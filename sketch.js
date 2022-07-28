@@ -768,3 +768,17 @@ function touchEnded(){
 
 }
 
+// 
+const MAX_BRIGHTNESS = 255;
+const MAX_MAGNITUDE = 100;
+function coordToColor(x, y) {
+    let magnitude = sqrt(y*y + x*x);
+    let angle = atan2(y, x);
+
+    let color = map(angle, -PI, PI, 0, 255);
+    let intensity = map(magnitude, 0, MAX_MAGNITUDE, 0, MAX_BRIGHTNESS*2);
+    let brightness = min(MAX_BRIGHTNESS, intensity);
+    let saturation = min(MAX_BRIGHTNESS, (MAX_BRIGHTNESS*2) - intensity);
+    
+    return [color, brightness, saturation];
+}
