@@ -280,33 +280,18 @@ function draw() {
 
             pAvgX = (pmouse1X+pmouse2X+pmouse3X+pmouse4X+pmouse5X+pmouse6X)/6;
             pAvgY = (pmouse1Y+pmouse2Y+pmouse3Y+pmouse4Y+pmouse5Y+pmouse6Y)/6;
-     
 
-            myColor = map(atan2(mouseY-pAvgY,mouseX-pAvgX),-PI,PI,0,255);
-
-
+	    // magnitude the joystick needs to be at
             myMagnitude = sqrt((mouseY-pAvgY)*(mouseY-pAvgY)+(mouseX-pAvgX)*(mouseX-pAvgX))
 
             controlDotX = controlCenterX + 10*myMagnitude*cos(atan2(mouseY-pAvgY,mouseX-pAvgX))
             controlDotY = controlCenterY + 10*myMagnitude*sin(atan2(mouseY-pAvgY,mouseX-pAvgX))
-
-            myBrightness = 3*sqrt((controlDotY-controlCenterY)*(controlDotY-controlCenterY)+(controlDotX-controlCenterX)*(controlDotX-controlCenterX));
-            if(myBrightness<255){
-                mySaturation = 255;
-            }else{
-                mySaturation = 500-myBrightness;
-            }
-
-
+	    let colorInfo = coordToColor(controlDotX - controlCenterX, controlDotY - controlCenterY);
+	    myColor = colorInfo[0];
+	    myBrightness = colorInfo[1];
+	    mySaturation = colorInfo[2];
         }
-
-
-
     }
-
-
-
-
 
 
     ////////// Input / Output calculations when we are driving with the control dot...
@@ -321,16 +306,10 @@ function draw() {
             controlDotX = mouseX;
             controlDotY = mouseY;
 
-            controlAngle = atan2(mouseY-controlCenterY, mouseX-controlCenterX)
-            myColor = map(controlAngle,-PI,PI,0,255);
-
-            myBrightness = 3*sqrt((mouseY-controlCenterY)*(mouseY-controlCenterY)+(mouseX-controlCenterX)*(mouseX-controlCenterX));
-            if(myBrightness<255){
-                mySaturation = 255;
-            }else{
-                mySaturation = 500-myBrightness;
-            }
-        
+	    let colorInfo = coordToColor(mouseX-controlCenterX, mouseY-controlCenterY);
+	    myColor = colorInfo[0];
+	    myBrightness = colorInfo[1];
+	    mySaturation = colorInfo[2];
 
             //update particle...
 
