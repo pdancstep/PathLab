@@ -61,9 +61,13 @@ var emptyTimeline = true;
 
 
 //where are we controlling from?
-// 0 == particle, 1 == velocity, 2 == timeline playback
+// 0 == particle, 1 == velocity, 2 == timeline playback]
 
-var controlMode = 1;
+const DRAGGINGMODE = 0;
+const JOYSTICKMODE = 1;
+const PLAYBACKMODE = 2;
+
+var controlMode = JOYSTICKMODE;
 
 
 
@@ -129,13 +133,13 @@ function draw() {
     //mode indication
     noStroke();
     fill(50);
-    if(controlMode==0){
+    if(controlMode==DRAGGINGMODE){
         ellipse(35,45,18,18);
     }
-    if(controlMode==1){
+    if(controlMode==JOYSTICKMODE){
         ellipse(35,610,18,18);
     }
-    if(controlMode==2){
+    if(controlMode==PLAYBACKMODE){
         ellipse(675,610,18,18);
     }
 
@@ -247,7 +251,7 @@ function draw() {
 
 
 
-    if(controlMode==0){
+    if(controlMode==DRAGGINGMODE){
 
         //updating particle and related values
 
@@ -307,7 +311,7 @@ function draw() {
 
     ////////// Input / Output calculations when we are driving with the control dot...
 
-    if(controlMode==1){
+    if(controlMode==JOYSTICKMODE){
         
         //if dragging, update control dot and color/brighness
         
@@ -652,28 +656,28 @@ function touchStarted() {
     //mode changes:
 
     if(dist(mouseX,mouseY,35,45)<25){
-        controlMode = 0;
+        controlMode = DRAGGINGMODE;
     }
 
     if(dist(mouseX,mouseY,35,610)<25){
-        controlMode = 1;
+        controlMode = JOYSTICKMODE;
     }
 
     if(dist(mouseX,mouseY,675,610)<25){
-        controlMode = 2;
+        controlMode = PLAYBACKMODE;
     }
 
 
     //turn on dot dragging...
 
-    if(controlMode==0){
+    if(controlMode==DRAGGINGMODE){
         if(dist(mouseX,mouseY,particleX,particleY)<15){
             dragging = true;
         }
     }
 
 
-    if(controlMode==1){
+    if(controlMode==JOYSTICKMODE){
         if(dist(mouseX,mouseY,controlDotX,controlDotY)<15){
             dragging = true;
         }
