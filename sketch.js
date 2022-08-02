@@ -5,24 +5,26 @@ function setup() {
 
 }
 
-var controlCenterX = 450;
-var controlCenterY = 725;
-var controlSize = 250;
+// coordinates of joystick area
+const controlCenterX = 450;
+const controlCenterY = 725;
+const controlSize = 250;
+
+// coordinates of particle area
+const stageX = 325;
+const stageY = 280;
+const stageSize = 500;
+
+
 //gives angle of current vector
 var controlAngle;
 
-//NOTE: dragging will mean either the control dot or the particle depending on the controlMode...
+//NOTE: *what* is being dragged depends on controlMode
 var dragging = false;
 
-
-
+// current coordinates of joystick and particle (start centered)
 var controlDotX = controlCenterX;
 var controlDotY = controlCenterY;
-
-var stageX = 325;
-var stageY = 280;
-var stageSize = 500;
-
 var particleX = stageX;
 var particleY = stageY;
 
@@ -39,9 +41,6 @@ var tracer = [];
 var tracerLimit = 200;
 var tracerAlpha = 255;
 
-
-
-
 //states
 var drawPath = true;
 var useColor = false;
@@ -52,24 +51,16 @@ var drawVector = true;
 var snapToZero = true;
 
 
-
-
-
-
 //timeline and playback variables
 var emptyTimeline = true;
 
 
 //where are we controlling from?
-// 0 == particle, 1 == velocity, 2 == timeline playback]
-
-const DRAGGINGMODE = 0;
-const JOYSTICKMODE = 1;
-const PLAYBACKMODE = 2;
+const DRAGGINGMODE = 0; // directly controlling the particle
+const JOYSTICKMODE = 1; // using joystick to set velocity of the particle
+const PLAYBACKMODE = 2; // moving the particle based on a recorded barcode
 
 var controlMode = JOYSTICKMODE;
-
-
 
 //variables for driving with particle
 var myMagnitude = 0;
@@ -91,15 +82,10 @@ var pmouse6Y = 0;
 var pAvgX;
 var pAvgY;
 
-
-
 function draw() {
 
     colorMode(RGB,255);
-
     background(indicator);
-
-
 
     //subdividing regions
     rectMode(CORNERS);
@@ -117,8 +103,7 @@ function draw() {
     fill(180,150,180);
     rect(650,575,width,height);
 
-    //Mode buttons
-    
+    //Mode buttons    
     stroke(50);
     noFill();
     strokeWeight(4);
@@ -129,32 +114,22 @@ function draw() {
     //lowerright
     ellipse(675,610,25,25);
 
-
     //mode indication
     noStroke();
     fill(50);
-    if(controlMode==DRAGGINGMODE){
+    if (controlMode==DRAGGINGMODE){
         ellipse(35,45,18,18);
     }
-    if(controlMode==JOYSTICKMODE){
+    if (controlMode==JOYSTICKMODE){
         ellipse(35,610,18,18);
     }
-    if(controlMode==PLAYBACKMODE){
+    if (controlMode==PLAYBACKMODE){
         ellipse(675,610,18,18);
     }
 
-
-
-
-
-
     //draw settings toggles
     drawSettings();
-
-
-
     rectMode(CENTER);
-
 
     //draw stage for particle
     fill(225,225,220);
@@ -170,9 +145,6 @@ function draw() {
     line(stageX-(stageSize/2),stageY,stageX+(stageSize/2),stageY);
     ellipse(stageX,stageY,200,200);
 
-
-
-
     //draw control box
     fill(50);
     noStroke();
@@ -182,75 +154,62 @@ function draw() {
     stroke(225,225,220);
     ellipse(controlCenterX,controlCenterY,100,100);
 
-
     colorMode(HSB,255);
 
-
-    if(useBrightness){
-
+    if (useBrightness){
         noFill();
-        for(i=0;i<25;i++){
-
-            for(j=0;j<64;j++){
-
-                if((15*i)<255){
+        for (i=0;i<25;i++){
+            for (j=0;j<64;j++){
+                if ((15*i)<255){
                     stroke(4*j,255,15*i);
-                }else{
+                } else {
                     stroke(4*j,500-(15*i),15*i);
                 }
-                arc(controlCenterX,controlCenterY,10*i,10*i,PI + j*TWO_PI/64,PI + (j+1)*TWO_PI/64);
+                arc(controlCenterX, controlCenterY,
+		    10*i, 10*i, PI + j*TWO_PI/64, PI + (j+1)*TWO_PI/64);
             }
-
         }
     }
 
-
     push();
+    
+    translate(controlCenterX,controlCenterY);
 
-        translate(controlCenterX,controlCenterY);
-
-
-
-        //pos. x-axis
-        stroke(128,255,255);
-        line(0,0,controlSize/2,0);
-
-        //quad 1 diagonal
-        stroke(160,255,255);
-        line(0,0,controlSize/2,controlSize/2);
-
-        //pos y-axis
-        stroke(192,255,255);
-        line(0,0,0,controlSize/2);
-
-        //quad 2 diagonal
-        stroke(224,255,255);
-        line(0,0,-controlSize/2,controlSize/2);
+    //pos. x-axis
+    stroke(128,255,255);
+    line(0,0,controlSize/2,0);
+    
+    //quad 1 diagonal
+    stroke(160,255,255);
+    line(0,0,controlSize/2,controlSize/2);
+    
+    //pos y-axis
+    stroke(192,255,255);
+    line(0,0,0,controlSize/2);
+    
+    //quad 2 diagonal
+    stroke(224,255,255);
+    line(0,0,-controlSize/2,controlSize/2);
         
-        //neg. x-axis
-        stroke(0,255,255);
-        line(0,0,-controlSize/2,0);
-
-        //quad 3 diagonal
-        stroke(32,255,255);
-        line(0,0,-controlSize/2,-controlSize/2);  
-        
-        //neg. y-axis
-        stroke(64,255,255);
-        line(0,0,0,-controlSize/2);
-
-        //quad 4 diagonal
-        stroke(96,255,255);
-        line(0,0,controlSize/2,-controlSize/2);
-
-
-
-
+    //neg. x-axis
+    stroke(0,255,255);
+    line(0,0,-controlSize/2,0);
+    
+    //quad 3 diagonal
+    stroke(32,255,255);
+    line(0,0,-controlSize/2,-controlSize/2);  
+    
+    //neg. y-axis
+    stroke(64,255,255);
+    line(0,0,0,-controlSize/2);
+    
+    //quad 4 diagonal
+    stroke(96,255,255);
+    line(0,0,controlSize/2,-controlSize/2);
+    
     pop();
 
-
-
-
+    // update
     if(controlMode==DRAGGINGMODE){
 
         //updating particle and related values
@@ -293,7 +252,6 @@ function draw() {
         }
     }
 
-
     ////////// Input / Output calculations when we are driving with the control dot...
 
     if(controlMode==JOYSTICKMODE){
@@ -319,9 +277,6 @@ function draw() {
         }
     }
 
-
-
-
     //draw control dot...
     
     noFill();
@@ -344,12 +299,6 @@ function draw() {
         }
     }
     ellipse(controlDotX,controlDotY,15,15);
-
-
-
-
-
-
 
 
     if(dragging){
@@ -391,15 +340,12 @@ function draw() {
     }
 
     
-
     colorMode(RGB,255);
 
     fill(50);
     strokeWeight(2);
     stroke(225,225,220);
     ellipse(particleX, particleY, 15, 15);
-
-
 
     //draw timeline/recording bar BACKGROUND
 
@@ -433,10 +379,6 @@ function draw() {
     fill(0);
     text(emptyTimeline,900,450);
 
-
-
-
-
 }
 
 
@@ -462,13 +404,8 @@ function drawTriangle(xPos,yPos,Rad){
             }
         endShape(CLOSE);
 
-
     pop();
-
-
 }
-
-
 
 function drawSettings(){
 
@@ -521,9 +458,6 @@ function drawSettings(){
             textAlign(CENTER,CENTER);
             text("clear", 180, 650);
         }
-
-
-
 
 
         ////////////////////////////////// direction / hue button
