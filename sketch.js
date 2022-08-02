@@ -6,15 +6,21 @@ function setup() {
 }
 
 // coordinates of joystick area
-const controlCenterX = 450;
-const controlCenterY = 725;
-const controlSize = 250;
+const JOYSTICK_CENTER_X = 450;
+const JOYSTICK_CENTER_Y = 725;
+const JOYSTICK_AREA_SIZE = 250;
 
 // coordinates of particle area
-const stageX = 325;
-const stageY = 280;
-const stageSize = 500;
+const PARTICLE_CENTER_X = 325;
+const PARTICLE_CENTER_Y = 280;
+const PARTICLE_AREA_SIZE = 500;
 
+// barcode display parameters
+const BARCODE_HEIGHT = 50;
+const FRAME_WIDTH = 2;
+
+// scaling
+const JOYSTICK_SCALING = 0.05;
 
 //gives angle of current vector
 var controlAngle;
@@ -23,10 +29,10 @@ var controlAngle;
 var dragging = false;
 
 // current coordinates of joystick and particle (start centered)
-var controlDotX = controlCenterX;
-var controlDotY = controlCenterY;
-var particleX = stageX;
-var particleY = stageY;
+var controlDotX = JOYSTICK_CENTER_X;
+var controlDotY = JOYSTICK_CENTER_Y;
+var particleX = PARTICLE_CENTER_X;
+var particleY = PARTICLE_CENTER_Y;
 
 
 var indicator = 150;
@@ -52,6 +58,9 @@ var snapToZero = true;
 
 
 //timeline and playback variables
+var playhead = 0; // index of the current frame of the active barcode
+var activeBarcode = -1; // index of the barcode currently on playback
+
 var emptyTimeline = true;
 
 
@@ -135,24 +144,24 @@ function draw() {
     fill(225,225,220);
     noStroke();
 
-    rect(stageX,stageY,stageSize,stageSize);
+    rect(PARTICLE_CENTER_X,PARTICLE_CENTER_Y,PARTICLE_AREA_SIZE,PARTICLE_AREA_SIZE);
 
     //stage coordinate system
     noFill();
     stroke(150);
     strokeWeight(2);
-    line(stageX,stageY-(stageSize/2),stageX,stageY+(stageSize/2));
-    line(stageX-(stageSize/2),stageY,stageX+(stageSize/2),stageY);
-    ellipse(stageX,stageY,200,200);
+    line(PARTICLE_CENTER_X,PARTICLE_CENTER_Y-(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_X,PARTICLE_CENTER_Y+(PARTICLE_AREA_SIZE/2));
+    line(PARTICLE_CENTER_X-(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y,PARTICLE_CENTER_X+(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y);
+    ellipse(PARTICLE_CENTER_X,PARTICLE_CENTER_Y,200,200);
 
     //draw control box
     fill(50);
     noStroke();
-    rect(controlCenterX,controlCenterY,controlSize,controlSize);
+    rect(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,JOYSTICK_AREA_SIZE,JOYSTICK_AREA_SIZE);
 
     noFill();
     stroke(225,225,220);
-    ellipse(controlCenterX,controlCenterY,100,100);
+    ellipse(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,100,100);
 
     colorMode(HSB,255);
 
@@ -165,7 +174,7 @@ function draw() {
                 } else {
                     stroke(4*j,500-(15*i),15*i);
                 }
-                arc(controlCenterX, controlCenterY,
+                arc(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y,
 		    10*i, 10*i, PI + j*TWO_PI/64, PI + (j+1)*TWO_PI/64);
             }
         }
@@ -173,110 +182,44 @@ function draw() {
 
     push();
     
-    translate(controlCenterX,controlCenterY);
+    translate(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y);
 
     //pos. x-axis
     stroke(128,255,255);
-    line(0,0,controlSize/2,0);
+    line(0,0,JOYSTICK_AREA_SIZE/2,0);
     
     //quad 1 diagonal
     stroke(160,255,255);
-    line(0,0,controlSize/2,controlSize/2);
+    line(0,0,JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);
     
     //pos y-axis
     stroke(192,255,255);
-    line(0,0,0,controlSize/2);
+    line(0,0,0,JOYSTICK_AREA_SIZE/2);
     
     //quad 2 diagonal
     stroke(224,255,255);
-    line(0,0,-controlSize/2,controlSize/2);
+    line(0,0,-JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);
         
     //neg. x-axis
     stroke(0,255,255);
-    line(0,0,-controlSize/2,0);
+    line(0,0,-JOYSTICK_AREA_SIZE/2,0);
     
     //quad 3 diagonal
     stroke(32,255,255);
-    line(0,0,-controlSize/2,-controlSize/2);  
+    line(0,0,-JOYSTICK_AREA_SIZE/2,-JOYSTICK_AREA_SIZE/2);  
     
     //neg. y-axis
     stroke(64,255,255);
-    line(0,0,0,-controlSize/2);
+    line(0,0,0,-JOYSTICK_AREA_SIZE/2);
     
     //quad 4 diagonal
     stroke(96,255,255);
-    line(0,0,controlSize/2,-controlSize/2);
+    line(0,0,JOYSTICK_AREA_SIZE/2,-JOYSTICK_AREA_SIZE/2);
     
     pop();
 
-    // update
-    if(controlMode==DRAGGINGMODE){
-
-        //updating particle and related values
-
-        if(dragging){
-
-            particleX = mouseX;
-            particleY = mouseY;
-
-            pmouse6X = pmouse5X;
-            pmouse6Y = pmouse5Y;
-
-            pmouse5X = pmouse4X;
-            pmouse5Y = pmouse4Y;
-
-            pmouse4X = pmouse3X;
-            pmouse4Y = pmouse3Y;
-
-            pmouse3X = pmouse2X;
-            pmouse3Y = pmouse2Y;
-
-            pmouse2X = pmouse1X;
-            pmouse2Y = pmouse1Y;
-
-            pmouse1X = pmouseX;
-            pmouse1Y = pmouseY;
-
-            pAvgX = (pmouse1X+pmouse2X+pmouse3X+pmouse4X+pmouse5X+pmouse6X)/6;
-            pAvgY = (pmouse1Y+pmouse2Y+pmouse3Y+pmouse4Y+pmouse5Y+pmouse6Y)/6;
-
-	    // magnitude the joystick needs to be at
-            myMagnitude = sqrt((mouseY-pAvgY)*(mouseY-pAvgY)+(mouseX-pAvgX)*(mouseX-pAvgX))
-
-            controlDotX = controlCenterX + 10*myMagnitude*cos(atan2(mouseY-pAvgY,mouseX-pAvgX))
-            controlDotY = controlCenterY + 10*myMagnitude*sin(atan2(mouseY-pAvgY,mouseX-pAvgX))
-	    let colorInfo = coordToColor(controlDotX - controlCenterX, controlDotY - controlCenterY);
-	    myColor = colorInfo[0];
-	    myBrightness = colorInfo[1];
-	    mySaturation = colorInfo[2];
-        }
-    }
-
-    ////////// Input / Output calculations when we are driving with the control dot...
-
-    if(controlMode==JOYSTICKMODE){
+    setNewCoordinates(controlMode);
         
-        //if dragging, update control dot and color/brighness
-        
-        if(dragging){
-
-
-            controlDotX = mouseX;
-            controlDotY = mouseY;
-
-	    let colorInfo = coordToColor(mouseX-controlCenterX, mouseY-controlCenterY);
-	    myColor = colorInfo[0];
-	    myBrightness = colorInfo[1];
-	    mySaturation = colorInfo[2];
-
-            //update particle...
-
-            particleX += .1*(controlDotX-450);
-            particleY += .1*(controlDotY-725);
-
-        }
-    }
-
     //draw control dot...
     
     noFill();
@@ -285,11 +228,11 @@ function draw() {
     }else{
         stroke(myColor,255,255);
     }
-    line(controlCenterX,controlCenterY,controlDotX,controlDotY);
+    line(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,controlDotX,controlDotY);
 
     strokeWeight(2);
     stroke(220);
-    if(dist(controlDotX,controlDotY,controlCenterX,controlCenterY)<5){
+    if(dist(controlDotX,controlDotY,JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y)<5){
         fill(0);    
     }else{
         if(useBrightness){
@@ -335,8 +278,8 @@ function draw() {
         }else{
             stroke(myColor,255,255);
         }
-        line(particleX, particleY, particleX+(controlDotX-controlCenterX), particleY+(controlDotY-controlCenterY));
-        drawTriangle(particleX+(controlDotX-controlCenterX),particleY+(controlDotY-controlCenterY),8);
+        line(particleX, particleY, particleX+(controlDotX-JOYSTICK_CENTER_X), particleY+(controlDotY-JOYSTICK_CENTER_Y));
+        drawTriangle(particleX+(controlDotX-JOYSTICK_CENTER_X),particleY+(controlDotY-JOYSTICK_CENTER_Y),8);
     }
 
     
@@ -565,19 +508,26 @@ function drawSettings(){
 
 function touchStarted() {
 
-
     //mode changes:
-
     if(dist(mouseX,mouseY,35,45)<25){
         controlMode = DRAGGINGMODE;
+	return;
     }
 
     if(dist(mouseX,mouseY,35,610)<25){
         controlMode = JOYSTICKMODE;
+	return;
     }
 
     if(dist(mouseX,mouseY,675,610)<25){
+	myBarcodes.push(new Barcode(750,700));
+	particleX = PARTICLE_CENTER_X;
+	particleY = PARTICLE_CENTER_Y;
         controlMode = PLAYBACKMODE;
+	playhead = 0;
+	activeBarcode = myBarcodes.length - 1;
+	drawPath = true;
+	return;
     }
 
 
@@ -589,13 +539,11 @@ function touchStarted() {
         }
     }
 
-
     if(controlMode==JOYSTICKMODE){
         if(dist(mouseX,mouseY,controlDotX,controlDotY)<15){
             dragging = true;
         }
     }
-
 
     if(mouseX>750&&mouseX<1150&&mouseY>700&&mouseY<750){
         myBarcodes.push(new Barcode(mouseX,mouseY))
@@ -606,20 +554,10 @@ function touchStarted() {
         barc.onClick();
     }
 
-
-
-
-
-
-
-
-
-
-    //clicking on the settings menu...
+    // clicking on the settings menu...
 
     if(dist(mouseX,mouseY,75,650)<20){     
         drawPath = !drawPath;
-
     }
 
     //if we're hovering over clear button...
@@ -632,7 +570,6 @@ function touchStarted() {
     if(drawPath&&dist(mouseX,mouseY,100,690)<20){     
         useColor = !useColor;
     }
-
 
     if(useColor&&dist(mouseX,mouseY,100,730)<20){     
         useBrightness = !useBrightness;
@@ -648,27 +585,17 @@ function touchStarted() {
         snapToZero = !snapToZero;
 
     }
-
-
-
-
-
-
-
 }
 
 function touchMoved() {
-
-
-
 
 }
 
 function touchEnded(){
 
     if(snapToZero){
-        controlDotX = controlCenterX;
-        controlDotY = controlCenterY;
+        controlDotX = JOYSTICK_CENTER_X;
+        controlDotY = JOYSTICK_CENTER_Y;
     }
 
     dragging = false;
@@ -676,14 +603,24 @@ function touchEnded(){
     for(const barc of myBarcodes){
         barc.dragging = false;
     }
-
-
-
 }
+
+// encoding of magnitude as brightness/saturation
+//
+// radius 0               = brightness 0, saturation 255
+//                                     \/
+//                               increases to
+//                                     \/
+// radius MAX_MAGNITUDE/2 = brightness 255, saturation 255
+//                                                     \/
+//                                               decreases to
+//                                                     \/
+// radius MAX_MAGNITUDE   = brightness 255, saturation 0
 
 // 
 const MAX_BRIGHTNESS = 255;
 const MAX_MAGNITUDE = 100;
+
 function coordToColor(x, y) {
     let magnitude = sqrt(y*y + x*x);
     let angle = atan2(y, x);
@@ -694,4 +631,99 @@ function coordToColor(x, y) {
     let saturation = min(MAX_BRIGHTNESS, (MAX_BRIGHTNESS*2) - intensity);
     
     return [color, brightness, saturation];
+}
+
+function colorToCoord(color, brightness, saturation) {
+    let angle = map(color, 0, 255, -PI, PI);
+    let intensity = brightness - saturation + MAX_BRIGHTNESS;
+    let magnitude = map(intensity, 0, MAX_BRIGHTNESS*2, 0, MAX_MAGNITUDE);
+
+    let x = magnitude * cos(angle);
+    let y = magnitude * sin(angle);
+
+    return [x, y];
+}
+
+// update particle, joystick, and barcode according to current UI mode
+function setNewCoordinates(mode) {
+    // update particle and related values based on mouse
+    if(mode==DRAGGINGMODE){
+        if(dragging){
+
+            particleX = mouseX;
+            particleY = mouseY;
+
+            pmouse6X = pmouse5X;
+            pmouse6Y = pmouse5Y;
+
+            pmouse5X = pmouse4X;
+            pmouse5Y = pmouse4Y;
+
+            pmouse4X = pmouse3X;
+            pmouse4Y = pmouse3Y;
+
+            pmouse3X = pmouse2X;
+            pmouse3Y = pmouse2Y;
+
+            pmouse2X = pmouse1X;
+            pmouse2Y = pmouse1Y;
+
+            pmouse1X = pmouseX;
+            pmouse1Y = pmouseY;
+
+            pAvgX = (pmouse1X+pmouse2X+pmouse3X+pmouse4X+pmouse5X+pmouse6X)/6;
+            pAvgY = (pmouse1Y+pmouse2Y+pmouse3Y+pmouse4Y+pmouse5Y+pmouse6Y)/6;
+
+	    // magnitude the joystick needs to be at
+            myMagnitude = sqrt((mouseY-pAvgY)*(mouseY-pAvgY)+(mouseX-pAvgX)*(mouseX-pAvgX))
+
+            controlDotX = JOYSTICK_CENTER_X + 10*myMagnitude*cos(atan2(mouseY-pAvgY,mouseX-pAvgX))
+            controlDotY = JOYSTICK_CENTER_Y + 10*myMagnitude*sin(atan2(mouseY-pAvgY,mouseX-pAvgX))
+	    let colorInfo = coordToColor(controlDotX - JOYSTICK_CENTER_X,
+					 controlDotY - JOYSTICK_CENTER_Y);
+	    myColor = colorInfo[0];
+	    myBrightness = colorInfo[1];
+	    mySaturation = colorInfo[2];
+        }
+    }
+
+    // update joystick based on mouse
+    else if (mode==JOYSTICKMODE) {
+        if(dragging){
+            controlDotX = mouseX;
+            controlDotY = mouseY;
+
+	    let colorInfo = coordToColor(mouseX - JOYSTICK_CENTER_X,
+					 mouseY - JOYSTICK_CENTER_Y);
+	    myColor = colorInfo[0];
+	    myBrightness = colorInfo[1];
+	    mySaturation = colorInfo[2];
+        }
+    }
+
+    // update joystick based on next recorded frame
+    else if (mode==PLAYBACKMODE) {
+	let frame = myBarcodes[activeBarcode].getFrame(playhead);
+	if (frame==null)
+	{
+	    // stop playback
+	    return;
+	}
+	myColor = frame[2];
+	myBrightness = frame[3];
+	mySaturation = frame[4];
+	
+	let coords = colorToCoord(myColor, myBrightness, mySaturation);
+	controlDotX = coords[0] + JOYSTICK_CENTER_X;
+	controlDotY = coords[1] + JOYSTICK_CENTER_Y;
+
+	playhead++;
+    }
+
+    // update particle based on updates to joystick
+    if (controlMode != DRAGGINGMODE)
+    {
+        particleX += JOYSTICK_SCALING * (controlDotX - JOYSTICK_CENTER_X);
+        particleY += JOYSTICK_SCALING * (controlDotY - JOYSTICK_CENTER_Y);
+    }
 }
