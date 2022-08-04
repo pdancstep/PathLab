@@ -1,14 +1,10 @@
-
 function setup() {
     createCanvas(1500,900);
-
 }
 
 function draw() {
-
     colorMode(RGB,255);
     background(indicator);
-
 
     //draw the environment...
     drawUI();
@@ -16,15 +12,9 @@ function draw() {
     //infer all coordinates based on present mode...
     setNewCoordinates(controlMode);
         
-    
-
-
-
     //////////////////////////////  JOYSTICK
-
     //draw joystick dot...
     drawJoystickPosition();
-
 
     //if dragging in DRAGGINGMODE or JOYSTICKMODE, record to present timeline...
     if(dragging){
@@ -34,25 +24,16 @@ function draw() {
         }
     }
 
-    
-
-
-
-
-
     //////////////////////////////  PARTICLE
-
     //draw particle path stored in tracer array...
     if(drawPath){
         drawParticlePath();
     }
 
-
     //draw particle velocity vector...
     if(drawVector){
         drawParticleVector();
     }
-
     
     //draw particle itself
     colorMode(RGB,255);
@@ -62,18 +43,12 @@ function draw() {
     stroke(225,225,220);
     ellipse(particleX, particleY, 15, 15);
 
-    
-
-
-
     /////////////////////////////  TIMELINE
-
     //draw timeline/recording bar BACKGROUND
     rectMode(CORNER);
     fill(100);
     noStroke();
     rect(750,700,400,50);
-
 
     colorMode(HSB,255);
     for(i=0;i<tracer.length;i++){
@@ -86,24 +61,13 @@ function draw() {
     stroke(200);
     rect(750,700,400,50);
 
-
-
-
-
-
-
     ////////////////////////////  BARCODES
-
     //draw barcodes on canvas
     for(const barc of myBarcodes){
         barc.update();
         barc.display();
     }
-
-
 }
-
-
 
 // encoding of magnitude as brightness/saturation
 //

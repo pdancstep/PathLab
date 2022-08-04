@@ -32,6 +32,7 @@ var particleX = PARTICLE_CENTER_X;
 var particleY = PARTICLE_CENTER_Y;
 
 
+// ?
 var indicator = 150;
 
 var myColor = 0;
@@ -57,8 +58,6 @@ var snapToZero = true;
 //timeline and playback variables
 var playhead = 0; // index of the current frame of the active barcode
 var activeBarcode = -1; // index of the barcode currently on playback
-
-
 
 //where are we controlling from?
 const DRAGGINGMODE = 0; // directly controlling the particle
@@ -89,8 +88,7 @@ var pAvgY;
 
 
 function drawUI(){
-
-	    //subdividing regions
+    //subdividing regions
     rectMode(CORNERS);
     noStroke();
 
@@ -144,8 +142,10 @@ function drawUI(){
     noFill();
     stroke(150);
     strokeWeight(2);
-    line(PARTICLE_CENTER_X,PARTICLE_CENTER_Y-(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_X,PARTICLE_CENTER_Y+(PARTICLE_AREA_SIZE/2));
-    line(PARTICLE_CENTER_X-(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y,PARTICLE_CENTER_X+(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y);
+    line(PARTICLE_CENTER_X,PARTICLE_CENTER_Y-(PARTICLE_AREA_SIZE/2),
+	 PARTICLE_CENTER_X,PARTICLE_CENTER_Y+(PARTICLE_AREA_SIZE/2));
+    line(PARTICLE_CENTER_X-(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y,
+	 PARTICLE_CENTER_X+(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y);
     ellipse(PARTICLE_CENTER_X,PARTICLE_CENTER_Y,200,200);
 
     //draw control box
@@ -213,38 +213,32 @@ function drawUI(){
     pop();
 }
 
-
 function drawJoystickPosition(){
-
-	noFill();
-    if(useBrightness){
-        stroke(myColor,mySaturation,myBrightness);
-    }else{
-        stroke(myColor,255,255);
+    let sat = 255;
+    let bri = 255;
+    if (useBrightness) {
+	sat = mySaturation;
+	bri = myBrightness;
     }
+    noFill();
+    stroke(myColor, sat, bri);
+
     line(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,joystickX,joystickY);
 
     strokeWeight(2);
     stroke(220);
-    if(dist(joystickX,joystickY,JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y)<5){
+    if(dist(joystickX,joystickY,JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y) < 5){
         fill(0);    
     }else{
-        if(useBrightness){
-            fill(myColor,mySaturation,myBrightness);
-        }else{
-            fill(myColor,255,255);
-        }
+        fill(myColor, sat, bri);
     }
     ellipse(joystickX,joystickY,15,15);
 }
 
-
-
 function drawParticlePath(){
-
     strokeWeight(7);
     strokeCap(ROUND);
-    for(i=0;i<tracer.length-1;i++){
+    for(i=0; i<tracer.length-1; i++){
         //tracerAlpha = map(i,0,tracer.length,0,255);
         if(useColor&&useBrightness){
             stroke(tracer[i][2],tracer[i][3],tracer[i][4]);
@@ -258,20 +252,20 @@ function drawParticlePath(){
 }
 
 function drawParticleVector(){
-	strokeWeight(2);
+    strokeWeight(2);
     if(useBrightness){
         stroke(myColor,mySaturation,myBrightness);
     }else{
         stroke(myColor,255,255);
     }
-    line(particleX, particleY, particleX+(joystickX-JOYSTICK_CENTER_X), particleY+(joystickY-JOYSTICK_CENTER_Y));
-    drawTriangle(particleX+(joystickX-JOYSTICK_CENTER_X),particleY+(joystickY-JOYSTICK_CENTER_Y),8);
-
+    line(particleX, particleY,
+	 particleX+(joystickX-JOYSTICK_CENTER_X), particleY+(joystickY-JOYSTICK_CENTER_Y));
+    drawTriangle(particleX+(joystickX-JOYSTICK_CENTER_X),
+		 particleY+(joystickY-JOYSTICK_CENTER_Y),
+		 8);
 }
 
 function drawTriangle(xPos,yPos,Rad){
-
-
     if(useBrightness){
         fill(myColor,mySaturation,myBrightness);
     }else{
@@ -284,7 +278,6 @@ function drawTriangle(xPos,yPos,Rad){
         translate(xPos,yPos);
         rotate(controlAngle);
 
-
         beginShape();
             for(i=0;i<3;i++){
                 vertex(Rad*cos(i*TWO_PI/3),Rad*sin(i*TWO_PI/3));
@@ -295,7 +288,6 @@ function drawTriangle(xPos,yPos,Rad){
 }
 
 function drawSettings(){
-
     push()
 
         translate(0,0);
@@ -325,8 +317,6 @@ function drawSettings(){
         noStroke();
         text("path", 90, 650);
 
-
-
         ////////////////////////////////////////////clear path button
         if(drawPath){
             
@@ -345,7 +335,6 @@ function drawSettings(){
             textAlign(CENTER,CENTER);
             text("clear", 180, 650);
         }
-
 
         ////////////////////////////////// direction / hue button
         if(drawPath){
@@ -373,12 +362,7 @@ function drawSettings(){
         textAlign(LEFT,CENTER);
         text("direction / hue", 115,690);
 
-
-
-
-
         //////////////////////////////   speed / brightness button
-
         if(useColor&&drawPath){
             stroke(50);
         }else{
@@ -389,13 +373,13 @@ function drawSettings(){
         noFill();
         ellipse(100,730,20,20);
 
-        if(useBrightness&&useColor&&drawPath){
+        if (useBrightness&&useColor&&drawPath){
             fill(50);
             noStroke();
             ellipse(100,730,13,13);
         }
 
-        if(useColor&&drawPath){
+        else if (useColor&&drawPath){
             fill(50);
         }else{
             fill(120);
@@ -404,12 +388,7 @@ function drawSettings(){
         noStroke()
         text("speed / brightness", 115,730);
 
-
-
-
         ///////////////////////////// show vector button
-
-
         stroke(50);
         strokeWeight(3);
         noFill();
@@ -425,10 +404,7 @@ function drawSettings(){
         noStroke();
         text("show vector", 90, 780);
 
-
-
         /////////////////////////////  snap-back-to-zero
-
         stroke(50);
         strokeWeight(3);
         noFill();
@@ -444,33 +420,5 @@ function drawSettings(){
         noStroke();
         text("snap to zero", 90, 820);
 
-
     pop()
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
