@@ -1,5 +1,7 @@
+const MAX_BARCODE_LENGTH = 200;
+
 class Barcode {
-    constructor(xPos,yPos) {
+    constructor(xPos,yPos,data) {
 	// fields for moving the barcode itself around the canvas
         //position
         this.x = xPos;
@@ -9,7 +11,7 @@ class Barcode {
         this.offsetY = 0; // position relative to yPos where barcode was grabbed
 
 	// fields for handling the data in the barcode
-        this.myVals = tracer.map((x)=>x);
+        this.frames = data.map((x)=>x);
     }
 
     // methods for moving barcodes around the canvas
@@ -20,6 +22,10 @@ class Barcode {
             this.offsetY = this.y - mouseY;
             this.dragging = true;
         }
+    }
+
+    clone(x, y) {
+	return new Barcode(x, y, this.frames);
     }
 
     // release mouse
@@ -36,18 +42,34 @@ class Barcode {
 
     display() {
 	strokeWeight(FRAME_WIDTH);
-        for(i=0; i<this.myVals.length; i++){
-            stroke(this.myVals[i][2],this.myVals[i][3],this.myVals[i][4]);
+        for(i=0; i<this.frames.length; i++){
+            stroke(this.frames[i][2],this.frames[i][3],this.frames[i][4]);
             line(this.x + 2*i, this.y, this.x + 2*i, this.y + BARCODE_HEIGHT);
         }
     }
 
-    // methods for playback
+    // methods for recording and playback
+    addFrame(fr) {
+	this.frames.push(fr);
+	// if full, remove oldest frame
+	if (this.frames.length > MAX_BARCODE_LENGTH) {
+	    this.frames.shift();
+	}
+    }
+    
     getFrame(index) {
-        if (0 <= index && index < this.myVals.length) {
-	    return this.myVals[index];
+        if (0 <= index && index < this.frames.length) {
+	    return this.frames[index];
 	} else {
 	    return null;
 	}
+    }
+
+    isFull() {
+	return (this.frames.length >= MAX_BARCODE_LENGTH);
+    }
+
+    length() {
+	return this.frames.length;
     }
 }

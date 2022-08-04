@@ -1,6 +1,20 @@
+/////////
+// Tuning Parameters
+/////////
+
+// relation of vector magnitude displayed in joystick area to color intensity
+const JOYSTICK_SCALING = 0.05;
+
+// relation of mouse movement speed to vector magnitude of joystick
+const DRAG_SCALING = 3;
+
+// how many frames back we look when calculating velocity of mouse movement
+const SAMPLE_SIZE = 10;
+
+///////////////////
+
 //container for all barcode instances
 var myBarcodes = [];
-
 
 // coordinates of joystick area
 const JOYSTICK_CENTER_X = 450;
@@ -16,8 +30,6 @@ const PARTICLE_AREA_SIZE = 500;
 const BARCODE_HEIGHT = 50;
 const FRAME_WIDTH = 2;
 
-// scaling
-const JOYSTICK_SCALING = 0.05;
 
 //gives angle of current vector
 var controlAngle;
@@ -31,7 +43,6 @@ var joystickY = JOYSTICK_CENTER_Y;
 var particleX = PARTICLE_CENTER_X;
 var particleY = PARTICLE_CENTER_Y;
 
-
 // ?
 var indicator = 150;
 
@@ -40,10 +51,6 @@ var myBrightness = 255;
 var mySaturation = 255;
 
 var clearButtonColor = 200;
-
-var tracer = [];
-var tracerLimit = 200;
-var tracerAlpha = 255;
 
 //states
 var drawPath = true;
@@ -54,11 +61,6 @@ var drawVector = true;
 
 var snapToZero = true;
 
-
-//timeline and playback variables
-var playhead = 0; // index of the current frame of the active barcode
-var activeBarcode = -1; // index of the barcode currently on playback
-
 //where are we controlling from?
 const DRAGGINGMODE = 0; // directly controlling the particle
 const JOYSTICKMODE = 1; // using joystick to set velocity of the particle
@@ -68,24 +70,6 @@ var controlMode = JOYSTICKMODE;
 
 //variables for driving with particle
 var myMagnitude = 0;
-
-
-var pmouse1X = 0;
-var pmouse1Y = 0;
-var pmouse2X = 0;
-var pmouse2Y = 0;
-var pmouse3X = 0;
-var pmouse3Y = 0;
-var pmouse4X = 0;
-var pmouse4Y = 0;
-var pmouse5X = 0;
-var pmouse5Y = 0;
-var pmouse6X = 0;
-var pmouse6Y = 0;
-
-var pAvgX;
-var pAvgY;
-
 
 function drawUI(){
     //subdividing regions
@@ -238,16 +222,27 @@ function drawJoystickPosition(){
 function drawParticlePath(){
     strokeWeight(7);
     strokeCap(ROUND);
-    for(i=0; i<tracer.length-1; i++){
-        //tracerAlpha = map(i,0,tracer.length,0,255);
+    
+    let pathEnd = tracer.length() - 1;
+    if (pathEnd <= 0) {
+	return;
+    }
+    
+    if (playhead > 0) {
+	pathEnd = playhead - 1;
+    }
+    
+    for(i=0; i<pathEnd; i++){
+	let frame = tracer.getFrame(i);
+	let nextFrame = tracer.getFrame(i+1);
         if(useColor&&useBrightness){
-            stroke(tracer[i][2],tracer[i][3],tracer[i][4]);
+            stroke(frame[2],frame[3],frame[4]);
         }else if(useColor){
-            stroke(tracer[i][2],255,255);
+            stroke(frame[2],255,255);
         }else{
             stroke(50);
         }
-        line(tracer[i][0],tracer[i][1],tracer[i+1][0],tracer[i+1][1]);
+        line(frame[0],frame[1],nextFrame[0],nextFrame[1]);
     }
 }
 

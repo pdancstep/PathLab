@@ -1,5 +1,6 @@
 function setup() {
     createCanvas(1500,900);
+    controlMode = JOYSTICKMODE;
 }
 
 function draw() {
@@ -11,18 +12,13 @@ function draw() {
 
     //infer all coordinates based on present mode...
     setNewCoordinates(controlMode);
-        
+
     //////////////////////////////  JOYSTICK
     //draw joystick dot...
     drawJoystickPosition();
 
     //if dragging in DRAGGINGMODE or JOYSTICKMODE, record to present timeline...
-    if(dragging){
-        tracer.push([particleX,particleY,myColor,mySaturation,myBrightness]);
-        if(tracer.length>tracerLimit){
-            tracer.splice(0,1);
-        }
-    }
+    recordFrame();
 
     //////////////////////////////  PARTICLE
     //draw particle path stored in tracer array...
@@ -51,8 +47,9 @@ function draw() {
     rect(750,700,400,50);
 
     colorMode(HSB,255);
-    for(i=0;i<tracer.length;i++){
-        stroke(tracer[i][2],tracer[i][3],tracer[i][4]);
+    for(i=0; i<tracer.length(); i++){
+	let frame = tracer.getFrame(i);
+        stroke(frame[2], frame[3], frame[4]);
         line(750+2*i,700,750+2*i,750);
     }
 
@@ -69,153 +66,28 @@ function draw() {
     }
 }
 
-// encoding of magnitude as brightness/saturation
-//
-// radius 0               = brightness 0, saturation 255
-//                                     \/
-//                               increases to
-//                                     \/
-// radius MAX_MAGNITUDE/2 = brightness 255, saturation 255
-//                                                     \/
-//                                               decreases to
-//                                                     \/
-// radius MAX_MAGNITUDE   = brightness 255, saturation 0
-
-// 
-const MAX_BRIGHTNESS = 255;
-const MAX_MAGNITUDE = 100;
-
-function coordToColor(x, y) {
-    let magnitude = sqrt(y*y + x*x);
-    let angle = atan2(y, x);
-
-    let color = map(angle, -PI, PI, 0, 255);
-    let intensity = map(magnitude, 0, MAX_MAGNITUDE, 0, MAX_BRIGHTNESS*2);
-    let brightness = min(MAX_BRIGHTNESS, intensity);
-    let saturation = min(MAX_BRIGHTNESS, (MAX_BRIGHTNESS*2) - intensity);
-    
-    return [color, brightness, saturation];
-}
-
-function colorToCoord(color, brightness, saturation) {
-    let angle = map(color, 0, 255, -PI, PI);
-    let intensity = brightness - saturation + MAX_BRIGHTNESS;
-    let magnitude = map(intensity, 0, MAX_BRIGHTNESS*2, 0, MAX_MAGNITUDE);
-
-    let x = magnitude * cos(angle);
-    let y = magnitude * sin(angle);
-
-    return [x, y];
-}
-
-// update particle, joystick, and barcode according to current UI mode
-function setNewCoordinates(mode) {
-    // update particle and related values based on mouse
-    if(mode==DRAGGINGMODE){
-        if(dragging){
-
-            particleX = mouseX;
-            particleY = mouseY;
-
-            pmouse6X = pmouse5X;
-            pmouse6Y = pmouse5Y;
-
-            pmouse5X = pmouse4X;
-            pmouse5Y = pmouse4Y;
-
-            pmouse4X = pmouse3X;
-            pmouse4Y = pmouse3Y;
-
-            pmouse3X = pmouse2X;
-            pmouse3Y = pmouse2Y;
-
-            pmouse2X = pmouse1X;
-            pmouse2Y = pmouse1Y;
-
-            pmouse1X = pmouseX;
-            pmouse1Y = pmouseY;
-
-            pAvgX = (pmouse1X+pmouse2X+pmouse3X+pmouse4X+pmouse5X+pmouse6X)/6;
-            pAvgY = (pmouse1Y+pmouse2Y+pmouse3Y+pmouse4Y+pmouse5Y+pmouse6Y)/6;
-
-	    // magnitude the joystick needs to be at
-            myMagnitude = sqrt((mouseY-pAvgY)*(mouseY-pAvgY)+(mouseX-pAvgX)*(mouseX-pAvgX))
-
-            joystickX = JOYSTICK_CENTER_X + 10*myMagnitude*cos(atan2(mouseY-pAvgY,mouseX-pAvgX))
-            joystickY = JOYSTICK_CENTER_Y + 10*myMagnitude*sin(atan2(mouseY-pAvgY,mouseX-pAvgX))
-	    let colorInfo = coordToColor(joystickX - JOYSTICK_CENTER_X,
-					 joystickY - JOYSTICK_CENTER_Y);
-	    myColor = colorInfo[0];
-	    myBrightness = colorInfo[1];
-	    mySaturation = colorInfo[2];
-        }
-    }
-
-    // update joystick based on mouse
-    else if (mode==JOYSTICKMODE) {
-        if(dragging){
-            joystickX = mouseX;
-            joystickY = mouseY;
-
-	    let colorInfo = coordToColor(mouseX - JOYSTICK_CENTER_X,
-					 mouseY - JOYSTICK_CENTER_Y);
-	    myColor = colorInfo[0];
-	    myBrightness = colorInfo[1];
-	    mySaturation = colorInfo[2];
-        }
-    }
-
-    // update joystick based on next recorded frame
-    else if (mode==PLAYBACKMODE) {
-	let frame = myBarcodes[activeBarcode].getFrame(playhead);
-	if (frame==null)
-	{
-	    // stop playback
-	    return;
-	}
-	myColor = frame[2];
-	myBrightness = frame[3];
-	mySaturation = frame[4];
-	
-	let coords = colorToCoord(myColor, myBrightness, mySaturation);
-	joystickX = coords[0] + JOYSTICK_CENTER_X;
-	joystickY = coords[1] + JOYSTICK_CENTER_Y;
-
-	playhead++;
-    }
-
-    // update particle based on updates to joystick
-    if (controlMode != DRAGGINGMODE)
-    {
-        particleX += JOYSTICK_SCALING * (joystickX - JOYSTICK_CENTER_X);
-        particleY += JOYSTICK_SCALING * (joystickY - JOYSTICK_CENTER_Y);
-    }
-}
-
-
 
 function touchStarted() {
 
     //mode changes:
     if(dist(mouseX,mouseY,35,45)<25){
         controlMode = DRAGGINGMODE;
-    return;
+	return;
     }
 
     if(dist(mouseX,mouseY,35,610)<25){
         controlMode = JOYSTICKMODE;
-    return;
+	return;
     }
 
+    // play button
     if(dist(mouseX,mouseY,675,610)<25){
-    myBarcodes.push(new Barcode(750,700));
-    particleX = PARTICLE_CENTER_X;
-    particleY = PARTICLE_CENTER_Y;
+	particleX = PARTICLE_CENTER_X;
+	particleY = PARTICLE_CENTER_Y;
         controlMode = PLAYBACKMODE;
-    playhead = 0;
-    activeBarcode = myBarcodes.length - 1;
-    drawPath = true;
-    return;
+	playhead = 0;
+	drawPath = true;
+	return;
     }
 
 
@@ -234,7 +106,7 @@ function touchStarted() {
     }
 
     if(mouseX>750&&mouseX<1150&&mouseY>700&&mouseY<750){
-        myBarcodes.push(new Barcode(mouseX,mouseY))
+        myBarcodes.push(tracer.clone());
     }
 
     //dragging existing barcode...
@@ -291,22 +163,3 @@ function touchEnded(){
         barc.dragging = false;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
