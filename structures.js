@@ -26,8 +26,8 @@ var controlAngle;
 var dragging = false;
 
 // current coordinates of joystick and particle (start centered)
-var controlDotX = JOYSTICK_CENTER_X;
-var controlDotY = JOYSTICK_CENTER_Y;
+var joystickX = JOYSTICK_CENTER_X;
+var joystickY = JOYSTICK_CENTER_Y;
 var particleX = PARTICLE_CENTER_X;
 var particleY = PARTICLE_CENTER_Y;
 
@@ -222,11 +222,11 @@ function drawJoystickPosition(){
     }else{
         stroke(myColor,255,255);
     }
-    line(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,controlDotX,controlDotY);
+    line(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,joystickX,joystickY);
 
     strokeWeight(2);
     stroke(220);
-    if(dist(controlDotX,controlDotY,JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y)<5){
+    if(dist(joystickX,joystickY,JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y)<5){
         fill(0);    
     }else{
         if(useBrightness){
@@ -235,7 +235,7 @@ function drawJoystickPosition(){
             fill(myColor,255,255);
         }
     }
-    ellipse(controlDotX,controlDotY,15,15);
+    ellipse(joystickX,joystickY,15,15);
 }
 
 
@@ -264,8 +264,8 @@ function drawParticleVector(){
     }else{
         stroke(myColor,255,255);
     }
-    line(particleX, particleY, particleX+(controlDotX-JOYSTICK_CENTER_X), particleY+(controlDotY-JOYSTICK_CENTER_Y));
-    drawTriangle(particleX+(controlDotX-JOYSTICK_CENTER_X),particleY+(controlDotY-JOYSTICK_CENTER_Y),8);
+    line(particleX, particleY, particleX+(joystickX-JOYSTICK_CENTER_X), particleY+(joystickY-JOYSTICK_CENTER_Y));
+    drawTriangle(particleX+(joystickX-JOYSTICK_CENTER_X),particleY+(joystickY-JOYSTICK_CENTER_Y),8);
 
 }
 

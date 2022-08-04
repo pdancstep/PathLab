@@ -177,10 +177,10 @@ function setNewCoordinates(mode) {
 	    // magnitude the joystick needs to be at
             myMagnitude = sqrt((mouseY-pAvgY)*(mouseY-pAvgY)+(mouseX-pAvgX)*(mouseX-pAvgX))
 
-            controlDotX = JOYSTICK_CENTER_X + 10*myMagnitude*cos(atan2(mouseY-pAvgY,mouseX-pAvgX))
-            controlDotY = JOYSTICK_CENTER_Y + 10*myMagnitude*sin(atan2(mouseY-pAvgY,mouseX-pAvgX))
-	    let colorInfo = coordToColor(controlDotX - JOYSTICK_CENTER_X,
-					 controlDotY - JOYSTICK_CENTER_Y);
+            joystickX = JOYSTICK_CENTER_X + 10*myMagnitude*cos(atan2(mouseY-pAvgY,mouseX-pAvgX))
+            joystickY = JOYSTICK_CENTER_Y + 10*myMagnitude*sin(atan2(mouseY-pAvgY,mouseX-pAvgX))
+	    let colorInfo = coordToColor(joystickX - JOYSTICK_CENTER_X,
+					 joystickY - JOYSTICK_CENTER_Y);
 	    myColor = colorInfo[0];
 	    myBrightness = colorInfo[1];
 	    mySaturation = colorInfo[2];
@@ -190,8 +190,8 @@ function setNewCoordinates(mode) {
     // update joystick based on mouse
     else if (mode==JOYSTICKMODE) {
         if(dragging){
-            controlDotX = mouseX;
-            controlDotY = mouseY;
+            joystickX = mouseX;
+            joystickY = mouseY;
 
 	    let colorInfo = coordToColor(mouseX - JOYSTICK_CENTER_X,
 					 mouseY - JOYSTICK_CENTER_Y);
@@ -214,8 +214,8 @@ function setNewCoordinates(mode) {
 	mySaturation = frame[4];
 	
 	let coords = colorToCoord(myColor, myBrightness, mySaturation);
-	controlDotX = coords[0] + JOYSTICK_CENTER_X;
-	controlDotY = coords[1] + JOYSTICK_CENTER_Y;
+	joystickX = coords[0] + JOYSTICK_CENTER_X;
+	joystickY = coords[1] + JOYSTICK_CENTER_Y;
 
 	playhead++;
     }
@@ -223,8 +223,8 @@ function setNewCoordinates(mode) {
     // update particle based on updates to joystick
     if (controlMode != DRAGGINGMODE)
     {
-        particleX += JOYSTICK_SCALING * (controlDotX - JOYSTICK_CENTER_X);
-        particleY += JOYSTICK_SCALING * (controlDotY - JOYSTICK_CENTER_Y);
+        particleX += JOYSTICK_SCALING * (joystickX - JOYSTICK_CENTER_X);
+        particleY += JOYSTICK_SCALING * (joystickY - JOYSTICK_CENTER_Y);
     }
 }
 
@@ -264,7 +264,7 @@ function touchStarted() {
     }
 
     if(controlMode==JOYSTICKMODE){
-        if(dist(mouseX,mouseY,controlDotX,controlDotY)<15){
+        if(dist(mouseX,mouseY,joystickX,joystickY)<15){
             dragging = true;
         }
     }
@@ -317,8 +317,8 @@ function touchMoved() {
 function touchEnded(){
 
     if(snapToZero){
-        controlDotX = JOYSTICK_CENTER_X;
-        controlDotY = JOYSTICK_CENTER_Y;
+        joystickX = JOYSTICK_CENTER_X;
+        joystickY = JOYSTICK_CENTER_Y;
     }
 
     dragging = false;
