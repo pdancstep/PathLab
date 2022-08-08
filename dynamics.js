@@ -16,14 +16,14 @@ function setNewCoordinates(mode) {
 	    prevMouseXs.shift();
 	    prevMouseYs.push(mouseY);
 	    prevMouseYs.shift();
-            particleX = mouseX;
-            particleY = mouseY;
+        particleX = mouseX;
+        particleY = mouseY;
 	    
-            let pAvgX = arrayMean(prevMouseXs);
+        let pAvgX = arrayMean(prevMouseXs);
 	    let pAvgY = arrayMean(prevMouseYs);
 	    
 	    // magnitude the joystick needs to be at
-            myMagnitude = sqrt((mouseY-pAvgY)*(mouseY-pAvgY)+(mouseX-pAvgX)*(mouseX-pAvgX));
+        myMagnitude = sqrt((mouseY-pAvgY)*(mouseY-pAvgY)+(mouseX-pAvgX)*(mouseX-pAvgX));
 	    
             joystickX = JOYSTICK_CENTER_X
 		+ DRAG_SCALING*myMagnitude*cos(atan2(mouseY-pAvgY,mouseX-pAvgX));

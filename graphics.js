@@ -417,3 +417,37 @@ function drawSettings(){
 
     pop()
 }
+
+function menuClick() {
+
+    if(dist(mouseX,mouseY,75,650)<20){     
+        drawPath = !drawPath;
+    }
+
+    //if we're hovering over clear button...
+    if(clearButtonColor==255){     
+        tracer = [];
+    }
+
+    //if we have paths and we're over the hue button...
+    if(drawPath&&dist(mouseX,mouseY,100,690)<20){     
+        useColor = !useColor;
+    }
+
+    if(useColor&&dist(mouseX,mouseY,100,730)<20){     
+        useBrightness = !useBrightness;
+    }
+
+
+    if(dist(mouseX,mouseY,75,780)<20){     
+        drawVector = !drawVector;
+
+    }
+
+    if(dist(mouseX,mouseY,75,820)<20){     
+        snapToZero = !snapToZero;
+
+    }
+
+
+}

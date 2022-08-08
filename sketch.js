@@ -84,7 +84,7 @@ function touchStarted() {
     if(dist(mouseX,mouseY,675,610)<25){
 	particleX = PARTICLE_CENTER_X;
 	particleY = PARTICLE_CENTER_Y;
-        controlMode = PLAYBACKMODE;
+    controlMode = PLAYBACKMODE;
 	playhead = 0;
 	drawPath = true;
 	return;
@@ -114,36 +114,19 @@ function touchStarted() {
         barc.onClick();
     }
 
+
+
+
+
+
     // clicking on the settings menu...
 
-    if(dist(mouseX,mouseY,75,650)<20){     
-        drawPath = !drawPath;
-    }
-
-    //if we're hovering over clear button...
-    if(clearButtonColor==255){     
-        tracer = [];
-    }
-
-    //if we have paths and we're over the hue button...
-    if(drawPath&&dist(mouseX,mouseY,100,690)<20){     
-        useColor = !useColor;
-    }
-
-    if(useColor&&dist(mouseX,mouseY,100,730)<20){     
-        useBrightness = !useBrightness;
-    }
+    menuClick();
 
 
-    if(dist(mouseX,mouseY,75,780)<20){     
-        drawVector = !drawVector;
 
-    }
 
-    if(dist(mouseX,mouseY,75,820)<20){     
-        snapToZero = !snapToZero;
 
-    }
 }
 
 function touchMoved() {
