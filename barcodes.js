@@ -16,7 +16,7 @@ class Barcode {
 
     // methods for moving barcodes around the canvas
     onClick(){
-        if (mouseX>this.x && mouseX<this.x + (this.myVals.length*FRAME_WIDTH) &&
+        if (mouseX>this.x && mouseX<this.x + (this.frames.length*FRAME_WIDTH) &&
 	    mouseY>this.y && mouseY<this.y + BARCODE_HEIGHT) {
             this.offsetX = this.x - mouseX;
             this.offsetY = this.y - mouseY;
@@ -43,7 +43,9 @@ class Barcode {
     display() {
 	strokeWeight(FRAME_WIDTH);
         for(i=0; i<this.frames.length; i++){
-            stroke(this.frames[i][2],this.frames[i][3],this.frames[i][4]);
+            stroke(this.frames[i].myColor(),
+		   this.frames[i].myBrightness(),
+		   this.frames[i].mySaturation());
             line(this.x + 2*i, this.y, this.x + 2*i, this.y + BARCODE_HEIGHT);
         }
     }
@@ -53,7 +55,10 @@ class Barcode {
 	this.frames.push(fr);
 	// if full, remove oldest frame
 	if (this.frames.length > MAX_BARCODE_LENGTH) {
-	    this.frames.shift();
+	    return this.frames.shift();
+	}
+	else {
+	    return null;
 	}
     }
     

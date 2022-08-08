@@ -49,7 +49,7 @@ function draw() {
     colorMode(HSB,255);
     for(i=0; i<tracer.length(); i++){
 	let frame = tracer.getFrame(i);
-        stroke(frame[2], frame[3], frame[4]);
+        stroke(frame.getColor(), frame.getBrightness(), frame.getSaturation());
         line(750+2*i,700,750+2*i,750);
     }
 
@@ -65,7 +65,6 @@ function draw() {
         barc.display();
     }
 }
-
 
 function touchStarted() {
 
@@ -84,7 +83,8 @@ function touchStarted() {
     if(dist(mouseX,mouseY,675,610)<25){
 	particleX = PARTICLE_CENTER_X;
 	particleY = PARTICLE_CENTER_Y;
-    controlMode = PLAYBACKMODE;
+	pathstart = PARTICLE_CENTER;
+	controlMode = PLAYBACKMODE;
 	playhead = 0;
 	drawPath = true;
 	return;
@@ -114,27 +114,15 @@ function touchStarted() {
         barc.onClick();
     }
 
-
-
-
-
-
     // clicking on the settings menu...
-
     menuClick();
-
-
-
-
-
 }
 
 function touchMoved() {
 
 }
 
-function touchEnded(){
-
+function touchEnded() {
     if(snapToZero){
         joystickX = JOYSTICK_CENTER_X;
         joystickY = JOYSTICK_CENTER_Y;

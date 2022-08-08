@@ -1,30 +1,14 @@
-/////////
-// Tuning Parameters
-/////////
-
-// relation of vector magnitude displayed in joystick area to color intensity
-const JOYSTICK_SCALING = 0.05;
-
-// relation of mouse movement speed to vector magnitude of joystick
-const DRAG_SCALING = 3;
-
-// how many frames back we look when calculating velocity of mouse movement
-const SAMPLE_SIZE = 10;
-
-///////////////////
-
-//container for all barcode instances
-var myBarcodes = [];
-
 // coordinates of joystick area
 const JOYSTICK_CENTER_X = 450;
 const JOYSTICK_CENTER_Y = 725;
 const JOYSTICK_AREA_SIZE = 250;
+const JOYSTICK_CENTER = new Coord(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y);
 
 // coordinates of particle area
 const PARTICLE_CENTER_X = 325;
 const PARTICLE_CENTER_Y = 280;
 const PARTICLE_AREA_SIZE = 500;
+const PARTICLE_CENTER = new Coord(PARTICLE_CENTER_X, PARTICLE_CENTER_Y);
 
 // barcode display parameters
 const BARCODE_HEIGHT = 50;
@@ -159,7 +143,6 @@ function drawUI(){
     }
 
     push();
-    
     translate(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y);
 
     //pos. x-axis
@@ -223,26 +206,25 @@ function drawParticlePath(){
     strokeWeight(7);
     strokeCap(ROUND);
     
-    let pathEnd = tracer.length() - 1;
-    if (pathEnd <= 0) {
+    let pathEnd = min(tracer.length()-1, playhead);
+    if (pathEnd < 0) {
 	return;
     }
-    
-    if (playhead > 0) {
-	pathEnd = playhead - 1;
-    }
-    
+
+    let previous = pathstart;
     for(i=0; i<pathEnd; i++){
 	let frame = tracer.getFrame(i);
-	let nextFrame = tracer.getFrame(i+1);
         if(useColor&&useBrightness){
-            stroke(frame[2],frame[3],frame[4]);
+            stroke(frame.getColor(),frame.getBrightness(),frame.getSaturation());
         }else if(useColor){
-            stroke(frame[2],255,255);
+            stroke(frame.getColor(),255,255);
         }else{
             stroke(50);
         }
-        line(frame[0],frame[1],nextFrame[0],nextFrame[1]);
+	let newpos = frame.applyAsVelocity(previous);
+        line(previous.getX(), previous.getY(), newpos.getX(), newpos.getY());
+
+	previous = newpos;
     }
 }
 
@@ -284,9 +266,7 @@ function drawTriangle(xPos,yPos,Rad){
 
 function drawMenu(){
     push()
-
         translate(0,0);
-
 
         textAlign(LEFT,CENTER);
         textSize(30);
@@ -426,7 +406,10 @@ function menuClick() {
 
     //if we're hovering over clear button...
     if(clearButtonColor==255){     
-        tracer = [];
+	particleX = PARTICLE_CENTER_X;
+	particleY = PARTICLE_CENTER_Y;
+	pathstart = PARTICLE_CENTER;
+        tracer = new Barcode(0, 0, []);
     }
 
     //if we have paths and we're over the hue button...
@@ -446,8 +429,5 @@ function menuClick() {
 
     if(dist(mouseX,mouseY,75,820)<20){     
         snapToZero = !snapToZero;
-
     }
-
-
 }

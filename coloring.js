@@ -26,6 +26,11 @@ function coordToColor(x, y) {
     return [color, brightness, saturation];
 }
 
+function coordToFrame(x, y) {
+    let colors = coordToColor(x, y);
+    return new Frame(colors[0],colors[1],colors[2]);
+}
+
 function colorToCoord(color, brightness, saturation) {
     let angle = map(color, 0, 255, -PI, PI);
     let intensity = brightness - saturation + MAX_BRIGHTNESS;
@@ -34,5 +39,5 @@ function colorToCoord(color, brightness, saturation) {
     let x = magnitude * cos(angle);
     let y = magnitude * sin(angle);
 
-    return [x, y];
+    return new Coord(x,y);
 }
