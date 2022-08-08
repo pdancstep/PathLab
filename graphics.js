@@ -112,8 +112,8 @@ function drawUI(){
         ellipse(675,610,18,18);
     }
 
-    //draw settings toggles
-    drawSettings();
+    //draw menu toggles
+    drawMenu();
     rectMode(CENTER);
 
     //draw stage for particle
@@ -282,7 +282,7 @@ function drawTriangle(xPos,yPos,Rad){
     pop();
 }
 
-function drawSettings(){
+function drawMenu(){
     push()
 
         translate(0,0);
