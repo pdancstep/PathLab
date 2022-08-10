@@ -16,10 +16,13 @@ const FRAME_WIDTH = 2;
 
 
 //gives angle of current vector
-var controlAngle;
+var arrowAngle;
 
 //NOTE: *what* is being dragged depends on controlMode
 var dragging = false;
+
+var draggingParticle = false;
+var draggingJoystick = false;
 
 // current coordinates of joystick and particle (start centered)
 var joystickX = JOYSTICK_CENTER_X;
@@ -55,6 +58,8 @@ var controlMode = JOYSTICKMODE;
 //variables for driving with particle
 var myMagnitude = 0;
 
+var playheadCoord;
+
 function drawUI(){
     //subdividing regions
     rectMode(CORNERS);
@@ -72,29 +77,6 @@ function drawUI(){
     fill(180,150,180);
     rect(650,575,width,height);
 
-    //Mode buttons    
-    stroke(50);
-    noFill();
-    strokeWeight(4);
-    //upperleft
-    ellipse(35,45,25,25);
-    //lowerleft
-    ellipse(35,610,25,25);
-    //lowerright
-    ellipse(675,610,25,25);
-
-    //mode indication
-    noStroke();
-    fill(50);
-    if (controlMode==DRAGGINGMODE){
-        ellipse(35,45,18,18);
-    }
-    if (controlMode==JOYSTICKMODE){
-        ellipse(35,610,18,18);
-    }
-    if (controlMode==PLAYBACKMODE){
-        ellipse(675,610,18,18);
-    }
 
     //draw menu toggles
     drawMenu();
@@ -238,11 +220,14 @@ function drawParticleVector(){
     line(particleX, particleY,
 	 particleX+(joystickX-JOYSTICK_CENTER_X), particleY+(joystickY-JOYSTICK_CENTER_Y));
     drawTriangle(particleX+(joystickX-JOYSTICK_CENTER_X),
-		 particleY+(joystickY-JOYSTICK_CENTER_Y),
-		 8);
+		 particleY+(joystickY-JOYSTICK_CENTER_Y));
 }
 
-function drawTriangle(xPos,yPos,Rad){
+function drawTriangle(xPos,yPos){
+
+    arrowAngle = atan2(joystickY-JOYSTICK_CENTER_Y,joystickX-JOYSTICK_CENTER_X);
+
+
     if(useBrightness){
         fill(myColor,mySaturation,myBrightness);
     }else{
@@ -253,11 +238,11 @@ function drawTriangle(xPos,yPos,Rad){
     push();
 
         translate(xPos,yPos);
-        rotate(controlAngle);
+        rotate(arrowAngle);
 
         beginShape();
             for(i=0;i<3;i++){
-                vertex(Rad*cos(i*TWO_PI/3),Rad*sin(i*TWO_PI/3));
+                vertex(8*cos(i*TWO_PI/3),8*sin(i*TWO_PI/3));
             }
         endShape(CLOSE);
 
@@ -406,10 +391,11 @@ function menuClick() {
 
     //if we're hovering over clear button...
     if(clearButtonColor==255){     
-	particleX = PARTICLE_CENTER_X;
-	particleY = PARTICLE_CENTER_Y;
-	pathstart = PARTICLE_CENTER;
-        tracer = new Barcode(0, 0, []);
+	   particleX = PARTICLE_CENTER_X;
+	   particleY = PARTICLE_CENTER_Y;
+	   pathstart = PARTICLE_CENTER;
+       tracer = new Barcode(0, 0, []);
+       playhead = 0;
     }
 
     //if we have paths and we're over the hue button...

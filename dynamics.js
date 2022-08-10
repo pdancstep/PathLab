@@ -27,14 +27,14 @@ var playhead = 0; // index of the current frame for playback
 function setNewCoordinates(mode) {
     // update particle and related values based on mouse
     if(mode==DRAGGINGMODE) {
-        if(dragging) {
+        if(draggingParticle) {
 	    prevMouseCoords.push(new Coord(mouseX, mouseY));
 	    prevMouseCoords.shift();
 	    particleX = mouseX;
-            particleY = mouseY;
+        particleY = mouseY;
 	    
 	    // TODO: refactor mean calculation for Coord array instead of pair of arrays
-            let pAvgX = arrayMean(prevMouseXs);
+        let pAvgX = arrayMean(prevMouseXs);
 	    let pAvgY = arrayMean(prevMouseYs);
 	    
 	    // magnitude the joystick needs to be at
@@ -54,7 +54,7 @@ function setNewCoordinates(mode) {
     
     // update joystick based on mouse
     else if (mode==JOYSTICKMODE) {
-        if(dragging){
+        if(draggingJoystick){
             joystickX = mouseX;
             joystickY = mouseY;
 	    
@@ -96,7 +96,7 @@ function setNewCoordinates(mode) {
 }
 
 function recordFrame() {
-    if (dragging){
+    if (draggingJoystick||draggingParticle){
 	let droppedFrame = tracer.addFrame(new Frame(myColor,mySaturation,myBrightness));
 	playhead++;
 	if (droppedFrame) {
