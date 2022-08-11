@@ -24,6 +24,7 @@ var tracer = new Barcode(0,0, []);
 var playhead = 0; // index of the current frame for playback
 
 // update particle, joystick, and barcode according to current UI mode
+// returns the color data (as a Frame) for the current particle velocity/joystick position
 function setNewCoordinates(mode) {
     // update particle and related values based on mouse
     if(mode==DRAGGINGMODE) {
@@ -31,76 +32,78 @@ function setNewCoordinates(mode) {
 	    prevMouseCoords.push(new Coord(mouseX, mouseY));
 	    prevMouseCoords.shift();
 	    particleX = mouseX;
-        particleY = mouseY;
+            particleY = mouseY;
 	    
-	    // TODO: refactor mean calculation for Coord array instead of pair of arrays
-        let pAvgX = arrayMean(prevMouseXs);
-	    let pAvgY = arrayMean(prevMouseYs);
+	    let prevCoordSum = prevMouseCoords.reduce((a,b)=> a.translate(b),
+						      new Coord(0,0));
+	    let prevCoordAvg = prevCoordSum.scale(1/prevMouseCoords.length);
+            let dx = mouseX - prevCoordAvg.getX();
+	    let dy = mouseY - prevCoordAvg.getY();
 	    
 	    // magnitude the joystick needs to be at
-            myMagnitude = sqrt((mouseY-pAvgY)*(mouseY-pAvgY)+(mouseX-pAvgX)*(mouseX-pAvgX));
+            let magnitude = sqrt(dy*dy + dx*dx);
 	    
-            joystickX = JOYSTICK_CENTER_X
-		+ DRAG_SCALING*myMagnitude*cos(atan2(mouseY-pAvgY,mouseX-pAvgX));
-            joystickY = JOYSTICK_CENTER_Y
-		+ DRAG_SCALING*myMagnitude*sin(atan2(mouseY-pAvgY,mouseX-pAvgX));
-	    let colorInfo = coordToFrame(joystickX - JOYSTICK_CENTER_X,
-					 joystickY - JOYSTICK_CENTER_Y);
-	    myColor = colorInfo.getColor();
-	    myBrightness = colorInfo.getBrightness();
-	    mySaturation = colorInfo.getSaturation();
-        }
+            joystickX = JOYSTICK_CENTER_X + DRAG_SCALING * magnitude * cos(atan2(dy, dx));
+            joystickY = JOYSTICK_CENTER_Y + DRAG_SCALING * magnitude * sin(atan2(dy, dx));
+	    
+	    return coordToFrame(joystickX - JOYSTICK_CENTER_X,
+				joystickY - JOYSTICK_CENTER_Y);
+        } else {
+	    return coordToFrame(0,0);
+	}
     }
     
     // update joystick based on mouse
     else if (mode==JOYSTICKMODE) {
-        if(draggingJoystick){
+        if (draggingJoystick) {
             joystickX = mouseX;
             joystickY = mouseY;
-	    
-	    let colorInfo = coordToFrame(mouseX - JOYSTICK_CENTER_X,
-					 mouseY - JOYSTICK_CENTER_Y);
-	    myColor = colorInfo.getColor();
-	    myBrightness = colorInfo.getBrightness();
-	    mySaturation = colorInfo.getSaturation();
-        }
+	}
+	
+	let colorInfo = coordToFrame(joystickX - JOYSTICK_CENTER_X,
+				     joystickY - JOYSTICK_CENTER_Y);
+	let newParticle = colorInfo.applyAsVelocity(new Coord(particleX, particleY));
+	particleX = newParticle.getX();
+	particleY = newParticle.getY();
+	return colorInfo;
     }
     
     // update joystick based on next recorded frame
     else if (mode==PLAYBACKMODE) {
 	let frame = null;
+	
 	if (playhead < tracer.length()) {
 	    frame = tracer.getFrame(playhead);
+	    playhead++;
+	    
+	    joystickX = frame.getCoord().getX() + JOYSTICK_CENTER_X;
+	    joystickY = frame.getCoord().getY() + JOYSTICK_CENTER_Y;
+	    let newParticle = frame.applyAsVelocity(new Coord(particleX, particleY));
+	    particleX = newParticle.getX();
+	    particleY = newParticle.getY();
+	    
+	    return frame;
 	} else {
 	    // stop playback
 	    playhead = tracer.length();
-	    return;
+	    frame = tracer.getLastFrame();
+	    if (frame==null) {
+		return coordToFrame(joystickX - JOYSTICK_CENTER_X,
+				    joystickY - JOYSTICK_CENTER_Y);
+	    } else {
+		return frame;
+	    }
 	}
-	myColor = frame.getColor();
-	myBrightness = frame.getBrightness();
-	mySaturation = frame.getSaturation();
-	
-	let coords = colorToCoord(myColor, myBrightness, mySaturation);
-	joystickX = coords.getX() + JOYSTICK_CENTER_X;
-	joystickY = coords.getY() + JOYSTICK_CENTER_Y;
-	
-	playhead++;
-    }
-    
-    // update particle based on updates to joystick
-    if (controlMode != DRAGGINGMODE)
-    {
-        particleX += JOYSTICK_SCALING * (joystickX - JOYSTICK_CENTER_X);
-        particleY += JOYSTICK_SCALING * (joystickY - JOYSTICK_CENTER_Y);
     }
 }
 
-function recordFrame() {
+function recordFrame(colorInfo) {
     if (draggingJoystick||draggingParticle){
-	let droppedFrame = tracer.addFrame(new Frame(myColor,mySaturation,myBrightness));
-	playhead++;
+	let droppedFrame = tracer.addFrame(colorInfo);
 	if (droppedFrame) {
 	    pathstart = droppedFrame.applyAsVelocity(pathstart);
+	} else {
+	    playhead++;
 	}
     }
 }
@@ -108,9 +111,4 @@ function recordFrame() {
 function installBarcode(barcode) {
     tracer = barcode;
     playhead = barcode.length();
-}
-
-function arrayMean(ar) {
-    let sum = ar.reduce(function(a,b) { return a+b; }, 0);
-    return sum/ar.length;
 }

@@ -34,7 +34,7 @@ function coordToFrame(x, y) {
 function colorToCoord(color, brightness, saturation) {
     let angle = map(color, 0, 255, -PI, PI);
     let intensity = brightness - saturation + MAX_BRIGHTNESS;
-    let magnitude = map(intensity, 0, MAX_BRIGHTNESS*2, MAX_MAGNITUDE, 0);
+    let magnitude = map(intensity, 0, MAX_BRIGHTNESS*2, 0, MAX_MAGNITUDE);
 
     let x = magnitude * cos(angle);
     let y = magnitude * sin(angle);

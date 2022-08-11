@@ -6,7 +6,7 @@ class Barcode {
         //position
         this.x = xPos;
         this.y = yPos;
-        this.dragging = true;
+        this.dragging = false;
         this.offsetX = 0; // position relative to xPos where barcode was grabbed
         this.offsetY = 0; // position relative to yPos where barcode was grabbed
 
@@ -43,9 +43,9 @@ class Barcode {
     display() {
 	strokeWeight(FRAME_WIDTH);
         for(i=0; i<this.frames.length; i++){
-            stroke(this.frames[i].myColor(),
-		   this.frames[i].myBrightness(),
-		   this.frames[i].mySaturation());
+            stroke(this.frames[i].getColor(),
+		   this.frames[i].getBrightness(),
+		   this.frames[i].getSaturation());
             line(this.x + 2*i, this.y, this.x + 2*i, this.y + BARCODE_HEIGHT);
         }
     }
@@ -65,6 +65,14 @@ class Barcode {
     getFrame(index) {
         if (0 <= index && index < this.frames.length) {
 	    return this.frames[index];
+	} else {
+	    return null;
+	}
+    }
+
+    getLastFrame() {
+	if (this.frames.length > 0) {
+	    return this.frames[this.frames.length-1];
 	} else {
 	    return null;
 	}

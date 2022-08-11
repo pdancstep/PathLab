@@ -33,10 +33,6 @@ var particleY = PARTICLE_CENTER_Y;
 // ?
 var indicator = 150;
 
-var myColor = 0;
-var myBrightness = 255;
-var mySaturation = 255;
-
 var clearButtonColor = 200;
 
 //states
@@ -54,9 +50,6 @@ const JOYSTICKMODE = 1; // using joystick to set velocity of the particle
 const PLAYBACKMODE = 2; // moving the particle based on a recorded barcode
 
 var controlMode = JOYSTICKMODE;
-
-//variables for driving with particle
-var myMagnitude = 0;
 
 var playheadCoord;
 
@@ -162,24 +155,24 @@ function drawUI(){
     pop();
 }
 
-function drawJoystickPosition(){
+function drawJoystickPosition(colorInfo){
     let sat = 255;
     let bri = 255;
     if (useBrightness) {
-	sat = mySaturation;
-	bri = myBrightness;
+	sat = colorInfo.getSaturation();
+	bri = colorInfo.getBrightness();
     }
     noFill();
-    stroke(myColor, sat, bri);
-
+    stroke(colorInfo.getColor(), sat, bri);
+    
     line(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,joystickX,joystickY);
-
+    
     strokeWeight(2);
     stroke(220);
     if(dist(joystickX,joystickY,JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y) < 5){
         fill(0);    
     }else{
-        fill(myColor, sat, bri);
+        fill(colorInfo.getColor(), sat, bri);
     }
     ellipse(joystickX,joystickY,15,15);
 }
@@ -197,7 +190,7 @@ function drawParticlePath(){
     for(i=0; i<pathEnd; i++){
 	let frame = tracer.getFrame(i);
         if(useColor&&useBrightness){
-            stroke(frame.getColor(),frame.getBrightness(),frame.getSaturation());
+            stroke(frame.getColor(),frame.getSaturation(),frame.getBrightness());
         }else if(useColor){
             stroke(frame.getColor(),255,255);
         }else{
@@ -210,28 +203,29 @@ function drawParticlePath(){
     }
 }
 
-function drawParticleVector(){
+function drawParticleVector(colorInfo){
     strokeWeight(2);
     if(useBrightness){
-        stroke(myColor,mySaturation,myBrightness);
+        stroke(colorInfo.getColor(), colorInfo.getSaturation(), colorInfo.getBrightness());
     }else{
-        stroke(myColor,255,255);
+        stroke(colorInfo.getColor(), 255, 255);
     }
     line(particleX, particleY,
 	 particleX+(joystickX-JOYSTICK_CENTER_X), particleY+(joystickY-JOYSTICK_CENTER_Y));
     drawTriangle(particleX+(joystickX-JOYSTICK_CENTER_X),
-		 particleY+(joystickY-JOYSTICK_CENTER_Y));
+		 particleY+(joystickY-JOYSTICK_CENTER_Y),
+		 colorInfo);
 }
 
-function drawTriangle(xPos,yPos){
+function drawTriangle(xPos, yPos, colorInfo){
 
     arrowAngle = atan2(joystickY-JOYSTICK_CENTER_Y,joystickX-JOYSTICK_CENTER_X);
 
 
     if(useBrightness){
-        fill(myColor,mySaturation,myBrightness);
+        fill(colorInfo.getColor(), colorInfo.getSaturation(), colorInfo.getBrightness());
     }else{
-        fill(myColor,255,255);
+        fill(colorInfo.getColor(), 255, 255);
     }
     noStroke();
 

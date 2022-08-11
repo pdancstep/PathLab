@@ -33,4 +33,8 @@ class Coord {
     scale(factor) {
 	return new Coord(this.x * factor, this.y * factor);
     }
+
+    isOrigin() {
+	return (this.x == 0 && this.y == 0);
+    }
 }

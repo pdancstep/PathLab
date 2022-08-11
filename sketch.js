@@ -11,14 +11,14 @@ function draw() {
     drawUI();
 
     //infer all coordinates based on present mode...
-    setNewCoordinates(controlMode);
+    let velocityFrame = setNewCoordinates(controlMode);
 
     //////////////////////////////  JOYSTICK
     //draw joystick dot...
-    drawJoystickPosition();
+    drawJoystickPosition(velocityFrame);
 
     //if dragging in DRAGGINGMODE or JOYSTICKMODE, record to present timeline...
-    recordFrame();
+    recordFrame(velocityFrame);
 
     //////////////////////////////  PARTICLE
     //draw particle path stored in tracer array...
@@ -28,7 +28,7 @@ function draw() {
 
     //draw particle velocity vector...
     if(drawVector){
-        drawParticleVector();
+        drawParticleVector(velocityFrame);
     }
     
     //draw particle itself
@@ -39,11 +39,7 @@ function draw() {
     stroke(225,225,220);
     ellipse(particleX, particleY, 15, 15);
 
-
-
-
-
-    //TODO? Move into graphics? note that bardcode image gets stored between timeline background and outline...
+    //TODO? Move into graphics? note that barcode image gets stored between timeline background and outline...
 
     /////////////////////////////  TIMELINE
     //draw timeline/recording bar BACKGROUND
@@ -55,7 +51,7 @@ function draw() {
     colorMode(HSB,255);
     for(i=0; i<tracer.length(); i++){
 	let frame = tracer.getFrame(i);
-        stroke(frame.getColor(), frame.getBrightness(), frame.getSaturation());
+        stroke(frame.getColor(), frame.getSaturation(), frame.getBrightness());
         line(750+2*i,700,750+2*i,750);
     }
 
@@ -90,8 +86,6 @@ function draw() {
         barc.display();
     }
 
-
-
     //drawing a playhead position indicator
 
     noFill();
@@ -102,19 +96,9 @@ function draw() {
         playheadCoord = 1150;
     }
     rect(playheadCoord-6,698,6,54);
-
-    
-
-
-
-
-
-
 }
 
 function touchStarted() {
-
-
     // play button
     if(mouseX>950&&mouseX<1000&&mouseY>770&&mouseY<830){
 	particleX = PARTICLE_CENTER_X;
@@ -125,7 +109,6 @@ function touchStarted() {
 	drawPath = true;
 	return;
     }
-
 
     // clicking on joystick activates JOYSTICK mode controls...
     if(dist(mouseX,mouseY,joystickX,joystickY)<15){
@@ -141,7 +124,7 @@ function touchStarted() {
 
     //"eject"
     if(dist(mouseX,mouseY,1180,725)<15){
-        myBarcodes.push(tracer.clone());
+        spawnBarcode();
     }
 
     //dragging existing barcode...
