@@ -6,7 +6,7 @@
 const JOYSTICK_SCALING = 0.05;
 
 // relation of mouse movement speed to vector magnitude of joystick
-const DRAG_SCALING = 3;
+const DRAG_SCALING = 4.45;
 
 // how many frames back we look when calculating velocity of mouse movement
 const SAMPLE_SIZE = 10;

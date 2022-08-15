@@ -44,8 +44,8 @@ class Barcode {
 	strokeWeight(FRAME_WIDTH);
         for(i=0; i<this.frames.length; i++){
             stroke(this.frames[i].getColor(),
-		   this.frames[i].getBrightness(),
-		   this.frames[i].getSaturation());
+		   this.frames[i].getSaturation(),
+		   this.frames[i].getBrightness());
             line(this.x + 2*i, this.y, this.x + 2*i, this.y + BARCODE_HEIGHT);
         }
     }

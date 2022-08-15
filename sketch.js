@@ -96,6 +96,59 @@ function draw() {
         playheadCoord = 1150;
     }
     rect(playheadCoord-6,698,6,54);
+
+
+    //////////////////////////////////////////////CONTAINERS FOR EDITING BARCODES...
+
+    //Reverser field and button
+    noFill();
+    stroke(200);
+    strokeWeight(2);
+    rect(750,100,400,50);
+
+    fill(50);
+    noStroke();
+    ellipse(720,125,30,30);
+    fill(200);
+    textAlign(CENTER,CENTER);
+    textSize(20);
+    text("R",720,125);
+
+
+
+
+
+    //stretcher field and buttons
+    noFill();
+    stroke(200);
+    strokeWeight(2);
+    rect(750,200,400,50);
+
+    fill(50);
+    noStroke();
+    ellipse(720,212,20,20);
+    ellipse(720,238,20,20);
+    fill(200);
+    textAlign(CENTER,CENTER);
+    textSize(15);
+    text("↑",720,212);
+    text("↓",720,238);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 function touchStarted() {
@@ -134,6 +187,42 @@ function touchStarted() {
 
     // clicking on the settings menu...
     menuClick();
+
+
+
+
+    //////////////////////////////// BUTTONS for BARCODE EDITING
+
+    //Reverse button
+    if(dist(mouseX,mouseY,720,125)<15){
+
+
+    }
+
+
+    //Stetcher UP
+    if(dist(mouseX,mouseY,720,212)<10){
+
+    }
+
+
+
+
+    //Stretcher DOWN
+    if(dist(mouseX,mouseY,720,238)<10){
+
+
+    
+    }
+
+
+
+
+
+
+
+
+
 }
 
 function touchMoved() {

@@ -2,7 +2,7 @@
 var myBarcodes = [];
 
 // location where barcodes initially spawn into the editing area
-const SPAWN_X = 800;
+const SPAWN_X = 750;
 const SPAWN_Y = 500;
 
 function spawnBarcode() {
