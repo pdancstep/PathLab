@@ -29,10 +29,10 @@ function setNewCoordinates(mode) {
     // update particle and related values based on mouse
     if(mode==DRAGGINGMODE) {
         if(draggingParticle) {
-	    prevMouseCoords.push(new Coord(mouseX, mouseY));
+	    let mouse = new Coord(mouseX, mouseY);
+	    prevMouseCoords.push(mouse);
 	    prevMouseCoords.shift();
-	    particleX = mouseX;
-            particleY = mouseY;
+	    particlePos = mouse;
 	    
 	    let prevCoordSum = prevMouseCoords.reduce((a,b)=> a.translate(b),
 						      new Coord(0,0));
@@ -43,11 +43,12 @@ function setNewCoordinates(mode) {
 	    // magnitude the joystick needs to be at
             let magnitude = sqrt(dy*dy + dx*dx);
 	    
-            joystickX = JOYSTICK_CENTER_X + DRAG_SCALING * magnitude * cos(atan2(dy, dx));
-            joystickY = JOYSTICK_CENTER_Y + DRAG_SCALING * magnitude * sin(atan2(dy, dx));
-	    
-	    return coordToFrame(joystickX - JOYSTICK_CENTER_X,
-				joystickY - JOYSTICK_CENTER_Y);
+            let jx = DRAG_SCALING * magnitude * cos(atan2(dy, dx));
+            let jy = DRAG_SCALING * magnitude * sin(atan2(dy, dx));
+
+	    joystickPos = new Coord(jx + JOYSTICK_CENTER_X, jy + JOYSTICK_CENTER_Y);
+
+	    return coordToFrame(jx, jy);
         } else {
 	    return coordToFrame(0,0);
 	}
@@ -56,15 +57,12 @@ function setNewCoordinates(mode) {
     // update joystick based on mouse
     else if (mode==JOYSTICKMODE) {
         if (draggingJoystick) {
-            joystickX = mouseX;
-            joystickY = mouseY;
+	    joystickPos = new Coord(mouseX, mouseY);
 	}
 	
-	let colorInfo = coordToFrame(joystickX - JOYSTICK_CENTER_X,
-				     joystickY - JOYSTICK_CENTER_Y);
-	let newParticle = colorInfo.applyAsVelocity(new Coord(particleX, particleY));
-	particleX = newParticle.getX();
-	particleY = newParticle.getY();
+	let colorInfo = coordToFrame(joystickPos.getX() - JOYSTICK_CENTER_X,
+				     joystickPos.getY() - JOYSTICK_CENTER_Y);
+	particlePos = colorInfo.applyAsVelocity(particlePos);
 	return colorInfo;
     }
     
@@ -75,21 +73,21 @@ function setNewCoordinates(mode) {
 	if (playhead < tracer.length()) {
 	    frame = tracer.getFrame(playhead);
 	    playhead++;
+
+	    joystickPos = frame.getCoord().translate(JOYSTICK_CENTER);
 	    
-	    joystickX = frame.getCoord().getX() + JOYSTICK_CENTER_X;
-	    joystickY = frame.getCoord().getY() + JOYSTICK_CENTER_Y;
-	    let newParticle = frame.applyAsVelocity(new Coord(particleX, particleY));
-	    particleX = newParticle.getX();
-	    particleY = newParticle.getY();
-	    
+	    particlePos = frame.applyAsVelocity(particlePos);
 	    return frame;
 	} else {
 	    // stop playback
 	    playhead = tracer.length();
 	    frame = tracer.getLastFrame();
 	    if (frame==null) {
-		return coordToFrame(joystickX - JOYSTICK_CENTER_X,
-				    joystickY - JOYSTICK_CENTER_Y);
+		// this case should only be reached if the barcode being played is empty
+		// not quite sure I still understand why we are returning this value here;
+		// the other reasonable-seeming candidate is coordToFrame(0,0)
+		return coordToFrame(joystickPos.getX() - JOYSTICK_CENTER_X,
+				    joystickPos.getY() - JOYSTICK_CENTER_Y);
 	    } else {
 		return frame;
 	    }

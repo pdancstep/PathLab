@@ -14,10 +14,6 @@ const PARTICLE_CENTER = new Coord(PARTICLE_CENTER_X, PARTICLE_CENTER_Y);
 const BARCODE_HEIGHT = 50;
 const FRAME_WIDTH = 2;
 
-
-//gives angle of current vector
-var arrowAngle;
-
 //NOTE: *what* is being dragged depends on controlMode
 var dragging = false;
 
@@ -25,17 +21,16 @@ var draggingParticle = false;
 var draggingJoystick = false;
 
 // current coordinates of joystick and particle (start centered)
-var joystickX = JOYSTICK_CENTER_X;
-var joystickY = JOYSTICK_CENTER_Y;
-var particleX = PARTICLE_CENTER_X;
-var particleY = PARTICLE_CENTER_Y;
+var joystickPos = JOYSTICK_CENTER;
+var particlePos = PARTICLE_CENTER;
 
-// ?
+// debug
 var indicator = 150;
 
+// color changes based on mouseover state
 var clearButtonColor = 200;
 
-//states
+// setting states
 var drawPath = true;
 var useColor = false;
 var useBrightness = false;
@@ -165,16 +160,18 @@ function drawJoystickPosition(colorInfo){
     noFill();
     stroke(colorInfo.getColor(), sat, bri);
     
-    line(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,joystickX,joystickY);
+    line(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y,
+	 joystickPos.getX(), joystickPos.getY());
     
     strokeWeight(2);
     stroke(220);
-    if(dist(joystickX,joystickY,JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y) < 5){
-        fill(0);    
+    if(dist(joystickPos.getX(), joystickPos.getY(),
+	    JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y) < 5) {
+        fill(0);
     }else{
         fill(colorInfo.getColor(), sat, bri);
     }
-    ellipse(joystickX,joystickY,15,15);
+    ellipse(joystickPos.getX(), joystickPos.getY(),15,15);
 }
 
 function drawParticlePath(){
@@ -210,17 +207,17 @@ function drawParticleVector(colorInfo){
     }else{
         stroke(colorInfo.getColor(), 255, 255);
     }
-    line(particleX, particleY,
-	 particleX+(joystickX-JOYSTICK_CENTER_X), particleY+(joystickY-JOYSTICK_CENTER_Y));
-    drawTriangle(particleX+(joystickX-JOYSTICK_CENTER_X),
-		 particleY+(joystickY-JOYSTICK_CENTER_Y),
-		 colorInfo);
+    let xplusdx = particlePos.getX() + joystickPos.getX() - JOYSTICK_CENTER_X;
+    let yplusdy = particlePos.getY() + joystickPos.getY() - JOYSTICK_CENTER_Y;
+    
+    line(particlePos.getX(), particlePos.getY(), xplusdx, yplusdy);
+    drawTriangle(xplusdx, yplusdy, colorInfo);
 }
 
 function drawTriangle(xPos, yPos, colorInfo){
 
-    arrowAngle = atan2(joystickY-JOYSTICK_CENTER_Y,joystickX-JOYSTICK_CENTER_X);
-
+    let arrowAngle = atan2(joystickPos.getY() - JOYSTICK_CENTER_Y,
+			   joystickPos.getX() - JOYSTICK_CENTER_X);
 
     if(useBrightness){
         fill(colorInfo.getColor(), colorInfo.getSaturation(), colorInfo.getBrightness());
@@ -384,12 +381,12 @@ function menuClick() {
     }
 
     //if we're hovering over clear button...
-    if(clearButtonColor==255){     
-	   particleX = PARTICLE_CENTER_X;
-	   particleY = PARTICLE_CENTER_Y;
-	   pathstart = PARTICLE_CENTER;
-       tracer = new Barcode(0, 0, []);
-       playhead = 0;
+    if(clearButtonColor==255){
+	particlePos = PARTICLE_CENTER;
+	pathstart = PARTICLE_CENTER;
+	tracer = new Barcode(0, 0, []);
+	prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
+	playhead = 0;
     }
 
     //if we have paths and we're over the hue button...
@@ -401,10 +398,8 @@ function menuClick() {
         useBrightness = !useBrightness;
     }
 
-
     if(dist(mouseX,mouseY,75,780)<20){     
         drawVector = !drawVector;
-
     }
 
     if(dist(mouseX,mouseY,75,820)<20){     

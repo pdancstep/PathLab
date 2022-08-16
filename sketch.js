@@ -37,7 +37,7 @@ function draw() {
     fill(50);
     strokeWeight(2);
     stroke(225,225,220);
-    ellipse(particleX, particleY, 15, 15);
+    ellipse(particlePos.getX(), particlePos.getY(), 15, 15);
 
     //TODO? Move into graphics? note that barcode image gets stored between timeline background and outline...
 
@@ -78,7 +78,6 @@ function draw() {
     textSize(20);
     text("↑",1180,727);
 
-
     ////////////////////////////  BARCODES
     //draw barcodes on canvas
     for(const barc of myBarcodes){
@@ -86,8 +85,7 @@ function draw() {
         barc.display();
     }
 
-    //drawing a playhead position indicator
-
+    // drawing a playhead position indicator
     noFill();
     stroke(50);
     strokeWeight(4);
@@ -96,7 +94,6 @@ function draw() {
         playheadCoord = 1150;
     }
     rect(playheadCoord-6,698,6,54);
-
 
     //////////////////////////////////////////////CONTAINERS FOR EDITING BARCODES...
 
@@ -114,10 +111,6 @@ function draw() {
     textSize(20);
     text("R",720,125);
 
-
-
-
-
     //stretcher field and buttons
     noFill();
     stroke(200);
@@ -133,29 +126,12 @@ function draw() {
     textSize(15);
     text("↑",720,212);
     text("↓",720,238);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 function touchStarted() {
     // play button
     if(mouseX>950&&mouseX<1000&&mouseY>770&&mouseY<830){
-	particleX = PARTICLE_CENTER_X;
-	particleY = PARTICLE_CENTER_Y;
+	particlePos = PARTICLE_CENTER;
 	pathstart = PARTICLE_CENTER;
 	controlMode = PLAYBACKMODE;
 	playhead = 0;
@@ -164,14 +140,15 @@ function touchStarted() {
     }
 
     // clicking on joystick activates JOYSTICK mode controls...
-    if(dist(mouseX,mouseY,joystickX,joystickY)<15){
+    if(dist(mouseX,mouseY,joystickPos.getX(),joystickPos.getY()) < 15){
         controlMode = JOYSTICKMODE;
         draggingJoystick = true;
     }
 
     //clicking on particle activates PARTICLE dragging controls...
-    if(dist(mouseX,mouseY,particleX,particleY)<15){
+    if(dist(mouseX,mouseY,particlePos.getX(),particlePos.getY()) < 15){
         controlMode = DRAGGINGMODE;
+	prevMouseCoords = Array(SAMPLE_SIZE).fill(new Coord(mouseX, mouseY));
         draggingParticle = true;
     }
 
@@ -188,9 +165,6 @@ function touchStarted() {
     // clicking on the settings menu...
     menuClick();
 
-
-
-
     //////////////////////////////// BUTTONS for BARCODE EDITING
 
     //Reverse button
@@ -199,30 +173,15 @@ function touchStarted() {
 
     }
 
-
     //Stetcher UP
     if(dist(mouseX,mouseY,720,212)<10){
 
     }
 
-
-
-
     //Stretcher DOWN
     if(dist(mouseX,mouseY,720,238)<10){
 
-
-    
     }
-
-
-
-
-
-
-
-
-
 }
 
 function touchMoved() {
@@ -230,9 +189,8 @@ function touchMoved() {
 }
 
 function touchEnded() {
-    if(snapToZero){
-        joystickX = JOYSTICK_CENTER_X;
-        joystickY = JOYSTICK_CENTER_Y;
+    if(snapToZero) {
+	joystickPos = JOYSTICK_CENTER;
     }
 
     draggingJoystick = false;
