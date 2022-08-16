@@ -18,9 +18,10 @@ var pathstart = PARTICLE_CENTER;
 var prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
 
 // active barcode
-var tracer = new Barcode(0,0, []);
+var tracer = new Barcode(0, 0, []);
 
-//timeline and playback variables
+// timeline and playback variables
+// when not playing, should equal tracer.length()
 var playhead = 0; // index of the current frame for playback
 
 // update particle, joystick, and barcode according to current UI mode

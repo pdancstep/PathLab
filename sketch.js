@@ -158,8 +158,13 @@ function touchStarted() {
     }
 
     //dragging existing barcode...
-    for(const barc of myBarcodes){
-        barc.onClick();
+    for (var i = 0; i < myBarcodes.length; i++) {
+        if (myBarcodes[i].onClick()) {
+	    if (editingStation==i) {
+		editingStation = -1;
+	    }
+	    break;
+	}
     }
 
     // clicking on the settings menu...
@@ -169,8 +174,9 @@ function touchStarted() {
 
     //Reverse button
     if(dist(mouseX,mouseY,720,125)<15){
-
-
+	if (editingStation >= 0) {
+	    myBarcodes[editingStation].reverse();
+	}
     }
 
     //Stetcher UP
@@ -196,7 +202,17 @@ function touchEnded() {
     draggingJoystick = false;
     draggingParticle = false;
 
-    for(const barc of myBarcodes){
-        barc.dragging = false;
+    for (var i = 0; i < myBarcodes.length; i++) {
+	let slot = myBarcodes[i].onRelease();
+	if (slot==SLOT_EDITOR) {
+	    editingStation = i;
+	}
+	if (slot==SLOT_TRACER) {
+	    installBarcode(myBarcodes[i]);
+	    if (editingStation > i) {
+		editingStation--;
+	    }
+	    myBarcodes.splice(i,1);
+	}
     }
 }

@@ -16,21 +16,36 @@ class Barcode {
 
     // methods for moving barcodes around the canvas
     onClick(){
-        if (mouseX>this.x && mouseX<this.x + (this.frames.length*FRAME_WIDTH) &&
-	    mouseY>this.y && mouseY<this.y + BARCODE_HEIGHT) {
+        if (this.x < mouseX && mouseX < this.x + (this.frames.length*FRAME_WIDTH) &&
+	    this.y < mouseY && mouseY < this.y + BARCODE_HEIGHT) {
             this.offsetX = this.x - mouseX;
             this.offsetY = this.y - mouseY;
             this.dragging = true;
-        }
+	    return true;
+        } else {
+	    return false;
+	}
     }
 
     clone(x, y) {
 	return new Barcode(x, y, this.frames);
     }
 
-    // release mouse
+    // release mouse - returns slot we ended up in
     onRelease() {
+	let slot = NO_SLOT;
+	if (this.dragging) {
+	    if (editingStation<0 && coordInEditor(mouseX, mouseY)) {
+		this.x = EDITING_STATION_X;
+		this.y = EDITING_STATION_Y;
+		slot = SLOT_EDITOR;
+	    }
+	    if (coordInTracer(mouseX, mouseY)) {
+		slot = SLOT_TRACER;
+	    }
+	}
         this.dragging = false;
+	return slot;
     }
 
     update() {
@@ -84,5 +99,10 @@ class Barcode {
 
     length() {
 	return this.frames.length;
+    }
+
+    // methods for editing frame data
+    reverse() {
+	this.frames.reverse();
     }
 }
