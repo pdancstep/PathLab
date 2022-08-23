@@ -110,4 +110,5 @@ function recordFrame(colorInfo) {
 function installBarcode(barcode) {
     tracer = barcode.clone(TRACER_X, TRACER_Y);
     playhead = tracer.length();
+    particlePos = PARTICLE_CENTER;
 }

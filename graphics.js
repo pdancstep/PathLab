@@ -445,7 +445,7 @@ function menuClick() {
     if(clearButtonColor==255){
 	particlePos = PARTICLE_CENTER;
 	pathstart = PARTICLE_CENTER;
-	tracer = new Barcode(0, 0, []);
+	tracer = new Barcode(TRACER_X, TRACER_Y, []);
 	prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
 	playhead = 0;
     }
