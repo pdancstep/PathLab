@@ -85,6 +85,7 @@ function touchStarted() {
     menuClick();
 
     //////////////////////////////// BUTTONS for BARCODE EDITING
+    // TODO add buttons for all stations and probably move this into editing.js
 
     //Reverse button
     if(dist(mouseX,mouseY,720,125)<15){
@@ -95,12 +96,16 @@ function touchStarted() {
 
     //Stetcher UP
     if(dist(mouseX,mouseY,720,212)<10){
-
+	if (editingStation[1] >= 0) {
+	    myBarcodes[editingStation[1]].stretch();
+	}
     }
 
     //Stretcher DOWN
     if(dist(mouseX,mouseY,720,238)<10){
-
+	if (editingStation[1] >=0) {
+	    myBarcodes[editingStation[1]].squash();
+	}
     }
 }
 

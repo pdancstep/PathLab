@@ -103,7 +103,31 @@ class Barcode {
     }
 
     // methods for editing frame data
+    crop() {
+	if (this.frames.length > MAX_BARCODE_LENGTH) {
+	    this.frames = this.frames.slice(0, MAX_BARCODE_LENGTH);
+	}
+    }
+    
     reverse() {
 	this.frames.reverse();
+    }
+
+    squash() {
+	for (var i = 0; i < this.frames.length-1; i++) {
+	    this.frames.splice(i, 1);
+	}
+    }
+
+    stretch() {
+	for (var i = 0; i < this.frames.length; i+=2) {
+	    this.frames.splice(i, 0, this.frames[i]);
+	}
+	this.crop();
+    }
+
+    concat(barc) {
+	this.frames = this.frames.concat(barc);
+	this.crop();
     }
 }

@@ -304,6 +304,7 @@ function drawBarcodes() {
     fill(50);
     noStroke();
 
+    // TODO add buttons for all stations
     //Reverser buttons
     ellipse(720,125,30,30);
     fill(200);
