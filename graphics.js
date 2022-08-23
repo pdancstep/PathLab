@@ -268,11 +268,8 @@ function drawBarcodes() {
 
     }
 
-    ellipse(1180,725,30,30);
-    fill(200);
-    textAlign(CENTER,CENTER);
-    textSize(20);
-    text("↑",1180,727);
+
+    drawButton(1180, 725, "↑");
 
     // drawing a playhead position indicator
     noFill();
@@ -293,33 +290,15 @@ function drawBarcodes() {
     }
 
     // draw editing stations
-    noFill();
-    stroke(200);
-    strokeWeight(2);
     for (var i = 0; i < editingStation.length; i++) {
+	noFill();
+	stroke(200);
+	strokeWeight(2);
 	rect(EDITING_STATION_X[i], EDITING_STATION_Y[i],
 	     MAX_BARCODE_LENGTH*FRAME_WIDTH, BARCODE_HEIGHT);
+
+	drawButtonPanel(i);
     }
-
-    fill(50);
-    noStroke();
-
-    // TODO add buttons for all stations
-    //Reverser buttons
-    ellipse(720,125,30,30);
-    fill(200);
-    textAlign(CENTER,CENTER);
-    textSize(20);
-    text("R",720,125);
-
-    //stretcher buttons
-    ellipse(720,212,20,20);
-    ellipse(720,238,20,20);
-    fill(200);
-    textAlign(CENTER,CENTER);
-    textSize(15);
-    text("↑",720,212);
-    text("↓",720,238);
 }
 
 function drawMenu(){

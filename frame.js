@@ -15,6 +15,19 @@ class Frame {
 	let scaled_velocity = this.coord.scale(JOYSTICK_SCALING);
 	return coord.translate(scaled_velocity);
     }
+
+    // scale brightness & saturation without looking at the coordinates,
+    // just the color values
+    manuallyScaleIntensity(factor) {
+	// ignore invalid scale factor
+	if (factor <=0) { return this; }
+	
+	let intensity = this.brightness - this.saturation + MAX_BRIGHTNESS;
+	intensity = min(intensity * factor, MAX_BRIGHTNESS*2);
+	return new Frame(this.color,
+			 min(MAX_BRIGHTNESS, intensity),
+			 min(MAX_BRIGHTNESS, (MAX_BRIGHTNESS*2) - intensity));
+    }
 }
 
 class Coord {

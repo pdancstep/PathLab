@@ -81,32 +81,11 @@ function touchStarted() {
 	}
     }
 
-    // clicking on the settings menu...
+    // handle clicking on the settings menu
     menuClick();
 
-    //////////////////////////////// BUTTONS for BARCODE EDITING
-    // TODO add buttons for all stations and probably move this into editing.js
-
-    //Reverse button
-    if(dist(mouseX,mouseY,720,125)<15){
-	if (editingStation[0] >= 0) {
-	    myBarcodes[editingStation[0]].reverse();
-	}
-    }
-
-    //Stetcher UP
-    if(dist(mouseX,mouseY,720,212)<10){
-	if (editingStation[1] >= 0) {
-	    myBarcodes[editingStation[1]].stretch();
-	}
-    }
-
-    //Stretcher DOWN
-    if(dist(mouseX,mouseY,720,238)<10){
-	if (editingStation[1] >=0) {
-	    myBarcodes[editingStation[1]].squash();
-	}
-    }
+    // handle clicking on buttons in the editing area
+    editingClick();
 }
 
 function touchMoved() {

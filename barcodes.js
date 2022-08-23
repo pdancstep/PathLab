@@ -126,6 +126,18 @@ class Barcode {
 	this.crop();
     }
 
+    darken() {
+	for (var i = 0; i < this.frames.length; i++) {
+	    this.frames[i] = this.frames[i].manuallyScaleIntensity(0.5);
+	}
+    }
+
+    brighten() {
+	for (var i = 0; i < this.frames.length; i++) {
+	    this.frames[i] = this.frames[i].manuallyScaleIntensity(2);
+	}
+    }
+    
     concat(barc) {
 	this.frames = this.frames.concat(barc);
 	this.crop();
