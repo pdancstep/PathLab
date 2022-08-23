@@ -30,7 +30,7 @@ var indicator = 150;
 // color changes based on mouseover state
 var clearButtonColor = 200;
 
-// setting states
+// set initial states for menu options
 var drawPath = true;
 var useColor = false;
 var useBrightness = false;
@@ -238,6 +238,87 @@ function drawTriangle(xPos, yPos, colorInfo){
         endShape(CLOSE);
 
     pop();
+}
+
+function drawBarcodes() {
+    // tracer
+    rectMode(CORNER);
+    fill(100);
+    noStroke();
+    rect(TRACER_X, TRACER_Y, MAX_BARCODE_LENGTH*FRAME_WIDTH, BARCODE_HEIGHT);
+
+    // TODO use the barcode class to avoid duplication here
+    colorMode(HSB,255);
+    tracer.display();
+
+    //draw timeline/recordng bar OUTLINE
+    noFill();
+    stroke(200);
+    rect(TRACER_X, TRACER_Y, MAX_BARCODE_LENGTH*FRAME_WIDTH, BARCODE_HEIGHT);
+
+    //draw play/pause button:
+    fill(50);
+    noStroke();
+    if(controlMode==PLAYBACKMODE&&playhead<tracer.length()){
+        //pause button
+        rect(950,775,20,55);
+        rect(980,775,20,55);     
+    }else{
+        triangle(1000,800,950,770,950,830);
+
+    }
+
+    ellipse(1180,725,30,30);
+    fill(200);
+    textAlign(CENTER,CENTER);
+    textSize(20);
+    text("↑",1180,727);
+
+    // drawing a playhead position indicator
+    noFill();
+    stroke(50);
+    strokeWeight(4);
+    playheadCoord = map(playhead,
+			0, MAX_BARCODE_LENGTH,
+			TRACER_X, TRACER_X + MAX_BARCODE_LENGTH*FRAME_WIDTH);
+    if(playheadCoord>1150){
+        playheadCoord = 1150;
+    }
+    rect(playheadCoord-6,698,6,54);
+    
+    // draw barcodes on canvas
+    for(const barc of myBarcodes){
+        barc.update();
+        barc.display();
+    }
+
+    // draw editing stations
+    noFill();
+    stroke(200);
+    strokeWeight(2);
+    for (var i = 0; i < editingStation.length; i++) {
+	rect(EDITING_STATION_X[i], EDITING_STATION_Y[i],
+	     MAX_BARCODE_LENGTH*FRAME_WIDTH, BARCODE_HEIGHT);
+    }
+
+    fill(50);
+    noStroke();
+
+    //Reverser buttons
+    ellipse(720,125,30,30);
+    fill(200);
+    textAlign(CENTER,CENTER);
+    textSize(20);
+    text("R",720,125);
+
+    //stretcher buttons
+    ellipse(720,212,20,20);
+    ellipse(720,238,20,20);
+    fill(200);
+    textAlign(CENTER,CENTER);
+    textSize(15);
+    text("↑",720,212);
+    text("↓",720,238);
 }
 
 function drawMenu(){

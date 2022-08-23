@@ -17,11 +17,10 @@ function draw() {
     //draw joystick dot...
     drawJoystickPosition(velocityFrame);
 
-    //if dragging in DRAGGINGMODE or JOYSTICKMODE, record to present timeline...
+    //if dragging in DRAGGINGMODE or JOYSTICKMODE, record to present timeline
     recordFrame(velocityFrame);
 
-    //////////////////////////////  PARTICLE
-    //draw particle path stored in tracer array...
+    //draw particle path stored in tracer array
     if(drawPath){
         drawParticlePath();
     }
@@ -33,99 +32,13 @@ function draw() {
     
     //draw particle itself
     colorMode(RGB,255);
-
     fill(50);
     strokeWeight(2);
     stroke(225,225,220);
     ellipse(particlePos.getX(), particlePos.getY(), 15, 15);
 
-    //TODO? Move into graphics? note that barcode image gets stored between timeline background and outline...
-
-    /////////////////////////////  TIMELINE
-    //draw timeline/recording bar BACKGROUND
-    rectMode(CORNER);
-    fill(100);
-    noStroke();
-    rect(750,700,400,50);
-
-    colorMode(HSB,255);
-    for(i=0; i<tracer.length(); i++){
-	let frame = tracer.getFrame(i);
-        stroke(frame.getColor(), frame.getSaturation(), frame.getBrightness());
-        line(750+2*i,700,750+2*i,750);
-    }
-
-    //draw timeline/recordng bar OUTLINE
-    noFill();
-    stroke(200);
-    rect(750,700,400,50);
-
-    //draw play/pause button:
-    fill(50);
-    noStroke();
-    if(controlMode==PLAYBACKMODE&&playhead<tracer.length()){
-        //pause button
-        rect(950,775,20,55);
-        rect(980,775,20,55);     
-    }else{
-        triangle(1000,800,950,770,950,830);
-
-    }
-
-    ellipse(1180,725,30,30);
-    fill(200);
-    textAlign(CENTER,CENTER);
-    textSize(20);
-    text("↑",1180,727);
-
-    ////////////////////////////  BARCODES
-    //draw barcodes on canvas
-    for(const barc of myBarcodes){
-        barc.update();
-        barc.display();
-    }
-
-    // drawing a playhead position indicator
-    noFill();
-    stroke(50);
-    strokeWeight(4);
-    playheadCoord = map(playhead,0,MAX_BARCODE_LENGTH,750,1150);
-    if(playheadCoord>1150){
-        playheadCoord = 1150;
-    }
-    rect(playheadCoord-6,698,6,54);
-
-    //////////////////////////////////////////////CONTAINERS FOR EDITING BARCODES...
-
-    //Reverser field and button
-    noFill();
-    stroke(200);
-    strokeWeight(2);
-    rect(750,100,400,50);
-
-    fill(50);
-    noStroke();
-    ellipse(720,125,30,30);
-    fill(200);
-    textAlign(CENTER,CENTER);
-    textSize(20);
-    text("R",720,125);
-
-    //stretcher field and buttons
-    noFill();
-    stroke(200);
-    strokeWeight(2);
-    rect(750,200,400,50);
-
-    fill(50);
-    noStroke();
-    ellipse(720,212,20,20);
-    ellipse(720,238,20,20);
-    fill(200);
-    textAlign(CENTER,CENTER);
-    textSize(15);
-    text("↑",720,212);
-    text("↓",720,238);
+    // draw the editing and playback areas
+    drawBarcodes();
 }
 
 function touchStarted() {
@@ -160,8 +73,9 @@ function touchStarted() {
     //dragging existing barcode...
     for (var i = 0; i < myBarcodes.length; i++) {
         if (myBarcodes[i].onClick()) {
-	    if (editingStation==i) {
-		editingStation = -1;
+	    let myslot = editingStation.indexOf(i);
+	    if (myslot >= 0) {
+		editingStation[myslot] = -1;
 	    }
 	    break;
 	}
@@ -174,8 +88,8 @@ function touchStarted() {
 
     //Reverse button
     if(dist(mouseX,mouseY,720,125)<15){
-	if (editingStation >= 0) {
-	    myBarcodes[editingStation].reverse();
+	if (editingStation[0] >= 0) {
+	    myBarcodes[editingStation[0]].reverse();
 	}
     }
 
@@ -204,13 +118,15 @@ function touchEnded() {
 
     for (var i = 0; i < myBarcodes.length; i++) {
 	let slot = myBarcodes[i].onRelease();
-	if (slot==SLOT_EDITOR) {
-	    editingStation = i;
+	if (slot >= 0) {
+	    editingStation[slot] = i;
 	}
 	if (slot==SLOT_TRACER) {
 	    installBarcode(myBarcodes[i]);
-	    if (editingStation > i) {
-		editingStation--;
+	    for (var j = 0; j < editingStation.length; j++) {
+		if (editingStation[j] > i) {
+		    editingStation[j]--;
+		}
 	    }
 	    myBarcodes.splice(i,1);
 	}

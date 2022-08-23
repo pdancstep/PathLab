@@ -18,7 +18,7 @@ var pathstart = PARTICLE_CENTER;
 var prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
 
 // active barcode
-var tracer = new Barcode(0, 0, []);
+var tracer = new Barcode(TRACER_X, TRACER_Y, []);
 
 // timeline and playback variables
 // when not playing, should equal tracer.length()
@@ -108,6 +108,6 @@ function recordFrame(colorInfo) {
 }
 
 function installBarcode(barcode) {
-    tracer = barcode;
-    playhead = barcode.length();
+    tracer = barcode.clone(TRACER_X, TRACER_Y);
+    playhead = tracer.length();
 }

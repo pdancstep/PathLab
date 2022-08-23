@@ -35,10 +35,11 @@ class Barcode {
     onRelease() {
 	let slot = NO_SLOT;
 	if (this.dragging) {
-	    if (editingStation<0 && coordInEditor(mouseX, mouseY)) {
-		this.x = EDITING_STATION_X;
-		this.y = EDITING_STATION_Y;
-		slot = SLOT_EDITOR;
+	    let n = coordInEditor(mouseX, mouseY);
+	    if (n >= 0 && editingStation[n] < 0) {
+		this.x = EDITING_STATION_X[n];
+		this.y = EDITING_STATION_Y[n];
+		slot = n;
 	    }
 	    if (coordInTracer(mouseX, mouseY)) {
 		slot = SLOT_TRACER;
