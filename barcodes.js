@@ -139,7 +139,7 @@ class Barcode {
     }
     
     concat(barc) {
-	this.frames = this.frames.concat(barc);
+	this.frames = this.frames.concat(barc.frames);
 	this.crop();
     }
 }

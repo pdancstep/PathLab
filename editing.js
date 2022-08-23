@@ -65,6 +65,10 @@ function drawButtonPanel(station) {
     drawButton(x, y, "-"); // slow button
     x += BUTTON_SPACE;
     drawButton(x, y, "+"); // speed button
+    x += BUTTON_SPACE;
+    if (station > 0) {
+	drawButton(x, y, "^");  // append to previous station button
+    }
 }
 
 function editingClick() {
@@ -114,6 +118,24 @@ function editingClick() {
 		myBarcodes[editingStation[i]].brighten();
 	    }
 	    break;
+	}
+	x += BUTTON_SPACE;
+	
+	// append to previous station button
+	if (i>0 && dist(mouseX, mouseY, x, y) < BUTTON_SIZE/2) {
+	    if (editingStation[i] >= 0) {
+		let otherbarc = editingStation[i-1];
+		if (otherbarc >= 0) { // both barcodes exist
+		    myBarcodes[otherbarc].concat(myBarcodes[editingStation[i]]);
+		} else {
+		    // barcode is being "appended" to an empty station, so we make a copy
+		    let newx = EDITING_STATION_X[i-1];
+		    let newy = EDITING_STATION_Y[i-1];
+		    let newbarc = myBarcodes[editingStation[i]].clone(newx, newy);
+		    editingStation[i-1] = myBarcodes.length;
+		    myBarcodes.push(newbarc);
+		}
+	    }
 	}
     }
 }
