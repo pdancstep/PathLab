@@ -245,7 +245,8 @@ function drawBarcodes() {
     rectMode(CORNER);
     fill(100);
     noStroke();
-    rect(TRACER_X, TRACER_Y, MAX_BARCODE_LENGTH*FRAME_WIDTH, BARCODE_HEIGHT);
+    let slotWidth = MAX_BARCODE_LENGTH * FRAME_WIDTH / BARCODE_DISPLAY_RESOLUTION;
+    rect(TRACER_X, TRACER_Y, slotWidth, BARCODE_HEIGHT);
 
     // TODO use the barcode class to avoid duplication here
     colorMode(HSB,255);
@@ -254,7 +255,7 @@ function drawBarcodes() {
     //draw timeline/recordng bar OUTLINE
     noFill();
     stroke(200);
-    rect(TRACER_X, TRACER_Y, MAX_BARCODE_LENGTH*FRAME_WIDTH, BARCODE_HEIGHT);
+    rect(TRACER_X, TRACER_Y, slotWidth, BARCODE_HEIGHT);
 
     //draw play/pause button:
     fill(50);
@@ -277,7 +278,7 @@ function drawBarcodes() {
     strokeWeight(4);
     playheadCoord = map(playhead,
 			0, MAX_BARCODE_LENGTH,
-			TRACER_X, TRACER_X + MAX_BARCODE_LENGTH*FRAME_WIDTH);
+			TRACER_X, TRACER_X + slotWidth);
     if(playheadCoord>1150){
         playheadCoord = 1150;
     }
@@ -294,8 +295,7 @@ function drawBarcodes() {
 	noFill();
 	stroke(200);
 	strokeWeight(2);
-	rect(EDITING_STATION_X[i], EDITING_STATION_Y[i],
-	     MAX_BARCODE_LENGTH*FRAME_WIDTH, BARCODE_HEIGHT);
+	rect(EDITING_STATION_X[i], EDITING_STATION_Y[i], slotWidth, BARCODE_HEIGHT);
 
 	drawButtonPanel(i);
     }

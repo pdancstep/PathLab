@@ -1,4 +1,5 @@
-const MAX_BARCODE_LENGTH = 200;
+const MAX_BARCODE_LENGTH = 400;
+const BARCODE_DISPLAY_RESOLUTION = 2;
 
 class Barcode {
     constructor(xPos,yPos,data) {
@@ -16,7 +17,8 @@ class Barcode {
 
     // methods for moving barcodes around the canvas
     onClick(){
-        if (this.x < mouseX && mouseX < this.x + (this.frames.length*FRAME_WIDTH) &&
+	let w = this.frames.length * FRAME_WIDTH / BARCODE_DISPLAY_RESOLUTION;
+        if (this.x < mouseX && mouseX < this.x + w &&
 	    this.y < mouseY && mouseY < this.y + BARCODE_HEIGHT) {
             this.offsetX = this.x - mouseX;
             this.offsetY = this.y - mouseY;
@@ -58,11 +60,12 @@ class Barcode {
 
     display() {
 	strokeWeight(FRAME_WIDTH);
-        for(i=0; i<this.frames.length; i++){
-            stroke(this.frames[i].getColor(),
-		   this.frames[i].getSaturation(),
-		   this.frames[i].getBrightness());
-            line(this.x + 2*i, this.y, this.x + 2*i, this.y + BARCODE_HEIGHT);
+        for(i=0; i<this.frames.length/BARCODE_DISPLAY_RESOLUTION; i++){
+            stroke(this.frames[i*BARCODE_DISPLAY_RESOLUTION].getColor(),
+		   this.frames[i*BARCODE_DISPLAY_RESOLUTION].getSaturation(),
+		   this.frames[i*BARCODE_DISPLAY_RESOLUTION].getBrightness());
+            line(this.x + i*FRAME_WIDTH, this.y,
+		 this.x + i*FRAME_WIDTH, this.y + BARCODE_HEIGHT);
         }
     }
 
@@ -113,31 +116,47 @@ class Barcode {
 	this.frames.reverse();
     }
 
-    squash() {
-	for (var i = 0; i < this.frames.length-1; i++) {
+    // squash a barcode of length len to one of length len/factor
+    // factor must be an integer > 1
+    squash(factor) {
+	for (var i = 0; i < this.frames.length-1; i+=factor-1) {
 	    this.frames.splice(i, 1);
 	}
     }
 
-    stretch() {
-	for (var i = 0; i < this.frames.length; i+=2) {
+    // stretch a barcode of length len to one of length len + len/rate
+    // (i.e. duplicate every rate'th frame)
+    // rate must be an integer > 0
+    stretch(rate) {
+	for (var i = 0; i < this.frames.length; i+=rate+1) {
 	    this.frames.splice(i, 0, this.frames[i]);
 	}
 	this.crop();
     }
 
-    darken() {
+    darken(factor) {
 	for (var i = 0; i < this.frames.length; i++) {
-	    this.frames[i] = this.frames[i].manuallyScaleIntensity(0.5);
+	    this.frames[i] = this.frames[i].manuallyScaleIntensity(1/factor);
 	}
     }
 
-    brighten() {
+    brighten(factor) {
 	for (var i = 0; i < this.frames.length; i++) {
-	    this.frames[i] = this.frames[i].manuallyScaleIntensity(2);
+	    this.frames[i] = this.frames[i].manuallyScaleIntensity(factor);
 	}
     }
-    
+
+    // add the given angle to the color value of each frame
+    // angle should be on the 0-255 scale, NOT degrees or radians
+    rotate(angle) {
+	for (var i = 0; i < this.frames.length; i++) {
+	    let newcolor = (this.frames[i].getColor() + angle) % 255;
+	    this.frames[i] = new Frame(newcolor,
+				       this.frames[i].getBrightness(),
+				       this.frames[i].getSaturation());
+	}
+    }
+
     concat(barc) {
 	this.frames = this.frames.concat(barc.frames);
 	this.crop();
