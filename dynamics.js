@@ -3,6 +3,8 @@
 /////////
 
 // relation of vector magnitude displayed in joystick area to color intensity
+// TODO is this still being used anywhere?? is it the right value?
+// Frame.multiply maybe wants to use it
 const JOYSTICK_SCALING = 0.05;
 
 // relation of mouse movement speed to vector magnitude of joystick

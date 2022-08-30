@@ -161,4 +161,24 @@ class Barcode {
 	this.frames = this.frames.concat(barc.frames);
 	this.crop();
     }
+
+    framewiseAdd(barc, x, y) {
+	let length = min(this.frames.length, barc.frames.length);
+	let me = this.frames.slice(0, length);
+	let you = barc.frames.slice(0, length);
+	let sum = me.map(function(f,i) { return f.addAsCoords(you[i]); });
+	
+	return new Barcode(x, y, sum);
+    }
+
+    framewiseMultiply(barc, x, y) {
+	let length = min(this.frames.length, barc.frames.length);
+	let me = this.frames.slice(0, length);
+	let you = barc.frames.slice(0, length);
+
+	// note: we could use either multiply() or multiplyAsCoords() here
+	let prod = me.map(function(f,i) { return f.multiply(you[i]); });
+	
+	return new Barcode(x, y, prod);
+    }
 }

@@ -28,6 +28,27 @@ class Frame {
 			 min(MAX_BRIGHTNESS, intensity),
 			 min(MAX_BRIGHTNESS, (MAX_BRIGHTNESS*2) - intensity));
     }
+
+    addAsCoords(frame) {
+	return this.coord.translate(frame.getCoord()).toFrame();
+    }
+
+    multiplyAsCoords(frame) {
+	return this.coord.multiply(frame.getCoord()).toFrame();
+    }
+
+    multiply(frame) {
+	let myintensity = this.brightness - this.saturation + MAX_BRIGHTNESS;
+	let yourintensity = frame.brightness - frame.saturation + MAX_BRIGHTNESS;
+	// TODO put this scaling constant declaration somewhere more useful. also,
+	// double-check that it (and the prodintensity calculation) are actually correct
+	const INTENSITY_PER_UNIT = MAX_BRIGHTNESS / 2;
+	let prodintensity = myintensity * yourintensity / INTENSITY_PER_UNIT;
+	let prodbrightness = min(MAX_BRIGHTNESS, prodintensity);
+	let prodsaturation = min(MAX_BRIGHTNESS, (MAX_BRIGHTNESS*2) - prodintensity);
+	
+	return new Frame(this.color + frame.getColor(), prodbrightness, prodintensity);
+    }
 }
 
 class Coord {
@@ -45,6 +66,22 @@ class Coord {
 
     scale(factor) {
 	return new Coord(this.x * factor, this.y * factor);
+    }
+
+    multiply(vector) {
+	let mymagn = sqrt(this.x*this.x + this.y*this.y);
+	let myangle = atan2(this.y, this.x);
+	let yourmagn = sqrt(vector.getX()*vector.getX() + vector.getY()*vector.getY());
+	let yourangle = atan2(vector.getY(), vector.getX());
+
+	let prodmagn = mymagn * yourmagn;
+	let prodangle = myangle + yourangle;
+
+	return new Coord(prodmagn * cos(prodangle), prodmagn * sin(prodangle));
+    }
+
+    toFrame() {
+	return coordToFrame(this.x, this.y);
     }
 
     isOrigin() {
