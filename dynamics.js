@@ -97,7 +97,7 @@ function setNewCoordinates(mode) {
 }
 
 function recordFrame(colorInfo) {
-    if (draggingJoystick||draggingParticle){
+    if (draggingParticle || !joystickPos.equals(JOYSTICK_CENTER)){
 	let droppedFrame = tracer.addFrame(colorInfo);
 	if (droppedFrame) {
 	    pathstart = droppedFrame.applyAsVelocity(pathstart);

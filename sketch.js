@@ -18,7 +18,9 @@ function draw() {
     drawJoystickPosition(velocityFrame);
 
     //if dragging in DRAGGINGMODE or JOYSTICKMODE, record to present timeline
-    recordFrame(velocityFrame);
+    if (controlMode != PLAYBACKMODE) {
+	recordFrame(velocityFrame);
+    }
 
     //draw particle path stored in tracer array
     if(drawPath){

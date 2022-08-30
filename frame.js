@@ -50,4 +50,8 @@ class Coord {
     isOrigin() {
 	return (this.x == 0 && this.y == 0);
     }
+
+    equals(vector) {
+	return (this.x==vector.getX() && this.y==vector.getY());
+    }
 }
