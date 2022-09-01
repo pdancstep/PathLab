@@ -105,6 +105,16 @@ class Barcode {
 	return this.frames.length;
     }
 
+    // returns the displacement vector from applying
+    // this portion of the barcode as velocities
+    displacement(start = 0, end = this.frames.length) {
+	let pos = new Coord(0,0);
+	for (let i = start; i < end; i++) {
+	    pos = this.frames[i].applyAsVelocity(pos);
+	}
+	return pos.toFrame();
+    }
+    
     // methods for editing frame data
     crop() {
 	if (this.frames.length > MAX_BARCODE_LENGTH) {
