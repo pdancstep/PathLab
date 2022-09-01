@@ -11,9 +11,20 @@ const TRACER_Y = 700;
 const TRACER_END_X = 1150;
 const TRACER_END_Y = 750;
 
+const PRESETS_X = [900, 850, 950, 900, 1100];
+const PRESETS_Y = [400, 450, 450, 500, 400];
+const PRESETS_GEN = [function (idx) { return new Frame( 64, 128, 255); },
+		     function (idx) { return new Frame(  0, 128, 255); },
+		     function (idx) { return new Frame(128, 128, 255); },
+		     function (idx) { return new Frame(192, 128, 255); },
+		     function (idx) { return new Frame(idx,  64, 255); }]
+const BASE_DURATION = MAX_BARCODE_LENGTH / 8;
+const PRESETS_DURATIONS = [BASE_DURATION, BASE_DURATION, BASE_DURATION, BASE_DURATION,
+			  255];
+
 // location where barcodes initially spawn into the editing area
 const SPAWN_X = 750;
-const SPAWN_Y = 550;
+const SPAWN_Y = 600;
 
 function spawnBarcode() {
     myBarcodes.push(tracer.clone(SPAWN_X, SPAWN_Y));
@@ -137,5 +148,15 @@ function editingClick() {
 		myBarcodes.push(newbarc);
 	    }
 	}
+    }
+}
+
+function createPresetBarcodes() {
+    for (let b=0; b < PRESETS_GEN.length; b++) {
+	let frames = [];
+	for (let i=0; i < PRESETS_DURATIONS[b]; i++) {
+	    frames.push(PRESETS_GEN[b](i));
+	}
+	myBarcodes.push(new Barcode(PRESETS_X[b], PRESETS_Y[b], frames));
     }
 }
