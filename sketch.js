@@ -89,6 +89,7 @@ function touchStarted() {
 
     // handle clicking on buttons in the editing area
     editingClick();
+    combinerClick();
 }
 
 function touchMoved() {

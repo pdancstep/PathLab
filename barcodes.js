@@ -1,4 +1,4 @@
-const MAX_BARCODE_LENGTH = 400;
+const MAX_BARCODE_LENGTH = 510;
 const BARCODE_DISPLAY_RESOLUTION = 2;
 
 class Barcode {

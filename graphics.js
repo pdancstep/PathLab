@@ -299,6 +299,8 @@ function drawBarcodes() {
 
 	drawButtonPanel(i);
     }
+
+    drawCombinerPanel();
 }
 
 function drawMenu(){

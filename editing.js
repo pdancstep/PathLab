@@ -1,10 +1,10 @@
 var myBarcodes = [];
 
 var editingStation = [-1, -1, -1];
-const EDITING_STATION_X = [750, 750, 750];
-const EDITING_STATION_Y = [100, 200, 300];
+const EDITING_STATION_X = [650, 650, 650];
+const EDITING_STATION_Y = [100, 220, 320];
 const EDITING_STATION_END_X = [1150, 1150, 1150];
-const EDITING_STATION_END_Y = [150, 250, 350];
+const EDITING_STATION_END_Y = [150, 270, 370];
 
 const TRACER_X = 750;
 const TRACER_Y = 700;
@@ -12,13 +12,13 @@ const TRACER_END_X = 1150;
 const TRACER_END_Y = 750;
 
 const PRESETS_X = [900, 850, 950, 900, 1100];
-const PRESETS_Y = [400, 450, 450, 500, 400];
-const PRESETS_GEN = [function (idx) { return new Frame( 64, 128, 255); },
-		     function (idx) { return new Frame(  0, 128, 255); },
-		     function (idx) { return new Frame(128, 128, 255); },
-		     function (idx) { return new Frame(192, 128, 255); },
-		     function (idx) { return new Frame(idx,  64, 255); }]
-const BASE_DURATION = MAX_BARCODE_LENGTH / 8;
+const PRESETS_Y = [420, 470, 470, 520, 420];
+const PRESETS_GEN = [function (idx) { return new Frame(63.25, 128, 255); },
+		     function (idx) { return new Frame(0, 128, 255); },
+		     function (idx) { return new Frame(127.5, 128, 255); },
+		     function (idx) { return new Frame(191.75, 128, 255); },
+		     function (idx) { return new Frame(idx, 64, 255); }]
+const BASE_DURATION = BARCODE_HEIGHT;
 const PRESETS_DURATIONS = [BASE_DURATION, BASE_DURATION, BASE_DURATION, BASE_DURATION,
 			  255];
 
@@ -82,6 +82,15 @@ function drawButtonPanel(station) {
     if (station > 0) {
 	drawButton(x, y, "^");  // append to previous station button
     }
+}
+
+function drawCombinerPanel() {
+    let x = (EDITING_STATION_X[0] + EDITING_STATION_END_X[0])/2 - .5*BUTTON_SPACE;
+    let y = EDITING_STATION_END_Y[0] + 30;
+
+    drawButton(x, y, "+");
+    x += BUTTON_SPACE;
+    drawButton(x, y, "*");
 }
 
 function editingClick() {
@@ -148,6 +157,46 @@ function editingClick() {
 		myBarcodes.push(newbarc);
 	    }
 	}
+    }
+}
+
+function combinerClick() {
+    let x = (EDITING_STATION_X[0] + EDITING_STATION_END_X[0])/2 - .5*BUTTON_SPACE;
+    let y = EDITING_STATION_END_Y[0] + 30;
+
+    // add-barcodes button
+    if (dist(mouseX, mouseY, x, y) < BUTTON_SIZE/2) {
+	// first two stations must be occupied, third must not be
+	if (editingStation[0] < 0 || editingStation[1] < 0 ||
+	    editingStation[2] >= 0)
+	{
+	    return;
+	}
+
+	let a1 = myBarcodes[editingStation[0]];
+	let a2 = myBarcodes[editingStation[1]];
+	let sum = a1.framewiseAdd(a2, EDITING_STATION_X[2], EDITING_STATION_Y[2]);
+	
+	editingStation[2] = myBarcodes.length;
+	myBarcodes.push(sum);
+    }
+    x += BUTTON_SPACE;
+
+    // multiply-barcodes button
+    if (dist(mouseX, mouseY, x, y) < BUTTON_SIZE/2) {
+	// first two stations must be occupied, third must not be
+	if (editingStation[0] < 0 || editingStation[1] < 0 ||
+	    editingStation[2] >= 0)
+	{
+	    return;
+	}
+
+	let f1 = myBarcodes[editingStation[0]];
+	let f2 = myBarcodes[editingStation[1]];
+	let prod = f1.framewiseMultiply(f2, EDITING_STATION_X[2], EDITING_STATION_Y[2]);
+	
+	editingStation[2] = myBarcodes.length;
+	myBarcodes.push(prod);
     }
 }
 

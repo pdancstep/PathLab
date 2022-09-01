@@ -47,7 +47,8 @@ class Frame {
 	let prodbrightness = min(MAX_BRIGHTNESS, prodintensity);
 	let prodsaturation = min(MAX_BRIGHTNESS, (MAX_BRIGHTNESS*2) - prodintensity);
 	
-	return new Frame(this.color + frame.getColor(), prodbrightness, prodintensity);
+	return new Frame((this.color + frame.getColor() + 128) % 256,
+			 prodbrightness, prodsaturation);
     }
 }
 
