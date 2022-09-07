@@ -25,6 +25,7 @@ var tracer = new Barcode(TRACER_X, TRACER_Y, []);
 // timeline and playback variables
 // when not playing, should equal tracer.length()
 var playhead = 0; // index of the current frame for playback
+var playing = false;
 
 // update particle, joystick, and barcode according to current UI mode
 // returns the color data (as a Frame) for the current particle velocity/joystick position
@@ -75,16 +76,18 @@ function setNewCoordinates(mode) {
 	
 	if (playhead < tracer.length()) {
 	    frame = tracer.getFrame(playhead);
-	    playhead++;
-
 	    joystickPos = frame.getCoord().translate(JOYSTICK_CENTER);
-	    
-	    particlePos = frame.applyAsVelocity(particlePos);
+
+	    if (playing) {
+		playhead++;
+		particlePos = frame.applyAsVelocity(particlePos);
+	    }
 	    return frame;
 	} else {
 	    // stop playback
 	    playhead = tracer.length();
 	    frame = tracer.getLastFrame();
+	    playing = false;
 	    if (frame==null) {
 		// this case should only be reached if the barcode being played is empty
 		// not quite sure I still understand why we are returning this value here;

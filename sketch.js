@@ -47,30 +47,48 @@ function draw() {
 
 function touchStarted() {
     // play button
-    if(mouseX>970&&mouseX<1040&&mouseY>770&&mouseY<830){
-	particlePos = PARTICLE_CENTER;
-	pathstart = PARTICLE_CENTER;
-	controlMode = PLAYBACKMODE;
-	playhead = 0;
-	drawPath = true;
-	return;
+    if (dist(mouseX, mouseY, PLAY_BUTTON_CENTER_X, PLAY_BUTTON_CENTER_Y) < 30) {
+	if (playing) {
+	    playing = false;
+	} else {
+	    // if coming from another mode, or if at the end,
+	    // set up to do a fresh playback from the beginning
+	    if (controlMode != PLAYBACKMODE || playhead >= tracer.length()) {
+		particlePos = PARTICLE_CENTER;
+		pathstart = PARTICLE_CENTER;
+		controlMode = PLAYBACKMODE;
+		playhead = 0;
+	    }
+	    playing = true;
+	    drawPath = true;
+	    return;
+	}
     }
 
     // clicking on joystick activates JOYSTICK mode controls...
     if(dist(mouseX,mouseY,joystickPos.getX(),joystickPos.getY()) < 15){
+	if (controlMode == PLAYBACKMODE) {
+	    playing = false;
+	    tracer.crop(playhead);
+	}
         controlMode = JOYSTICKMODE;
         draggingJoystick = true;
     }
 
     //clicking on particle activates PARTICLE dragging controls...
     if(dist(mouseX,mouseY,particlePos.getX(),particlePos.getY()) < 15){
+	if (controlMode == PLAYBACKMODE) {
+	    playing = false;
+	    tracer.crop(playhead);
+	}
         controlMode = DRAGGINGMODE;
 	prevMouseCoords = Array(SAMPLE_SIZE).fill(new Coord(mouseX, mouseY));
         draggingParticle = true;
     }
 
     //"eject"
-    if(dist(mouseX,mouseY,TRACER_X + BUTTON_SPACE + MAX_BARCODE_LENGTH * FRAME_WIDTH / BARCODE_DISPLAY_RESOLUTION, TRACER_Y + BARCODE_HEIGHT/2)<15){
+    if(dist(mouseX, mouseY,
+	    TRACER_X + BUTTON_SPACE + SLOT_WIDTH, TRACER_Y + BARCODE_HEIGHT/2) < 15) {
         spawnBarcode();
     }
 

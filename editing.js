@@ -26,6 +26,10 @@ const PRESETS_DURATIONS = [BASE_DURATION, BASE_DURATION, BASE_DURATION, BASE_DUR
 const SPAWN_X = 750;
 const SPAWN_Y = 600;
 
+// play/pause button
+const PLAY_BUTTON_CENTER_X = TRACER_X + SLOT_WIDTH/2;
+const PLAY_BUTTON_CENTER_Y = TRACER_Y + BARCODE_HEIGHT + 55;
+
 function spawnBarcode() {
     myBarcodes.push(tracer.clone(SPAWN_X, SPAWN_Y));
 }

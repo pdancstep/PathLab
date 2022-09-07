@@ -13,6 +13,7 @@ const PARTICLE_CENTER = new Coord(PARTICLE_CENTER_X, PARTICLE_CENTER_Y);
 // barcode display parameters
 const BARCODE_HEIGHT = 50;
 const FRAME_WIDTH = 2;
+const SLOT_WIDTH = MAX_BARCODE_LENGTH * FRAME_WIDTH / BARCODE_DISPLAY_RESOLUTION;
 
 //NOTE: *what* is being dragged depends on controlMode
 var dragging = false;
@@ -245,8 +246,7 @@ function drawBarcodes() {
     rectMode(CORNER);
     fill(100);
     noStroke();
-    let slotWidth = MAX_BARCODE_LENGTH * FRAME_WIDTH / BARCODE_DISPLAY_RESOLUTION;
-    rect(TRACER_X, TRACER_Y, slotWidth, BARCODE_HEIGHT);
+    rect(TRACER_X, TRACER_Y, SLOT_WIDTH, BARCODE_HEIGHT);
 
     // TODO use the barcode class to avoid duplication here
     colorMode(HSB,255);
@@ -255,27 +255,22 @@ function drawBarcodes() {
     //draw timeline/recordng bar OUTLINE
     noFill();
     stroke(200);
-    rect(TRACER_X, TRACER_Y, slotWidth, BARCODE_HEIGHT);
+    rect(TRACER_X, TRACER_Y, SLOT_WIDTH, BARCODE_HEIGHT);
 
     //draw play/pause button:
     fill(50);
     noStroke();
-    if(controlMode==PLAYBACKMODE&&playhead<tracer.length()){
-        //pause button
-        push();
-            translate(TRACER_X + slotWidth/2, TRACER_Y + BARCODE_HEIGHT + 55);
-            rect(-25,-25,20,55);
-            rect(5,-25,20,55);
-        pop();
-    }else{
-        push();
-            translate(TRACER_X + slotWidth/2, TRACER_Y + BARCODE_HEIGHT + 55);
-            triangle(25,0,-25,-30,-25,30);
-        pop();
+    push();
+    translate(PLAY_BUTTON_CENTER_X, PLAY_BUTTON_CENTER_Y);
+    if (playing) {
+	rect(-25,-25,20,55);
+	rect(5,-25,20,55);
+    } else {
+	triangle(25,0,-25,-30,-25,30);
     }
+    pop();
 
-
-    drawButton(TRACER_X + slotWidth + BUTTON_SPACE, TRACER_Y + BARCODE_HEIGHT/2, "↑");
+    drawButton(TRACER_X + SLOT_WIDTH + BUTTON_SPACE, TRACER_Y + BARCODE_HEIGHT/2, "↑");
 
     // drawing a playhead position indicator
     noFill();
@@ -283,7 +278,7 @@ function drawBarcodes() {
     strokeWeight(4);
     playheadCoord = map(playhead,
 			0, MAX_BARCODE_LENGTH,
-			TRACER_X, TRACER_X + slotWidth);
+			TRACER_X, TRACER_X + SLOT_WIDTH);
     rect(playheadCoord-6,698,6,54);
     
     // draw barcodes on canvas
@@ -297,7 +292,7 @@ function drawBarcodes() {
 	noFill();
 	stroke(200);
 	strokeWeight(2);
-	rect(EDITING_STATION_X[i], EDITING_STATION_Y[i], slotWidth, BARCODE_HEIGHT);
+	rect(EDITING_STATION_X[i], EDITING_STATION_Y[i], SLOT_WIDTH, BARCODE_HEIGHT);
 
 	drawButtonPanel(i);
     }

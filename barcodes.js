@@ -116,9 +116,9 @@ class Barcode {
     }
     
     // methods for editing frame data
-    crop() {
-	if (this.frames.length > MAX_BARCODE_LENGTH) {
-	    this.frames = this.frames.slice(0, MAX_BARCODE_LENGTH);
+    crop(len = MAX_BARCODE_LENGTH) {
+	if (this.frames.length > len) {
+	    this.frames = this.frames.slice(0, len);
 	}
     }
     
