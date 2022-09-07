@@ -262,15 +262,20 @@ function drawBarcodes() {
     noStroke();
     if(controlMode==PLAYBACKMODE&&playhead<tracer.length()){
         //pause button
-        rect(950,775,20,55);
-        rect(980,775,20,55);     
+        push();
+            translate(TRACER_X + slotWidth/2, TRACER_Y + BARCODE_HEIGHT + 55);
+            rect(-25,-25,20,55);
+            rect(5,-25,20,55);
+        pop();
     }else{
-        triangle(1000,800,950,770,950,830);
-
+        push();
+            translate(TRACER_X + slotWidth/2, TRACER_Y + BARCODE_HEIGHT + 55);
+            triangle(25,0,-25,-30,-25,30);
+        pop();
     }
 
 
-    drawButton(1180, 725, "↑");
+    drawButton(TRACER_X + slotWidth + BUTTON_SPACE, TRACER_Y + BARCODE_HEIGHT/2, "↑");
 
     // drawing a playhead position indicator
     noFill();
@@ -279,9 +284,6 @@ function drawBarcodes() {
     playheadCoord = map(playhead,
 			0, MAX_BARCODE_LENGTH,
 			TRACER_X, TRACER_X + slotWidth);
-    if(playheadCoord>1150){
-        playheadCoord = 1150;
-    }
     rect(playheadCoord-6,698,6,54);
     
     // draw barcodes on canvas

@@ -42,11 +42,12 @@ function draw() {
 
     // draw the editing and playback areas
     drawBarcodes();
+
 }
 
 function touchStarted() {
     // play button
-    if(mouseX>950&&mouseX<1000&&mouseY>770&&mouseY<830){
+    if(mouseX>970&&mouseX<1040&&mouseY>770&&mouseY<830){
 	particlePos = PARTICLE_CENTER;
 	pathstart = PARTICLE_CENTER;
 	controlMode = PLAYBACKMODE;
@@ -69,7 +70,7 @@ function touchStarted() {
     }
 
     //"eject"
-    if(dist(mouseX,mouseY,1180,725)<15){
+    if(dist(mouseX,mouseY,TRACER_X + BUTTON_SPACE + MAX_BARCODE_LENGTH * FRAME_WIDTH / BARCODE_DISPLAY_RESOLUTION, TRACER_Y + BARCODE_HEIGHT/2)<15){
         spawnBarcode();
     }
 
