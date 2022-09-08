@@ -33,6 +33,7 @@ var clearButtonColor = 200;
 
 // set initial states for menu options
 var drawPath = true;
+var drawJoystickPath = true;
 var useColor = false;
 var useBrightness = false;
 
@@ -173,6 +174,31 @@ function drawJoystickPosition(colorInfo){
         fill(colorInfo.getColor(), sat, bri);
     }
     ellipse(joystickPos.getX(), joystickPos.getY(),15,15);
+}
+
+function drawJoystickHistory() {
+    strokeWeight(7);
+    strokeCap(ROUND);
+    
+    let pathEnd = min(tracer.length()-1, playhead);
+    if (pathEnd < 1) {
+	return;
+    }
+
+    let previous = tracer.getFrame(0).getCoord().translate(JOYSTICK_CENTER);
+    for(i=1; i<pathEnd; i++){
+	let frame = tracer.getFrame(i);
+	let coord = frame.getCoord().translate(JOYSTICK_CENTER);
+        if(useColor&&useBrightness){
+            stroke(frame.getColor(),frame.getSaturation(),frame.getBrightness());
+        }else if(useColor){
+            stroke(frame.getColor(),255,255);
+        }else{
+            stroke(255);
+        }
+        line(previous.getX(), previous.getY(), coord.getX(), coord.getY());
+	previous = coord;
+    }
 }
 
 function drawParticlePath(){

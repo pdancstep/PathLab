@@ -18,6 +18,10 @@ function draw() {
     //draw joystick dot...
     drawJoystickPosition(velocityFrame);
 
+    if (drawJoystickPath) {
+	drawJoystickHistory();
+    }
+
     //if dragging in DRAGGINGMODE or JOYSTICKMODE, record to present timeline
     if (controlMode != PLAYBACKMODE) {
 	recordFrame(velocityFrame);
