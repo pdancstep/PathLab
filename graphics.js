@@ -177,7 +177,7 @@ function drawJoystickPosition(colorInfo){
 }
 
 function drawJoystickHistory() {
-    strokeWeight(7);
+    strokeWeight(1);
     strokeCap(ROUND);
     
     let pathEnd = min(tracer.length()-1, playhead);
@@ -191,11 +191,15 @@ function drawJoystickHistory() {
 	let coord = frame.getCoord().translate(JOYSTICK_CENTER);
         if(useColor&&useBrightness){
             stroke(frame.getColor(),frame.getSaturation(),frame.getBrightness());
+            fill(frame.getColor(),frame.getSaturation(),frame.getBrightness());
         }else if(useColor){
             stroke(frame.getColor(),255,255);
+            fill(frame.getColor(),255,255);
         }else{
             stroke(255);
+	    fill(255);
         }
+	ellipse(coord.getX(), coord.getY(), 7, 7);
         line(previous.getX(), previous.getY(), coord.getX(), coord.getY());
 	previous = coord;
     }
