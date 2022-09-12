@@ -65,6 +65,10 @@ class Coord {
 	return new Coord(this.x + vector.getX(), this.y + vector.getY());
     }
 
+    subtract(vector) {
+	return new Coord(this.x - vector.getX(), this.y - vector.getY());
+    }
+
     scale(factor) {
 	return new Coord(this.x * factor, this.y * factor);
     }
