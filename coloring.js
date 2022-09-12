@@ -12,7 +12,6 @@
 
 // 
 const MAX_BRIGHTNESS = 255;
-const MAX_MAGNITUDE = 200;
 
 function coordToColor(x, y) {
     let magnitude = sqrt(y*y + x*x);

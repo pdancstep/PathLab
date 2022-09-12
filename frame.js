@@ -11,8 +11,10 @@ class Frame {
     getSaturation() { return this.saturation; }
     getCoord() { return this.coord; }
 
+    // apply this coordinate as a velocity to the argument
+    // for a duration of 1 p5/display frame
     applyAsVelocity(coord) {
-	let scaled_velocity = this.coord.scale(JOYSTICK_SCALING);
+	let scaled_velocity = this.coord.scale(1/TIME_UNIT);
 	return coord.translate(scaled_velocity);
     }
 
@@ -73,6 +75,10 @@ class Coord {
 	return new Coord(this.x * factor, this.y * factor);
     }
 
+    conjugate() {
+	return new Coord(this.x, -this.y);
+    }
+    
     multiply(vector) {
 	let mymagn = sqrt(this.x*this.x + this.y*this.y);
 	let myangle = atan2(this.y, this.x);

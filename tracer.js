@@ -7,11 +7,11 @@ class Slot {
     }
 
     display() {
+	this.barcode.display();
 	noFill();
 	stroke(200);
 	rect(this.displayX, this.displayY, SLOT_WIDTH, BARCODE_HEIGHT);
 	this.drawButtons();
-	this.barcode.display();
     }
 
     drawButtons() {} // basic slot has no buttons; subclasses should override this
@@ -50,33 +50,33 @@ class Tracer extends Slot {
 	super(x, y);
 	this.particleCanvas = part;
 	this.joystickCanvas = joy;
-	this.startingPos = part.getCenter();
-	this.particlePos = this.startingPos;
-	this.joystickPos = joy.getCenter();
+	this.startingPos = new Coord(0,0);   // using particleCanvas coord system
+	this.particlePos = this.startingPos; // using particleCanvas coord system
+	this.joystickPos = new Coord(0,0);   // using joystickCanvas coord system
 	this.playhead = 0;
 	this.playing = false;
 	this.recording = true;
     }
 
     // insert a barcode into this tracer
-    installBarcode(barc, start = this.particleCanvas.getCenter()) {
+    installBarcode(barc, start = new Coord(0,0)) {
 	this.barcode = barc.clone(this.displayX, this.displayY);
 	this.startingPos = start;
 	this.playhead = barc.length();
-	this.particlePos = this.startingPos.translate(barc.displacement());
+	this.particlePos = start.translate(barc.displacement());
 	// joystick could also be reasonably set to barc.getLastFrame().getCoord() here,
 	// but this requires recording to be off when we initially install a barcode.
 	// another alternative would be to default to playback mode, paused at frame 0
-	this.joystickPos = this.joystickCanvas.getCenter();
+	this.joystickPos = new Coord(0,0);
 	this.playing = false;
-	this.recording = true
+	this.recording = true;
     }
 
     clear() {
 	super.clear();
-	this.startingPos = this.particleCanvas.getCenter();
+	this.startingPos = new Coord(0,0);
 	this.particlePos = this.startingPos;
-	this.joystickPos = this.joystickCanvas.getCenter();
+	this.joystickPos = new Coord(0,0);
 	this.playhead = 0;
 	this.playing = false;
 	this.recording = true;
@@ -114,8 +114,16 @@ class Tracer extends Slot {
 	return this.particlePos;
     }
 
+    getCurrentParticlePx() {
+	return this.particleCanvas.canvasToScreen(this.particlePos);
+    }
+
     getCurrentJoystick() {
 	return this.joystickPos;
+    }
+
+    getCurrentJoystickPx() {
+	return this.joystickCanvas.canvasToScreen(this.joystickPos);
     }
 
     // play back the next frame, treating it as a velocity for the particle
@@ -140,8 +148,9 @@ class Tracer extends Slot {
 	}
 	if (this.playing) {
 	    let newpos = this.getCurrentFrame().getCoord();
-	    this.joystickPos = newpos.subtract(this.particlePos);
+	    this.joystickPos = newpos.subtract(this.particlePos) * TIME_UNIT;
 	    this.particlePos = newpos;
+	    this.playhead++;
 	}
     }
 
@@ -172,6 +181,7 @@ class Tracer extends Slot {
 	this.recording = false;
 	this.playing = true;
 	this.playhead = 0;
+	this.particlePos = this.startingPos;
     }
 
     pause() {
@@ -186,15 +196,16 @@ class Tracer extends Slot {
 	this.playing = false;
 	this.recording = true;
 	this.playhead = this.barcode.length();
+	// TODO this is assuming barcode is velocity! need to handle both types
 	this.particlePos = this.startingPos.translate(this.barcode.displacement());
 	// joystick could also be reasonably set to the coords of the last frame here,
 	// but this requires recording to be off when we stop playback
-	this.joystickPos = this.joystickCanvas.getCenter();
+	this.joystickPos = new Coord(0,0);
     }
 
     recordFromHere() {
 	this.playing = false;
 	this.recording = true;
-	this.barcode.crop(playhead);
+	this.barcode.crop(this.playhead);
     }
 }

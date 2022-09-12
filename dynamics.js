@@ -12,16 +12,17 @@ var tracer = new Tracer(TRACER_X, TRACER_Y, particleCanvas, joystickCanvas);
 // Tuning Parameters
 /////////
 
-// relation of vector magnitude displayed in joystick area to color intensity
-// TODO is this still being used anywhere?? is it the right value?
-// Frame.multiply maybe wants to use it
-const JOYSTICK_SCALING = 0.05;
+// number of frames for speed 1 to produce displacement 1
+const TIME_UNIT = 20;
 
 // relation of mouse movement speed to vector magnitude of joystick
 const DRAG_SCALING = 4.45;
 
 // how many frames back we look when calculating velocity of mouse movement
 const SAMPLE_SIZE = 10;
+
+// radius at which a point is represented by a color frame that is totally white
+const MAX_MAGNITUDE = 4;
 
 ///////////////////
 
@@ -73,15 +74,15 @@ function setNewCoordinates(mode) {
     // update joystick based on next recorded frame
     else if (mode==PLAYBACKMODE) {
 	tracer.advanceJoystick();
-	particlePos = tracer.getCurrentParticle();
-	joystickPos = tracer.getCurrentJoystick();
+	particlePos = tracer.getCurrentParticlePx();
+	joystickPos = tracer.getCurrentJoystickPx();
 	return tracer.getCurrentFrame();
     }
 }
 
 function recordFrame(colorInfo) {
     if (draggingParticle || !joystickPos.equals(JOYSTICK_CENTER)) {
-	tracer.recordFrame(colorInfo);
+	tracer.recordFrame(colorInfo, SHIFT_JOYSTICK);
     }
 }
 
