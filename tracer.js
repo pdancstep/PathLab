@@ -11,14 +11,32 @@ class Slot {
 	stroke(200);
 	rect(this.displayX, this.displayY, SLOT_WIDTH, BARCODE_HEIGHT);
 	this.drawButtons();
+	this.barcode.display();
     }
 
     drawButtons() {} // basic slot has no buttons; subclasses should override this
-}
 
-// frame to use if a tracer with an empty barcode is asked for its current frame
-const DEFAULT_FRAME = coordToFrame(joystickPos.getX() - JOYSTICK_CENTER_X,
-				   joystickPos.getY() - JOYSTICK_CENTER_Y);
+    inside(x, y) {
+	return (this.displayX < x && x < this.displayX + SLOT_WIDTH &&
+		this.displayY < y && y < this.displayY + BARCODE_HEIGHT);
+    }
+    
+    // check if we're dropping a barcode on this slot.
+    // put it in the slot if appropriate
+    onRelease() {
+	// TODO
+    }
+
+    // clone the barcode held in this slot and put the new one at given coordinates
+    eject(x, y) {
+	return this.barcode.clone(x, y);
+    }
+
+    // replace currently-held barcode with an empty barcode
+    clear() {
+	this.barcode = new Barcode(this.displayX, this.displayY, []);
+    }
+}
 
 // when recording a new frame to this tracer that overflows the maximum barcode length,
 // how should we modify the starting position?
@@ -41,8 +59,8 @@ class Tracer extends Slot {
     }
 
     // insert a barcode into this tracer
-    installBarcode(barc, start = this.part.getCenter()) {
-	this.barcode = barc.clone(x, y);
+    installBarcode(barc, start = this.particleCanvas.getCenter()) {
+	this.barcode = barc.clone(this.displayX, this.displayY);
 	this.startingPos = start;
 	this.playhead = barc.length();
 	this.particlePos = this.startingPos.translate(barc.displacement());
@@ -54,14 +72,8 @@ class Tracer extends Slot {
 	this.recording = true
     }
 
-    // clone the barcode held in this tracer and put the new one at given coordinates
-    eject(x, y) {
-	return this.barcode.clone(x, y);
-    }
-
-    // replace 
     clear() {
-	this.barcode = new Barcode(this.displayX, this.displayY, []);
+	super.clear();
 	this.startingPos = this.particleCanvas.getCenter();
 	this.particlePos = this.startingPos;
 	this.joystickPos = this.joystickCanvas.getCenter();
@@ -74,6 +86,10 @@ class Tracer extends Slot {
 	return this.barcode.length();
     }
 
+    isPlaying() {
+	return this.playing;
+    }
+    
     // is the playhead at the end of the barcode?
     isComplete() {
 	return (this.playhead >= this.barcode.length());
@@ -87,13 +103,27 @@ class Tracer extends Slot {
 	    frame = this.barcode.getFrame(this.playhead);
 	}
 	if (frame) { return frame; }
-	else { return DEFAULT_FRAME; }
+	else { return coordToFrame(0,0); } // ?
+    }
+
+    getCurrentFrameNumber() {
+	return this.playhead;
+    }
+    
+    getCurrentParticle() {
+	return this.particlePos;
+    }
+
+    getCurrentJoystick() {
+	return this.joystickPos;
     }
 
     // play back the next frame, treating it as a velocity for the particle
     // (and a position for the joystick)
     advanceJoystick() {
-	if (this.isComplete()) { return; }
+	if (this.isComplete()) {
+	    this.stop();
+	}
 	if (this.playing) {
 	    let frame = this.getCurrentFrame();
 	    this.joystickPos = frame.getCoord();
@@ -105,7 +135,9 @@ class Tracer extends Slot {
     // play back the next frame, treating it as a position for the particle
     // (set the joystick to the displacement the particle undergoes for this frame)
     advanceParticle() {
-	if (this.isComplete()) { return; }
+	if (this.isComplete()) {
+	    this.stop();
+	}
 	if (this.playing) {
 	    let newpos = this.getCurrentFrame().getCoord();
 	    this.joystickPos = newpos.subtract(this.particlePos);
@@ -113,8 +145,10 @@ class Tracer extends Slot {
 	}
     }
 
-    // if recording, add the given frame
-    recordVelocity(colorInfo, shift) {
+    // if recording, add the given frame to the barcode
+    // colorInfo - frame to add
+    // shift - how to move the starting point if barcode was already at maximum length
+    recordFrame(colorInfo, shift) {
 	if (this.recording) {
 	    let droppedFrame = this.barcode.addFrame(colorInfo);
 	    if (droppedFrame) {
@@ -133,7 +167,7 @@ class Tracer extends Slot {
 	    }
 	}
     }
-    
+
     start() {
 	this.recording = false;
 	this.playing = true;
@@ -152,5 +186,15 @@ class Tracer extends Slot {
 	this.playing = false;
 	this.recording = true;
 	this.playhead = this.barcode.length();
+	this.particlePos = this.startingPos.translate(this.barcode.displacement());
+	// joystick could also be reasonably set to the coords of the last frame here,
+	// but this requires recording to be off when we stop playback
+	this.joystickPos = this.joystickCanvas.getCenter();
+    }
+
+    recordFromHere() {
+	this.playing = false;
+	this.recording = true;
+	this.barcode.crop(playhead);
     }
 }

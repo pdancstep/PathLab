@@ -1,3 +1,13 @@
+////////////////////////
+// canvases and slots //
+////////////////////////
+
+const particleCanvas = new Canvas(PARTICLE_TOPLEFT, PARTICLE_CENTER,
+				  PARTICLE_SCALE, PARTICLE_STYLE);
+const joystickCanvas = new Canvas(JOYSTICK_TOPLEFT, JOYSTICK_CENTER,
+				  JOYSTICK_SCALE, JOYSTICK_STYLE);
+var tracer = new Tracer(TRACER_X, TRACER_Y, particleCanvas, joystickCanvas);
+
 /////////
 // Tuning Parameters
 /////////
@@ -15,17 +25,7 @@ const SAMPLE_SIZE = 10;
 
 ///////////////////
 
-var pathstart = PARTICLE_CENTER;
-
 var prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
-
-// active barcode
-var tracer = new Barcode(TRACER_X, TRACER_Y, []);
-
-// timeline and playback variables
-// when not playing, should equal tracer.length()
-var playhead = 0; // index of the current frame for playback
-var playing = false;
 
 // update particle, joystick, and barcode according to current UI mode
 // returns the color data (as a Frame) for the current particle velocity/joystick position
@@ -72,48 +72,21 @@ function setNewCoordinates(mode) {
     
     // update joystick based on next recorded frame
     else if (mode==PLAYBACKMODE) {
-	let frame = null;
-	
-	if (playhead < tracer.length()) {
-	    frame = tracer.getFrame(playhead);
-	    joystickPos = frame.getCoord().translate(JOYSTICK_CENTER);
-
-	    if (playing) {
-		playhead++;
-		particlePos = frame.applyAsVelocity(particlePos);
-	    }
-	    return frame;
-	} else {
-	    // stop playback
-	    playhead = tracer.length();
-	    frame = tracer.getLastFrame();
-	    playing = false;
-	    if (frame==null) {
-		// this case should only be reached if the barcode being played is empty
-		// not quite sure I still understand why we are returning this value here;
-		// the other reasonable-seeming candidate is coordToFrame(0,0)
-		return coordToFrame(joystickPos.getX() - JOYSTICK_CENTER_X,
-				    joystickPos.getY() - JOYSTICK_CENTER_Y);
-	    } else {
-		return frame;
-	    }
-	}
+	tracer.advanceJoystick();
+	particlePos = tracer.getCurrentParticle();
+	joystickPos = tracer.getCurrentJoystick();
+	return tracer.getCurrentFrame();
     }
 }
 
 function recordFrame(colorInfo) {
-    if (draggingParticle || !joystickPos.equals(JOYSTICK_CENTER)){
-	let droppedFrame = tracer.addFrame(colorInfo);
-	if (droppedFrame) {
-	    pathstart = droppedFrame.applyAsVelocity(pathstart);
-	} else {
-	    playhead++;
-	}
+    if (draggingParticle || !joystickPos.equals(JOYSTICK_CENTER)) {
+	tracer.recordFrame(colorInfo);
     }
 }
 
 function installBarcode(barcode) {
-    tracer = barcode.clone(TRACER_X, TRACER_Y);
-    playhead = tracer.length();
+    tracer.installBarcode(barcode);
     particlePos = PARTICLE_CENTER;
+    joystickPos = JOYSTICK_CENTER;
 }

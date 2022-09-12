@@ -29,13 +29,19 @@ class Barcode {
 	}
     }
 
+    isBeingDragged() {
+	return this.dragging;
+    }
+
     clone(x, y) {
 	return new Barcode(x, y, this.frames);
     }
 
     // release mouse - returns slot we ended up in
+    // TODO remove this functionality from this class
+    // it should now be handled by Slot.onRelease()
     onRelease() {
-	let slot = NO_SLOT;
+	let slot = -2;
 	if (this.dragging) {
 	    let n = coordInEditor(mouseX, mouseY);
 	    if (n >= 0 && editingStation[n] < 0) {
@@ -44,7 +50,7 @@ class Barcode {
 		slot = n;
 	    }
 	    if (coordInTracer(mouseX, mouseY)) {
-		slot = SLOT_TRACER;
+		slot = -1;
 	    }
 	}
         this.dragging = false;
@@ -105,14 +111,14 @@ class Barcode {
 	return this.frames.length;
     }
 
-    // returns the displacement vector from applying
+    // returns the coordinate for the displacement vector from applying
     // this portion of the barcode as velocities
     displacement(start = 0, end = this.frames.length) {
 	let pos = new Coord(0,0);
 	for (let i = start; i < end; i++) {
 	    pos = this.frames[i].applyAsVelocity(pos);
 	}
-	return pos.toFrame();
+	return pos;
     }
     
     // methods for editing frame data

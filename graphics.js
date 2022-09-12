@@ -3,12 +3,18 @@ const JOYSTICK_CENTER_X = 450;
 const JOYSTICK_CENTER_Y = 725;
 const JOYSTICK_AREA_SIZE = 250;
 const JOYSTICK_CENTER = new Coord(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y);
+const JOYSTICK_TOPLEFT = new Coord(JOYSTICK_CENTER_X - JOYSTICK_AREA_SIZE/2,
+				   JOYSTICK_CENTER_Y - JOYSTICK_AREA_SIZE/2);
+const JOYSTICK_SCALE = 1/2;
 
 // coordinates of particle area
 const PARTICLE_CENTER_X = 325;
 const PARTICLE_CENTER_Y = 280;
 const PARTICLE_AREA_SIZE = 500;
 const PARTICLE_CENTER = new Coord(PARTICLE_CENTER_X, PARTICLE_CENTER_Y);
+const PARTICLE_TOPLEFT = new Coord(PARTICLE_CENTER_X - PARTICLE_AREA_SIZE/2,
+				   PARTICLE_CENTER_Y - PARTICLE_AREA_SIZE/2);
+const PARTICLE_SCALE = 1;
 
 // barcode display parameters
 const BARCODE_HEIGHT = 50;
@@ -176,7 +182,9 @@ function drawJoystickPosition(colorInfo){
     ellipse(joystickPos.getX(), joystickPos.getY(),15,15);
 }
 
+// TODO update this
 function drawJoystickHistory() {
+    if (false) {
     strokeWeight(1);
     strokeCap(ROUND);
     
@@ -203,9 +211,12 @@ function drawJoystickHistory() {
         line(previous.getX(), previous.getY(), coord.getX(), coord.getY());
 	previous = coord;
     }
+    }
 }
 
+// TODO update this
 function drawParticlePath(){
+    if (false) {
     strokeWeight(7);
     strokeCap(ROUND);
     
@@ -228,6 +239,7 @@ function drawParticlePath(){
         line(previous.getX(), previous.getY(), newpos.getX(), newpos.getY());
 
 	previous = newpos;
+    }
     }
 }
 
@@ -282,17 +294,12 @@ function drawBarcodes() {
     colorMode(HSB,255);
     tracer.display();
 
-    //draw timeline/recordng bar OUTLINE
-    noFill();
-    stroke(200);
-    rect(TRACER_X, TRACER_Y, SLOT_WIDTH, BARCODE_HEIGHT);
-
     //draw play/pause button:
     fill(50);
     noStroke();
     push();
     translate(PLAY_BUTTON_CENTER_X, PLAY_BUTTON_CENTER_Y);
-    if (playing) {
+    if (tracer.isPlaying()) {
 	rect(-25,-25,20,55);
 	rect(5,-25,20,55);
     } else {
@@ -306,13 +313,13 @@ function drawBarcodes() {
     noFill();
     stroke(50);
     strokeWeight(4);
-    playheadCoord = map(playhead,
+    playheadCoord = map(tracer.getCurrentFrameNumber(),
 			0, MAX_BARCODE_LENGTH,
 			TRACER_X, TRACER_X + SLOT_WIDTH);
     rect(playheadCoord-6,698,6,54);
     
     // draw barcodes on canvas
-    for(const barc of myBarcodes){
+    for(const barc of freeBarcodes){
         barc.update();
         barc.display();
     }
@@ -473,8 +480,7 @@ function menuClick() {
     //if we're hovering over clear button...
     if(clearButtonColor==255){
 	particlePos = PARTICLE_CENTER;
-	pathstart = PARTICLE_CENTER;
-	tracer = new Barcode(TRACER_X, TRACER_Y, []);
+	tracer.clear();
 	prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
 	playhead = 0;
     }

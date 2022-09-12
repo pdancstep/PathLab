@@ -46,24 +46,22 @@ function draw() {
 
     // draw the editing and playback areas
     drawBarcodes();
-
 }
 
 function touchStarted() {
     // play button
     if (dist(mouseX, mouseY, PLAY_BUTTON_CENTER_X, PLAY_BUTTON_CENTER_Y) < 30) {
-	if (playing) {
-	    playing = false;
+	if (tracer.isPlaying()) { // already playing, so we're clicking pause
+	    tracer.pause();
 	} else {
-	    // if coming from another mode, or if at the end,
-	    // set up to do a fresh playback from the beginning
-	    if (controlMode != PLAYBACKMODE || playhead >= tracer.length()) {
-		particlePos = PARTICLE_CENTER;
-		pathstart = PARTICLE_CENTER;
+	    if (tracer.isComplete()) { // at the end, so we're starting a new playback
+		tracer.start();
 		controlMode = PLAYBACKMODE;
-		playhead = 0;
+		particlePos = PARTICLE_CENTER;
+	    } else { // we're paused, so resume
+		tracer.resume();
+		controlMode = PLAYBACKMODE;
 	    }
-	    playing = true;
 	    drawPath = true;
 	    return;
 	}
@@ -72,8 +70,7 @@ function touchStarted() {
     // clicking on joystick activates JOYSTICK mode controls...
     if(dist(mouseX,mouseY,joystickPos.getX(),joystickPos.getY()) < 15){
 	if (controlMode == PLAYBACKMODE) {
-	    playing = false;
-	    tracer.crop(playhead);
+	    tracer.recordFromHere();
 	}
         controlMode = JOYSTICKMODE;
         draggingJoystick = true;
@@ -82,8 +79,7 @@ function touchStarted() {
     //clicking on particle activates PARTICLE dragging controls...
     if(dist(mouseX,mouseY,particlePos.getX(),particlePos.getY()) < 15){
 	if (controlMode == PLAYBACKMODE) {
-	    playing = false;
-	    tracer.crop(playhead);
+	    tracer.recordFromHere();
 	}
         controlMode = DRAGGINGMODE;
 	prevMouseCoords = Array(SAMPLE_SIZE).fill(new Coord(mouseX, mouseY));
@@ -93,12 +89,12 @@ function touchStarted() {
     //"eject"
     if(dist(mouseX, mouseY,
 	    TRACER_X + BUTTON_SPACE + SLOT_WIDTH, TRACER_Y + BARCODE_HEIGHT/2) < 15) {
-        spawnBarcode();
+        spawnBarcode(tracer);
     }
 
     //dragging existing barcode...
-    for (var i = 0; i < myBarcodes.length; i++) {
-        if (myBarcodes[i].onClick()) {
+    for (var i = 0; i < freeBarcodes.length; i++) {
+        if (freeBarcodes[i].onClick()) {
 	    let myslot = editingStation.indexOf(i);
 	    if (myslot >= 0) {
 		editingStation[myslot] = -1;
@@ -119,6 +115,7 @@ function touchMoved() {
 
 }
 
+// TODO refactor for Slot class
 function touchEnded() {
     if(snapToZero) {
 	joystickPos = JOYSTICK_CENTER;
@@ -127,19 +124,19 @@ function touchEnded() {
     draggingJoystick = false;
     draggingParticle = false;
 
-    for (var i = 0; i < myBarcodes.length; i++) {
-	let slot = myBarcodes[i].onRelease();
+    for (var i = 0; i < freeBarcodes.length; i++) {
+	let slot = freeBarcodes[i].onRelease();
 	if (slot >= 0) {
 	    editingStation[slot] = i;
 	}
-	if (slot==SLOT_TRACER) {
-	    installBarcode(myBarcodes[i]);
+	if (slot==-1) {
+	    installBarcode(freeBarcodes[i]);
 	    for (var j = 0; j < editingStation.length; j++) {
 		if (editingStation[j] > i) {
 		    editingStation[j]--;
 		}
 	    }
-	    myBarcodes.splice(i,1);
+	    freeBarcodes.splice(i,1);
 	}
     }
 }
