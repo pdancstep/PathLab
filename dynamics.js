@@ -8,9 +8,9 @@ const joystickCanvas = new Canvas(JOYSTICK_TOPLEFT, JOYSTICK_CENTER,
 				  JOYSTICK_SCALE, JOYSTICK_STYLE);
 var tracer = new Tracer(TRACER_X, TRACER_Y, particleCanvas, joystickCanvas);
 
-/////////
-// Tuning Parameters
-/////////
+///////////////////////
+// Tuning Parameters //
+///////////////////////
 
 // number of frames for speed 1 to produce displacement 1
 const TIME_UNIT = 20;

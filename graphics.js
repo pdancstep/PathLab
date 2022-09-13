@@ -123,37 +123,39 @@ function drawUI(){
     push();
     translate(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y);
 
-    //pos. x-axis
-    stroke(128,255,255);
-    line(0,0,JOYSTICK_AREA_SIZE/2,0);
-    
-    //quad 1 diagonal
-    stroke(160,255,255);
-    line(0,0,JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);
-    
-    //pos y-axis
-    stroke(192,255,255);
-    line(0,0,0,JOYSTICK_AREA_SIZE/2);
-    
-    //quad 2 diagonal
-    stroke(224,255,255);
-    line(0,0,-JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);
-        
+    // note that y values are inverted here: we're centered according to the
+    // joystick coordinate system, but still using screen coordinates, so +y is down
     //neg. x-axis
     stroke(0,255,255);
     line(0,0,-JOYSTICK_AREA_SIZE/2,0);
     
     //quad 3 diagonal
     stroke(32,255,255);
-    line(0,0,-JOYSTICK_AREA_SIZE/2,-JOYSTICK_AREA_SIZE/2);  
-    
+    line(0,0,-JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);  
+
     //neg. y-axis
     stroke(64,255,255);
-    line(0,0,0,-JOYSTICK_AREA_SIZE/2);
+    line(0,0,0,JOYSTICK_AREA_SIZE/2);
     
     //quad 4 diagonal
     stroke(96,255,255);
+    line(0,0,JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);
+    
+    //pos. x-axis
+    stroke(128,255,255);
+    line(0,0,JOYSTICK_AREA_SIZE/2,0);
+    
+    //quad 1 diagonal
+    stroke(160,255,255);
     line(0,0,JOYSTICK_AREA_SIZE/2,-JOYSTICK_AREA_SIZE/2);
+    
+    //pos y-axis
+    stroke(192,255,255);
+    line(0,0,0,-JOYSTICK_AREA_SIZE/2);
+    
+    //quad 2 diagonal
+    stroke(224,255,255);
+    line(0,0,-JOYSTICK_AREA_SIZE/2,-JOYSTICK_AREA_SIZE/2);    
     
     pop();
 }
@@ -167,19 +169,18 @@ function drawJoystickPosition(colorInfo){
     }
     noFill();
     stroke(colorInfo.getColor(), sat, bri);
-    
-    line(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y,
-	 joystickPos.getX(), joystickPos.getY());
+
+    let point = tracer.getCurrentJoystickPx();
+    line(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y, point.getX(), point.getY());
     
     strokeWeight(2);
     stroke(220);
-    if(dist(joystickPos.getX(), joystickPos.getY(),
-	    JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y) < 5) {
+    if(dist(point.getX(), point.getY(), JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y) < 5) {
         fill(0);
     }else{
         fill(colorInfo.getColor(), sat, bri);
     }
-    ellipse(joystickPos.getX(), joystickPos.getY(),15,15);
+    ellipse(point.getX(), point.getY(),15,15);
 }
 
 // TODO update this
@@ -250,17 +251,16 @@ function drawParticleVector(colorInfo){
     }else{
         stroke(colorInfo.getColor(), 255, 255);
     }
-    let xplusdx = particlePos.getX() + joystickPos.getX() - JOYSTICK_CENTER_X;
-    let yplusdy = particlePos.getY() + joystickPos.getY() - JOYSTICK_CENTER_Y;
+    let part = tracer.getCurrentParticlePx();
+    let joy = tracer.getCurrentJoystickPx().subtract(JOYSTICK_CENTER);
+    let xplusdx = part.getX() + joy.getX();
+    let yplusdy = part.getY() + joy.getY();
     
-    line(particlePos.getX(), particlePos.getY(), xplusdx, yplusdy);
-    drawTriangle(xplusdx, yplusdy, colorInfo);
+    line(part.getX(), part.getY(), xplusdx, yplusdy);
+    drawTriangle(xplusdx, yplusdy, atan2(joy.getY(), joy.getX()), colorInfo);
 }
 
-function drawTriangle(xPos, yPos, colorInfo){
-
-    let arrowAngle = atan2(joystickPos.getY() - JOYSTICK_CENTER_Y,
-			   joystickPos.getX() - JOYSTICK_CENTER_X);
+function drawTriangle(xPos, yPos, angle, colorInfo){
 
     if(useBrightness){
         fill(colorInfo.getColor(), colorInfo.getSaturation(), colorInfo.getBrightness());
@@ -272,7 +272,7 @@ function drawTriangle(xPos, yPos, colorInfo){
     push();
 
         translate(xPos,yPos);
-        rotate(arrowAngle);
+        rotate(angle);
 
         beginShape();
             for(i=0;i<3;i++){
