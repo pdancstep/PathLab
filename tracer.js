@@ -1,3 +1,7 @@
+const PLAYBACK_OFF = 0;
+const PLAYBACK_POS = 1;
+const PLAYBACK_VEL = 2;
+
 // when recording a new frame to this tracer that overflows the maximum barcode length,
 // how should we modify the starting position?
 const SHIFT_NONE = 0; // don't touch it
@@ -15,6 +19,7 @@ class Tracer extends Slot {
 	this.joystickPos = new Coord(0,0);   // using joystickCanvas coord system
 	this.playhead = 0;
 	this.playing = false;
+	this.playbackType = PLAYBACK_OFF;
 	this.recording = true;
     }
 
@@ -29,6 +34,7 @@ class Tracer extends Slot {
 	// another alternative would be to default to playback mode, paused at frame 0
 	this.joystickPos = new Coord(0,0);
 	this.playing = false;
+	this.playbackType = PLAYBACK_OFF;
 	this.recording = true;
     }
 
@@ -39,6 +45,7 @@ class Tracer extends Slot {
 	this.joystickPos = new Coord(0,0);
 	this.playhead = 0;
 	this.playing = false;
+	this.playbackType = PLAYBACK_OFF;
 	this.recording = true;
     }
 
@@ -88,28 +95,22 @@ class Tracer extends Slot {
 
     // play back the next frame, treating it as a velocity for the particle
     // (and a position for the joystick)
-    advanceJoystick() {
+    advance() {
 	if (this.isComplete()) {
 	    this.stop();
 	}
+	// frame treated as velocity for the particle (position for joystick)
 	if (this.playing) {
 	    let frame = this.getCurrentFrame();
-	    this.joystickPos = frame.getCoord();
-	    this.particlePos = frame.applyAsVelocity(this.particlePos);
-	    this.playhead++;
-	}
-    }
-
-    // play back the next frame, treating it as a position for the particle
-    // (set the joystick to the displacement the particle undergoes for this frame)
-    advanceParticle() {
-	if (this.isComplete()) {
-	    this.stop();
-	}
-	if (this.playing) {
-	    let newpos = this.getCurrentFrame().getCoord();
-	    this.joystickPos = newpos.subtract(this.particlePos) * TIME_UNIT;
-	    this.particlePos = newpos;
+	    if (this.playbackType == PLAYBACK_VEL) {
+		this.joystickPos = frame.getCoord();
+		this.particlePos = frame.applyAsVelocity(this.particlePos);
+	    }
+	    // frame treated as position for the particle
+	    if (this.playbackType == PLAYBACK_POS) {
+		this.joystickPos = frame.getCoord().subtract(this.particlePos) * TIME_UNIT;
+		this.particlePos = frame.getCoord();
+	    }
 	    this.playhead++;
 	}
     }
@@ -137,9 +138,12 @@ class Tracer extends Slot {
 	}
     }
 
-    start() {
+    // start a new replay
+    // type - how to interpret the barcode data (defaults to particle velocity)
+    start(type = PLAYBACK_VEL) {
 	this.recording = false;
 	this.playing = true;
+	this.playbackType = type;
 	this.playhead = 0;
 	this.particlePos = this.startingPos;
     }
@@ -156,15 +160,27 @@ class Tracer extends Slot {
 	this.playing = false;
 	this.recording = true;
 	this.playhead = this.barcode.length();
-	// TODO this is assuming barcode is velocity! need to handle both types
-	this.particlePos = this.startingPos.translate(this.barcode.displacement());
-	// joystick could also be reasonably set to the coords of the last frame here,
-	// but this requires recording to be off when we stop playback
-	this.joystickPos = new Coord(0,0);
+	if (this.playbackType == PLAYBACK_VEL) {
+	    this.particlePos = this.startingPos.translate(this.barcode.displacement());
+	    // joystick could also be reasonably set to the coords of the last frame here,
+	    // but this requires recording to be off when we stop playback
+	    this.joystickPos = new Coord(0,0);
+	}
+	if (this.playbackType == PLAYBACK_POS) {
+	    this.particlePos = this.barcode.getLastFrame().coord();
+	    // if we were to do the equivalent of leaving the joystick on its last-frame
+	    // value, as described above, we'd need to calculate the displacement between
+	    // the final 2 frames here
+	    this.joystickPos = new Coord(0,0);
+	}
+	this.playbackType = PLAYBACK_OFF;
+
+
     }
 
     recordFromHere() {
 	this.playing = false;
+	this.playbackType = PLAYBACK_OFF;
 	this.recording = true;
 	this.barcode.crop(this.playhead);
     }

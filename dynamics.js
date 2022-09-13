@@ -73,7 +73,7 @@ function setNewCoordinates(mode) {
     
     // update joystick based on next recorded frame
     else if (mode==PLAYBACKMODE) {
-	tracer.advanceJoystick();
+	tracer.advance();
 	particlePos = tracer.getCurrentParticlePx();
 	joystickPos = tracer.getCurrentJoystickPx();
 	return tracer.getCurrentFrame();
