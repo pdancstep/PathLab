@@ -70,6 +70,14 @@ class Tracer extends Slot {
     getCurrentFrameNumber() {
 	return this.playhead;
     }
+
+    getParticleCanvas() {
+	return this.particleCanvas;
+    }
+
+    getJoystickCanvas() {
+	return this.joystickCanvas;
+    }
     
     getCurrentParticle() {
 	return this.particlePos;
@@ -165,17 +173,11 @@ class Tracer extends Slot {
 	this.playhead = this.barcode.length();
 	if (this.playbackType == PLAYBACK_VEL) {
 	    this.particlePos = this.startingPos.translate(this.barcode.displacement());
-	    // joystick could also be reasonably set to the coords of the last frame here,
-	    // but this requires recording to be off when we stop playback
-	    this.joystickPos = new Coord(0,0);
 	}
 	if (this.playbackType == PLAYBACK_POS) {
 	    this.particlePos = this.barcode.getLastFrame().coord();
-	    // if we were to do the equivalent of leaving the joystick on its last-frame
-	    // value, as described above, we'd need to calculate the displacement between
-	    // the final 2 frames here
-	    this.joystickPos = new Coord(0,0);
 	}
+	this.joystickPos = new Coord(0,0);
 	this.playbackType = PLAYBACK_OFF;
 
 

@@ -16,7 +16,7 @@ var tracer = new Tracer(TRACER_X, TRACER_Y, particleCanvas, joystickCanvas);
 const TIME_UNIT = 20;
 
 // relation of mouse movement speed to vector magnitude of joystick
-const DRAG_SCALING = 4.45;
+const DRAG_SCALING = .01; // was 4.45 before calculation changed
 
 // how many frames back we look when calculating velocity of mouse movement
 const SAMPLE_SIZE = 10;
@@ -34,7 +34,8 @@ function setNewCoordinates(mode) {
     // update particle and related values based on mouse
     if(mode==DRAGGINGMODE) {
         if(draggingParticle) {
-	    let mouse = new Coord(mouseX, mouseY);
+	    let mouse
+		= tracer.getParticleCanvas().screenToCanvas(new Coord(mouseX, mouseY));
 	    prevMouseCoords.push(mouse);
 	    prevMouseCoords.shift();
 	    

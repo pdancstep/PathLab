@@ -46,13 +46,11 @@ function touchStarted() {
 	    tracer.pause();
 	} else {
 	    if (tracer.isComplete()) { // at the end, so we're starting a new playback
-		tracer.start();
-		controlMode = PLAYBACKMODE;
-		particlePos = PARTICLE_CENTER;
+		tracer.start(PLAYBACK_VEL);
 	    } else { // we're paused, so resume
 		tracer.resume();
-		controlMode = PLAYBACKMODE;
 	    }
+	    controlMode = PLAYBACKMODE;
 	    drawPath = true;
 	    return;
 	}
@@ -61,7 +59,7 @@ function touchStarted() {
     // clicking on joystick activates JOYSTICK mode controls...
     let joy = tracer.getCurrentJoystickPx();
     if(dist(mouseX, mouseY, joy.getX(), joy.getY()) < 15){
-	if (controlMode == PLAYBACKMODE) {
+	if (!tracer.isComplete()) {
 	    tracer.recordFromHere();
 	}
         controlMode = JOYSTICKMODE;
@@ -71,11 +69,13 @@ function touchStarted() {
     //clicking on particle activates PARTICLE dragging controls...
     let part = tracer.getCurrentParticlePx();
     if(dist(mouseX, mouseY, part.getX(), part.getY()) < 15){
-	if (controlMode == PLAYBACKMODE) {
+	if (!tracer.isComplete()) {
 	    tracer.recordFromHere();
 	}
         controlMode = DRAGGINGMODE;
-	prevMouseCoords = Array(SAMPLE_SIZE).fill(new Coord(mouseX, mouseY));
+	let mouse
+	    = tracer.getParticleCanvas().screenToCanvas(new Coord(mouseX, mouseY));
+	prevMouseCoords = Array(SAMPLE_SIZE).fill(mouse);
         draggingParticle = true;
     }
 
@@ -110,8 +110,8 @@ function touchMoved() {
 
 // TODO refactor for Slot class
 function touchEnded() {
-    if(snapToZero) {
-	joystickPos = JOYSTICK_CENTER;
+    if(snapToZero && tracer.isComplete()) {
+	tracer.stop();
     }
 
     draggingJoystick = false;
