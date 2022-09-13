@@ -27,10 +27,6 @@ var dragging = false;
 var draggingParticle = false;
 var draggingJoystick = false;
 
-// current coordinates of joystick and particle (start centered)
-var joystickPos = JOYSTICK_CENTER;
-var particlePos = PARTICLE_CENTER;
-
 // debug
 var indicator = 150;
 
@@ -244,7 +240,7 @@ function drawParticlePath(){
     }
 }
 
-function drawParticleVector(colorInfo){
+function drawParticleVector(colorInfo) {
     strokeWeight(2);
     if(useBrightness){
         stroke(colorInfo.getColor(), colorInfo.getSaturation(), colorInfo.getBrightness());
@@ -260,8 +256,7 @@ function drawParticleVector(colorInfo){
     drawTriangle(xplusdx, yplusdy, atan2(joy.getY(), joy.getX()), colorInfo);
 }
 
-function drawTriangle(xPos, yPos, angle, colorInfo){
-
+function drawTriangle(xPos, yPos, angle, colorInfo) {
     if(useBrightness){
         fill(colorInfo.getColor(), colorInfo.getSaturation(), colorInfo.getBrightness());
     }else{
@@ -270,7 +265,6 @@ function drawTriangle(xPos, yPos, angle, colorInfo){
     noStroke();
 
     push();
-
         translate(xPos,yPos);
         rotate(angle);
 
@@ -279,8 +273,16 @@ function drawTriangle(xPos, yPos, angle, colorInfo){
                 vertex(8*cos(i*TWO_PI/3),8*sin(i*TWO_PI/3));
             }
         endShape(CLOSE);
-
     pop();
+}
+
+function drawParticle() {
+    colorMode(RGB,255);
+    fill(50);
+    strokeWeight(2);
+    stroke(225,225,220);
+    let part = tracer.getCurrentParticlePx();
+    ellipse(part.getX(), part.getY(), 15, 15);
 }
 
 function drawBarcodes() {

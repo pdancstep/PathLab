@@ -2,12 +2,6 @@ const PLAYBACK_OFF = 0;
 const PLAYBACK_POS = 1;
 const PLAYBACK_VEL = 2;
 
-// when recording a new frame to this tracer that overflows the maximum barcode length,
-// how should we modify the starting position?
-const SHIFT_NONE = 0; // don't touch it
-const SHIFT_PARTICLE = 1; // move it to the position of the dropped (oldest) frame
-const SHIFT_JOYSTICK = 2; // move it by an amount equal to the dropped (oldest) frame.
-
 // slot that can record and play back a barcode to a particular joystick and particle canvas
 class Tracer extends Slot {
     constructor(x, y, part, joy) {
@@ -117,24 +111,33 @@ class Tracer extends Slot {
 
     // if recording, add the given frame to the barcode
     // colorInfo - frame to add
-    // shift - how to move the starting point if barcode was already at maximum length
-    recordFrame(colorInfo, shift) {
+    // type - what type of data is being added
+    //        used to update current particle/joystick positions,
+    //        as well as starting position if we overflow and drop the oldest frame
+    recordFrame(frame, type) {
 	if (this.recording) {
-	    let droppedFrame = this.barcode.addFrame(colorInfo);
-	    if (droppedFrame) {
-		switch (shift) {
-		case SHIFT_PARTICLE:
+	    let droppedFrame = this.barcode.addFrame(frame);
+	    switch (type) {
+	    case PLAYBACK_POS:
+		this.joystickPos = frame.getCoord().subtract(this.particlePos) * TIME_UNIT;
+		this.particlePos = frame.getCoord();
+		if (droppedFrame) {
 		    this.startingPos = droppedFrame.getCoord();
-		    break;
-		case SHIFT_JOYSTICK:
-		    this.startingPos = droppedFrame.applyAsVelocity(this.startingPos);
-		    break;
-		case SHIFT_NONE:
-		default:
 		}
-	    } else {
-		this.playhead++;
+		break;
+	    case PLAYBACK_VEL:
+		this.joystickPos = frame.getCoord();
+		this.particlePos = frame.applyAsVelocity(this.particlePos);
+		if (droppedFrame) {
+		    this.startingPos = droppedFrame.applyAsVelocity(this.startingPos);
+		}
+		break;
+	    case PLAYBACK_OFF:
+		if (droppedFrame) {}
+	    default:
 	    }
+	} else {
+	    this.playhead++;
 	}
     }
 

@@ -22,11 +22,6 @@ function draw() {
 	drawJoystickHistory();
     }
 
-    //if dragging in DRAGGINGMODE or JOYSTICKMODE, record to present timeline
-    if (controlMode != PLAYBACKMODE) {
-	recordFrame(velocityFrame);
-    }
-
     //draw particle path stored in tracer array
     if(drawPath){
         drawParticlePath();
@@ -38,11 +33,7 @@ function draw() {
     }
     
     //draw particle itself
-    colorMode(RGB,255);
-    fill(50);
-    strokeWeight(2);
-    stroke(225,225,220);
-    ellipse(particlePos.getX(), particlePos.getY(), 15, 15);
+    drawParticle();
 
     // draw the editing and playback areas
     drawBarcodes();
@@ -68,7 +59,8 @@ function touchStarted() {
     }
 
     // clicking on joystick activates JOYSTICK mode controls...
-    if(dist(mouseX,mouseY,joystickPos.getX(),joystickPos.getY()) < 15){
+    let joy = tracer.getCurrentJoystickPx();
+    if(dist(mouseX, mouseY, joy.getX(), joy.getY()) < 15){
 	if (controlMode == PLAYBACKMODE) {
 	    tracer.recordFromHere();
 	}
@@ -77,7 +69,8 @@ function touchStarted() {
     }
 
     //clicking on particle activates PARTICLE dragging controls...
-    if(dist(mouseX,mouseY,particlePos.getX(),particlePos.getY()) < 15){
+    let part = tracer.getCurrentParticlePx();
+    if(dist(mouseX, mouseY, part.getX(), part.getY()) < 15){
 	if (controlMode == PLAYBACKMODE) {
 	    tracer.recordFromHere();
 	}
@@ -130,7 +123,7 @@ function touchEnded() {
 	    editingStation[slot] = i;
 	}
 	if (slot==-1) {
-	    installBarcode(freeBarcodes[i]);
+	    tracer.installBarcode(freeBarcodes[i]);
 	    for (var j = 0; j < editingStation.length; j++) {
 		if (editingStation[j] > i) {
 		    editingStation[j]--;

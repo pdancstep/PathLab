@@ -13,10 +13,10 @@ const TRACER_END_Y = 750;
 
 const PRESETS_X = [900, 850, 950, 900, 1100];
 const PRESETS_Y = [520, 470, 470, 420, 420];
-const PRESETS_GEN = [function (idx) { return new Frame(63.25, 128, 255); },
+const PRESETS_GEN = [function (idx) { return new Frame(63.75, 128, 255); },
 		     function (idx) { return new Frame(0, 128, 255); },
 		     function (idx) { return new Frame(127.5, 128, 255); },
-		     function (idx) { return new Frame(191.75, 128, 255); },
+		     function (idx) { return new Frame(191.25, 128, 255); },
 		     function (idx) { return new Frame(255-idx, 64, 255); }]
 const BASE_DURATION = BARCODE_HEIGHT;
 const PRESETS_DURATIONS = [BASE_DURATION, BASE_DURATION, BASE_DURATION, BASE_DURATION,

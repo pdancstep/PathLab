@@ -37,7 +37,6 @@ function setNewCoordinates(mode) {
 	    let mouse = new Coord(mouseX, mouseY);
 	    prevMouseCoords.push(mouse);
 	    prevMouseCoords.shift();
-	    particlePos = mouse;
 	    
 	    let prevCoordSum = prevMouseCoords.reduce((a,b)=> a.translate(b),
 						      new Coord(0,0));
@@ -46,14 +45,12 @@ function setNewCoordinates(mode) {
 	    let dy = mouseY - prevCoordAvg.getY();
 	    
 	    // magnitude the joystick needs to be at
-            let magnitude = sqrt(dy*dy + dx*dx);
+            let magnitude = sqrt(dy*dy + dx*dx) * TIME_UNIT * DRAG_SCALING;
 	    
-            let jx = DRAG_SCALING * magnitude * cos(atan2(dy, dx));
-            let jy = DRAG_SCALING * magnitude * sin(atan2(dy, dx));
-
-	    joystickPos = new Coord(jx + JOYSTICK_CENTER_X, jy + JOYSTICK_CENTER_Y);
-
-	    return coordToFrame(jx, jy);
+	    let colorInfo = coordToFrame(magnitude * cos(atan2(dy, dx)),
+					 magnitude * sin(atan2(dy, dx)));
+	    tracer.recordFrame(colorInfo, PLAYBACK_VEL);
+	    return colorInfo;
         } else {
 	    return coordToFrame(0,0);
 	}
@@ -61,33 +58,18 @@ function setNewCoordinates(mode) {
     
     // update joystick based on mouse
     else if (mode==JOYSTICKMODE) {
-        if (draggingJoystick) {
-	    joystickPos = new Coord(mouseX, mouseY);
+        if (draggingJoystick || !tracer.getCurrentJoystick().isOrigin()) {
+	    let colorInfo = coordToFrame(mouseX, mouseY);
+	    tracer.recordFrame(colorInfo, PLAYBACK_VEL);
+	    return colorInfo;
+	} else {
+	    return coordToFrame(0,0);
 	}
-	
-	let colorInfo = coordToFrame(joystickPos.getX() - JOYSTICK_CENTER_X,
-				     joystickPos.getY() - JOYSTICK_CENTER_Y);
-	particlePos = colorInfo.applyAsVelocity(particlePos);
-	return colorInfo;
     }
     
     // update joystick based on next recorded frame
     else if (mode==PLAYBACKMODE) {
 	tracer.advance();
-	particlePos = tracer.getCurrentParticlePx();
-	joystickPos = tracer.getCurrentJoystickPx();
 	return tracer.getCurrentFrame();
     }
-}
-
-function recordFrame(colorInfo) {
-    if (draggingParticle || !joystickPos.equals(JOYSTICK_CENTER)) {
-	tracer.recordFrame(colorInfo, SHIFT_JOYSTICK);
-    }
-}
-
-function installBarcode(barcode) {
-    tracer.installBarcode(barcode);
-    particlePos = PARTICLE_CENTER;
-    joystickPos = JOYSTICK_CENTER;
 }
