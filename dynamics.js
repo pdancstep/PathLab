@@ -27,9 +27,13 @@ function particleDrag() {
     }
 }
 
+function joystickLeftOn() {
+    return (!snapToZero && !tracer.getCurrentJoystick().isOrigin());
+}
+
 // update joystick based on mouse
 function joystickDrag() {
-    if (draggingJoystick || !tracer.getCurrentJoystick().isOrigin()) {
+    if (draggingJoystick || joystickLeftOn()) {
 	let mouse
 	    = tracer.getJoystickCanvas().screenToCanvas(new Coord(mouseX, mouseY));
 	tracer.recordFrame(mouse.toFrame(), PLAYBACK_VEL);

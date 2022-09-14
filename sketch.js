@@ -110,7 +110,7 @@ function touchMoved() {
 
 // TODO refactor for Slot class
 function touchEnded() {
-    if(snapToZero && tracer.isComplete()) {
+    if ((draggingJoystick && snapToZero) || draggingParticle) {
 	tracer.stop();
     }
 
