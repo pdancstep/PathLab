@@ -16,7 +16,7 @@ var tracer = new Tracer(TRACER_X, TRACER_Y, particleCanvas, joystickCanvas);
 const TIME_UNIT = 20;
 
 // relation of mouse movement speed to vector magnitude of joystick
-const DRAG_SCALING = .01; // was 4.45 before calculation changed
+const DRAG_SCALING = .1; // was 4.45 before calculation changed
 
 // how many frames back we look when calculating velocity of mouse movement
 const SAMPLE_SIZE = 10;
