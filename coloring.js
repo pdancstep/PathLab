@@ -10,8 +10,11 @@
 //                                                     \/
 // radius MAX_MAGNITUDE   = brightness 255, saturation 0
 
-// 
+// maximum value that brightness and saturation values for a color can take
 const MAX_BRIGHTNESS = 255;
+
+// these functions depend on MAX_MAGNITUDE, defined in dynamics.js, which
+// sets the largest magnitude that can be represented by the color encoding
 
 function coordToColor(x, y) {
     let magnitude = sqrt(y*y + x*x);

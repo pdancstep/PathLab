@@ -1,35 +1,5 @@
 var freeBarcodes = [];
 
-var editingStation = [-1, -1, -1];
-const EDITING_STATION_X = [650, 650, 650];
-const EDITING_STATION_Y = [100, 220, 320];
-const EDITING_STATION_END_X = [1150, 1150, 1150];
-const EDITING_STATION_END_Y = [150, 270, 370];
-
-const TRACER_X = 750;
-const TRACER_Y = 700;
-const TRACER_END_X = 1150;
-const TRACER_END_Y = 750;
-
-const PRESETS_X = [900, 850, 950, 900, 1100];
-const PRESETS_Y = [520, 470, 470, 420, 420];
-const PRESETS_GEN = [function (idx) { return new Frame(63.75, 128, 255); },
-		     function (idx) { return new Frame(0, 128, 255); },
-		     function (idx) { return new Frame(127.5, 128, 255); },
-		     function (idx) { return new Frame(191.25, 128, 255); },
-		     function (idx) { return new Frame(255-idx, 64, 255); }]
-const BASE_DURATION = BARCODE_HEIGHT;
-const PRESETS_DURATIONS = [BASE_DURATION, BASE_DURATION, BASE_DURATION, BASE_DURATION,
-			  255];
-
-// location where barcodes initially spawn into the editing area
-const SPAWN_X = 750;
-const SPAWN_Y = 600;
-
-// play/pause button
-const PLAY_BUTTON_CENTER_X = TRACER_X + SLOT_WIDTH/2;
-const PLAY_BUTTON_CENTER_Y = TRACER_Y + BARCODE_HEIGHT + 55;
-
 function spawnBarcode(source) {
     freeBarcodes.push(source.eject(SPAWN_X, SPAWN_Y));
 }
@@ -50,11 +20,6 @@ function coordInEditor(x, y) {
     }
     return -2;
 }
-
-// buttons!
-const BUTTON_SIZE = 30;
-const BUTTON_TEXT_SIZE = 20;
-const BUTTON_SPACE = 40; // space between centers of consecutive buttons on the same panel
 
 function drawButton(x, y, label) {
     fill(50);

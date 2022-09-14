@@ -1,25 +1,3 @@
-// coordinates of joystick area
-const JOYSTICK_CENTER_X = 450;
-const JOYSTICK_CENTER_Y = 725;
-const JOYSTICK_AREA_SIZE = 250;
-const JOYSTICK_CENTER = new Coord(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y);
-const JOYSTICK_TOPLEFT = new Coord(JOYSTICK_CENTER_X - JOYSTICK_AREA_SIZE/2,
-				   JOYSTICK_CENTER_Y - JOYSTICK_AREA_SIZE/2);
-const JOYSTICK_SCALE = 50;
-
-// coordinates of particle area
-const PARTICLE_CENTER_X = 325;
-const PARTICLE_CENTER_Y = 280;
-const PARTICLE_AREA_SIZE = 500;
-const PARTICLE_CENTER = new Coord(PARTICLE_CENTER_X, PARTICLE_CENTER_Y);
-const PARTICLE_TOPLEFT = new Coord(PARTICLE_CENTER_X - PARTICLE_AREA_SIZE/2,
-				   PARTICLE_CENTER_Y - PARTICLE_AREA_SIZE/2);
-const PARTICLE_SCALE = 100;
-
-// barcode display parameters
-const BARCODE_HEIGHT = 50;
-const FRAME_WIDTH = 2;
-const SLOT_WIDTH = MAX_BARCODE_LENGTH * FRAME_WIDTH / BARCODE_DISPLAY_RESOLUTION;
 
 //NOTE: *what* is being dragged depends on controlMode
 var dragging = false;

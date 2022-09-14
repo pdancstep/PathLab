@@ -95,8 +95,7 @@ class Tracer extends Slot {
 	return this.joystickCanvas.canvasToScreen(this.joystickPos);
     }
 
-    // play back the next frame, treating it as a velocity for the particle
-    // (and a position for the joystick)
+    // play back the next frame (interpreting it as specified when playback started)
     advance() {
 	if (this.isComplete()) {
 	    this.stop();
@@ -179,8 +178,6 @@ class Tracer extends Slot {
 	}
 	this.joystickPos = new Coord(0,0);
 	this.playbackType = PLAYBACK_OFF;
-
-
     }
 
     recordFromHere() {

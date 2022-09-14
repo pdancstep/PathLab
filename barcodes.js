@@ -1,6 +1,3 @@
-const MAX_BARCODE_LENGTH = 510;
-const BARCODE_DISPLAY_RESOLUTION = 2;
-
 class Barcode {
     constructor(xPos,yPos,data) {
 	// fields for moving the barcode itself around the canvas

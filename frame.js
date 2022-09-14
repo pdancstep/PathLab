@@ -12,7 +12,7 @@ class Frame {
     getCoord() { return this.coord; }
 
     // apply this coordinate as a velocity to the argument
-    // for a duration of 1 p5/display frame
+    // for a duration of 1 p5 frame (display frame)
     applyAsVelocity(coord) {
 	let scaled_velocity = this.coord.scale(1/TIME_UNIT);
 	return coord.translate(scaled_velocity);
@@ -42,64 +42,13 @@ class Frame {
     multiply(frame) {
 	let myintensity = this.brightness - this.saturation + MAX_BRIGHTNESS;
 	let yourintensity = frame.brightness - frame.saturation + MAX_BRIGHTNESS;
-	// TODO put this scaling constant declaration somewhere more useful. also,
-	// double-check that it (and the prodintensity calculation) are actually correct
-	const INTENSITY_PER_UNIT = MAX_BRIGHTNESS / 2;
-	let prodintensity = myintensity * yourintensity / INTENSITY_PER_UNIT;
+
+	let intensityPerUnit = (MAX_BRIGHTNESS * 2) / MAX_MAGNITUDE;
+	let prodintensity = myintensity * yourintensity / intensityPerUnit;
 	let prodbrightness = min(MAX_BRIGHTNESS, prodintensity);
 	let prodsaturation = min(MAX_BRIGHTNESS, (MAX_BRIGHTNESS*2) - prodintensity);
 	
 	return new Frame((this.color + frame.getColor() + 128) % 256,
 			 prodbrightness, prodsaturation);
-    }
-}
-
-class Coord {
-    constructor(x,y) {
-	this.x = x;
-	this.y = y;
-    }
-
-    getX() { return this.x; }
-    getY() { return this.y; }
-
-    translate(vector) {
-	return new Coord(this.x + vector.getX(), this.y + vector.getY());
-    }
-
-    subtract(vector) {
-	return new Coord(this.x - vector.getX(), this.y - vector.getY());
-    }
-
-    scale(factor) {
-	return new Coord(this.x * factor, this.y * factor);
-    }
-
-    conjugate() {
-	return new Coord(this.x, -this.y);
-    }
-    
-    multiply(vector) {
-	let mymagn = sqrt(this.x*this.x + this.y*this.y);
-	let myangle = atan2(this.y, this.x);
-	let yourmagn = sqrt(vector.getX()*vector.getX() + vector.getY()*vector.getY());
-	let yourangle = atan2(vector.getY(), vector.getX());
-
-	let prodmagn = mymagn * yourmagn;
-	let prodangle = myangle + yourangle;
-
-	return new Coord(prodmagn * cos(prodangle), prodmagn * sin(prodangle));
-    }
-
-    toFrame() {
-	return coordToFrame(this.x, this.y);
-    }
-
-    isOrigin() {
-	return (this.x == 0 && this.y == 0);
-    }
-
-    equals(vector) {
-	return (this.x==vector.getX() && this.y==vector.getY());
     }
 }
