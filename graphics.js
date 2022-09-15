@@ -157,65 +157,54 @@ function drawJoystickPosition(colorInfo){
     ellipse(point.getX(), point.getY(),15,15);
 }
 
-// TODO update this
 function drawJoystickHistory() {
-    if (false) {
     strokeWeight(1);
     strokeCap(ROUND);
-    
-    let pathEnd = min(tracer.length()-1, playhead);
-    if (pathEnd < 1) {
-	return;
-    }
+    let canv = tracer.getJoystickCanvas();
 
-    let previous = tracer.getFrame(0).getCoord().translate(JOYSTICK_CENTER);
-    for(i=1; i<pathEnd; i++){
-	let frame = tracer.getFrame(i);
-	let coord = frame.getCoord().translate(JOYSTICK_CENTER);
-        if(useColor&&useBrightness){
-            stroke(frame.getColor(),frame.getSaturation(),frame.getBrightness());
-            fill(frame.getColor(),frame.getSaturation(),frame.getBrightness());
-        }else if(useColor){
-            stroke(frame.getColor(),255,255);
-            fill(frame.getColor(),255,255);
-        }else{
+    let drawSegment = function(start, end) {
+	if (useColor&&useBrightness) {
+            stroke(end.getColor(), end.getSaturation(), end.getBrightness());
+            fill(end.getColor(), end.getSaturation(), end.getBrightness());
+        } else if (useColor) {
+            stroke(end.getColor(),255,255);
+            fill(end.getColor(),255,255);
+        } else {
             stroke(255);
 	    fill(255);
         }
-	ellipse(coord.getX(), coord.getY(), 7, 7);
-        line(previous.getX(), previous.getY(), coord.getX(), coord.getY());
-	previous = coord;
-    }
-    }
+	let startCoord = canv.canvasToScreen(start.getCoord());
+	let endCoord = canv.canvasToScreen(end.getCoord());
+
+	ellipse(endCoord.getX(), endCoord.getY(), 7, 7);
+	line(startCoord.getX(), startCoord.getY(), endCoord.getX(), endCoord.getY());
+    };
+    
+    tracer.sendPathData(drawSegment);
 }
 
-// TODO update this
 function drawParticlePath(){
-    if (false) {
     strokeWeight(7);
     strokeCap(ROUND);
+    let canv = tracer.getParticleCanvas();
+    let previous = tracer.getStartingParticle();
     
-    let pathEnd = min(tracer.length()-1, playhead);
-    if (pathEnd < 0) {
-	return;
-    }
-
-    let previous = pathstart;
-    for(i=0; i<pathEnd; i++){
-	let frame = tracer.getFrame(i);
-        if(useColor&&useBrightness){
-            stroke(frame.getColor(),frame.getSaturation(),frame.getBrightness());
-        }else if(useColor){
-            stroke(frame.getColor(),255,255);
-        }else{
+    let drawSegment = function(start, end) {
+	if (useColor&&useBrightness) {
+            stroke(end.getColor(), end.getSaturation(), end.getBrightness());
+        } else if (useColor) {
+            stroke(end.getColor(),255,255);
+        } else {
             stroke(50);
         }
-	let newpos = frame.applyAsVelocity(previous);
-        line(previous.getX(), previous.getY(), newpos.getX(), newpos.getY());
-
-	previous = newpos;
-    }
-    }
+	let next = end.applyAsVelocity(previous);
+	let startCoord = canv.canvasToScreen(previous);
+	let endCoord = canv.canvasToScreen(next);
+	line(startCoord.getX(), startCoord.getY(), endCoord.getX(), endCoord.getY());
+	previous = next;
+    };
+    
+    tracer.sendPathData(drawSegment);
 }
 
 function drawParticleVector(colorInfo) {

@@ -67,33 +67,19 @@ class Tracer extends Slot {
 	else { return coordToFrame(0,0); } // ?
     }
 
-    getCurrentFrameNumber() {
-	return this.playhead;
-    }
+    getCurrentFrameNumber() { return this.playhead; }
 
-    getParticleCanvas() {
-	return this.particleCanvas;
-    }
-
-    getJoystickCanvas() {
-	return this.joystickCanvas;
-    }
+    getParticleCanvas() { return this.particleCanvas; }
+    getJoystickCanvas() { return this.joystickCanvas; }
     
-    getCurrentParticle() {
-	return this.particlePos;
-    }
+    getCurrentParticle() { return this.particlePos; }
+    getCurrentParticlePx() { return this.particleCanvas.canvasToScreen(this.particlePos); }
 
-    getCurrentParticlePx() {
-	return this.particleCanvas.canvasToScreen(this.particlePos);
-    }
-
-    getCurrentJoystick() {
-	return this.joystickPos;
-    }
-
-    getCurrentJoystickPx() {
-	return this.joystickCanvas.canvasToScreen(this.joystickPos);
-    }
+    getStartingParticle() { return this.startingPos; }
+    getStartingParticlePx() { return this.particleCanvas.canvasToScreen(this.startingPos); }
+    
+    getCurrentJoystick() { return this.joystickPos; }
+    getCurrentJoystickPx() { return this.joystickCanvas.canvasToScreen(this.joystickPos); }
 
     // play back the next frame (interpreting it as specified when playback started)
     advance() {
@@ -143,11 +129,31 @@ class Tracer extends Slot {
 		if (droppedFrame) {}
 	    default:
 	    }
-	} else {
-	    this.playhead++;
+	    
+	    if (!droppedFrame) {
+		this.playhead++;
+	    }
 	}
     }
 
+    // passes each pair of consecutive frames, up to the current playhead,
+    // to the given callback procedure
+    sendPathData(callback) {
+	let present = this.playhead;
+	let settings = [this.recording, this.playing];
+	this.start(this.playback);
+	let oldf = this.getCurrentFrame();
+	let newf = oldf;
+	for (let i = 0; i < present; i++) {
+	    oldf = newf;
+	    this.advance();
+	    newf = this.getCurrentFrame();
+	    callback(oldf, newf);
+	}
+	this.recording = settings[0];
+	this.playing = settings[1];
+    }
+    
     // start a new replay
     // type - how to interpret the barcode data (defaults to particle velocity)
     start(type = PLAYBACK_VEL) {
