@@ -26,6 +26,9 @@ const BUTTON_TEXT_SIZE = 20;
 const BUTTON_SPACE = 40; // space between centers of consecutive buttons on the same panel
 const PLAY_BUTTON_SPACE = 55; // space between tracer and center of play/pause button
 
+// size of text input area for transformers with a numeric argument
+const TEXTFIELD_SIZE = 50;
+
 // TODO these will probably get reorganized a bit when they join the Slot class hierarchy
 var editingStation = [-1, -1, -1];
 const EDITING_STATION_X = [650, 650, 650];
@@ -52,6 +55,6 @@ const PRESETS_GEN = [function (idx) { return new Frame(63.75, 128, 255); },
 		     function (idx) { return new Frame(255-idx, 64, 255); }]
 const BASE_DURATION = BARCODE_HEIGHT;
 const PRESETS_DURATIONS = [BASE_DURATION, BASE_DURATION, BASE_DURATION, BASE_DURATION,
-			  255];
+			   255];
 
 

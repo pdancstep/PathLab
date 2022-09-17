@@ -36,4 +36,8 @@ class Slot {
     clear() {
 	this.barcode = new Barcode(this.displayX, this.displayY, []);
     }
+
+    copyData(x, y) {
+	return this.barcode.clone(x, y);
+    }
 }
