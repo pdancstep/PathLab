@@ -7,7 +7,7 @@ const TR_ADD = 5;
 const TR_MULTIPLY = 6;
 const TR_CONCAT = 7;
 
-class Transformer {
+class Transformer extends Slot {
     constructor(parent, x, y, argx, argy) {
 	super(x, y);
 	this.parent = parent;
@@ -87,11 +87,11 @@ class Transformer {
 	    break;
 	    
 	case TR_STRETCH:
-	    let val = Number(this.arg.value());
-	    if (val > 1) {
+	    let amt = Number(this.arg.value());
+	    if (amt > 1) {
 		// TODO
-	    } else if (val < 1) {
-		let factor = round(1/val);
+	    } else if (amt < 1) {
+		let factor = round(1/amt);
 		this.barcode.squash(factor);
 	    } else {
 		this.barcode = base;
@@ -108,21 +108,21 @@ class Transformer {
 	    break;
 	    
 	case TR_ROTATE:
-	    let val = Number(this.arg.value());
-	    if (val > 0) { val = val % 360; }
-	    else if (val < 0) {	val = (val % 360) + 360; }
-	    else { val = 0; }
-	    this.barcode = base.rotate(map(val, 0, 360, 0, 255));
+	    let deg = Number(this.arg.value());
+	    if (deg > 0) { deg = deg % 360; }
+	    else if (val < 0) {	deg = (deg % 360) + 360; }
+	    else { deg = 0; }
+	    this.barcode = base.rotate(map(deg, 0, 360, 0, 255));
 	    break;
 	    
 	case TR_ADD:
-	    let barc = this.arg.barcode;
-	    this.barcode = base.framewiseAdd(barc, this.displayX, this.displayY);
+	    let addend = this.arg.barcode;
+	    this.barcode = base.framewiseAdd(addend, this.displayX, this.displayY);
 	    break;
 	    
 	case TR_MULTIPLY:
-	    let barc = this.arg.barcode;
-	    this.barcode = base.framewiseMultiply(barc, this.displayX, this.displayY);
+	    let factor = this.arg.barcode;
+	    this.barcode = base.framewiseMultiply(factor, this.displayX, this.displayY);
 	    break;
 	    
 	case TR_CONCAT:
