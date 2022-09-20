@@ -2,9 +2,9 @@
 // canvases and slots //
 ////////////////////////
 
-const particleCanvas = new Canvas(PARTICLE_TOPLEFT, PARTICLE_CENTER,
+const particleCanvas = new Canvas(PARTICLE_AREA_SIZE, PARTICLE_CENTER,
 				  PARTICLE_SCALE, PARTICLE_STYLE);
-const joystickCanvas = new Canvas(JOYSTICK_TOPLEFT, JOYSTICK_CENTER,
+const joystickCanvas = new Canvas(JOYSTICK_AREA_SIZE, JOYSTICK_CENTER,
 				  JOYSTICK_SCALE, JOYSTICK_STYLE);
 var tracer = new Tracer(TRACER_X, TRACER_Y, particleCanvas, joystickCanvas);
 

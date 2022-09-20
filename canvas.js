@@ -3,8 +3,8 @@ const JOYSTICK_STYLE = 1;
 
 // coordinate system for drawing
 class Canvas {
-    constructor(topleft, center, scale, displaytype) {
-	this.topleft = topleft;
+    constructor(width, center, scale, displaytype) {
+	this.radius = width/2;
 	this.center = center;
 	this.scale = scale;
 	// TODO display options
@@ -12,89 +12,82 @@ class Canvas {
     }
 
     display() {
-        if(this.displayType==PARTICLE_STYLE){
-            colorMode(RGB,255);
-            fill(225,225,220);
-            noStroke();
-            rectMode(CENTER);
+        colorMode(RGB,255);
+        if (this.displayType==PARTICLE_STYLE) { fill(225,225,220); }
+	else if (this.displayType==JOYSTICK_STYLE) { fill(50); }
 
-            rect(PARTICLE_CENTER_X,PARTICLE_CENTER_Y,PARTICLE_AREA_SIZE,PARTICLE_AREA_SIZE);
+	noStroke();
+        rectMode(CENTER);
 
-            //stage coordinate system
-            noFill();
-            stroke(150);
-            strokeWeight(2);
-            line(PARTICLE_CENTER_X,PARTICLE_CENTER_Y-(PARTICLE_AREA_SIZE/2),
-             PARTICLE_CENTER_X,PARTICLE_CENTER_Y+(PARTICLE_AREA_SIZE/2));
-            line(PARTICLE_CENTER_X-(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y,
-             PARTICLE_CENTER_X+(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y);
-            ellipse(PARTICLE_CENTER_X,PARTICLE_CENTER_Y,2*PARTICLE_SCALE,2*PARTICLE_SCALE);
+        rect(this.center.getX(), this.center.getY(), this.radius*2, this.radius*2);
 
-        }else if(this.displayType==JOYSTICK_STYLE){
-            //draw joystick canvas...
-            fill(50);
-            noStroke();
-            rectMode(CENTER);
-            rect(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,JOYSTICK_AREA_SIZE,JOYSTICK_AREA_SIZE);
+        //stage coordinate system
+        noFill();
+        strokeWeight(2);
+        if(this.displayType==PARTICLE_STYLE) { stroke(150); }
+	else if (this.displayType==JOYSTICK_STYLE) { stroke(225,225,220); }
 
-            noFill();
-            stroke(225,225,220);
-            ellipse(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,2*JOYSTICK_SCALE,2*JOYSTICK_SCALE);
+	line(this.center.getX(), this.center.getY() - this.radius,
+	     this.center.getX(), this.center.getY() + this.radius);
+	line(this.center.getX() - this.radius, this.center.getY(),
+	     this.center.getX() + this.radius, this.center.getY());
+        ellipse(this.center.getX(), this.center.getY(), this.scale*2, this.scale*2);
 
+	// draw color lines
+        if (this.displayType==JOYSTICK_STYLE) {
             colorMode(HSB,255);
-/*
-            if (useBrightness){
+
+            push();
+            translate(this.center.getX(), this.center.getY());
+
+            if (useBrightness) {
                 noFill();
-                for (i=0;i<25;i++){
-                    for (j=0;j<64;j++){
-                        if ((15*i)<255){
-                            stroke(4*j,255,15*i);
+                for (let i=0; i<25; i++){
+                    for (let j=0; j<64; j++){
+                        if ((15*i) < MAX_BRIGHTNESS) {
+                            stroke(4*j, MAX_BRIGHTNESS, 15*i);
                         } else {
-                            stroke(4*j,500-(15*i),15*i);
+                            stroke(4*j, MAX_BRIGHTNESS*2 - (15*i), 15*i);
                         }
-                        arc(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y,
-                    10*i, 10*i, PI + j*TWO_PI/64, PI + (j+1)*TWO_PI/64);
+                        arc(0, 0, 10*i, 10*i, PI + j*TWO_PI/64, PI + (j+1)*TWO_PI/64);
                     }
                 }
             }
-*/
-            push();
-            translate(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y);
 
             // note that y values are inverted here: we're centered according to the
             // joystick coordinate system, but still using screen coordinates, so +y is down
 
             //neg. x-axis
             stroke(0,255,255);
-            line(0,0,-JOYSTICK_AREA_SIZE/2,0);
+            line(0,0, -this.radius,0);
             
             //quad 3 diagonal
             stroke(32,255,255);
-            line(0,0,-JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);  
+            line(0,0, -this.radius,this.radius);
 
             //neg. y-axis
             stroke(64,255,255);
-            line(0,0,0,JOYSTICK_AREA_SIZE/2);
+            line(0,0, 0, this.radius);
             
             //quad 4 diagonal
             stroke(96,255,255);
-            line(0,0,JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);
+            line(0,0, this.radius,this.radius);
             
             //pos. x-axis
             stroke(128,255,255);
-            line(0,0,JOYSTICK_AREA_SIZE/2,0);
+            line(0,0, this.radius,0);
             
             //quad 1 diagonal
             stroke(160,255,255);
-            line(0,0,JOYSTICK_AREA_SIZE/2,-JOYSTICK_AREA_SIZE/2);
+            line(0,0, this.radius,-this.radius);
             
             //pos y-axis
             stroke(192,255,255);
-            line(0,0,0,-JOYSTICK_AREA_SIZE/2);
+            line(0,0, 0,-this.radius);
             
             //quad 2 diagonal
             stroke(224,255,255);
-            line(0,0,-JOYSTICK_AREA_SIZE/2,-JOYSTICK_AREA_SIZE/2);    
+            line(0,0, -this.radius,-this.radius);
             
             pop();
         }
