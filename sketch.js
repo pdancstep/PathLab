@@ -1,5 +1,5 @@
 function setup() {
-    createCanvas(1500,900);
+    createCanvas(1500,950);
     controlMode = JOYSTICKMODE;
     createPresetBarcodes();
 }

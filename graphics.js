@@ -31,110 +31,14 @@ var controlMode = JOYSTICKMODE;
 var playheadCoord;
 
 function drawUI(){
-    //subdividing regions
-    rectMode(CORNERS);
-    noStroke();
-
-    //particle, upper left
-    fill(175,175,190);
-    rect(0,0,650,575);
-
-    //control, lower left
-    fill(140,160,140);
-    rect(0,575,650,height);
-
-    //timeline
-    fill(180,150,180);
-    rect(650,575,width,height);
-
-
+    joystickCanvas.display();
+    particleCanvas.display();
     //draw menu toggles
-    drawMenu();
-    rectMode(CENTER);
-
-    //draw stage for particle
-    fill(225,225,220);
-    noStroke();
-
-    rect(PARTICLE_CENTER_X,PARTICLE_CENTER_Y,PARTICLE_AREA_SIZE,PARTICLE_AREA_SIZE);
-
-    //stage coordinate system
-    noFill();
-    stroke(150);
-    strokeWeight(2);
-    line(PARTICLE_CENTER_X,PARTICLE_CENTER_Y-(PARTICLE_AREA_SIZE/2),
-	 PARTICLE_CENTER_X,PARTICLE_CENTER_Y+(PARTICLE_AREA_SIZE/2));
-    line(PARTICLE_CENTER_X-(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y,
-	 PARTICLE_CENTER_X+(PARTICLE_AREA_SIZE/2),PARTICLE_CENTER_Y);
-    ellipse(PARTICLE_CENTER_X,PARTICLE_CENTER_Y,200,200);
-
-    //draw control box
-    fill(50);
-    noStroke();
-    rect(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,JOYSTICK_AREA_SIZE,JOYSTICK_AREA_SIZE);
-
-    noFill();
-    stroke(225,225,220);
-    ellipse(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y,100,100);
-
-    colorMode(HSB,255);
-
-    if (useBrightness){
-        noFill();
-        for (i=0;i<25;i++){
-            for (j=0;j<64;j++){
-                if ((15*i)<255){
-                    stroke(4*j,255,15*i);
-                } else {
-                    stroke(4*j,500-(15*i),15*i);
-                }
-                arc(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y,
-		    10*i, 10*i, PI + j*TWO_PI/64, PI + (j+1)*TWO_PI/64);
-            }
-        }
-    }
-
-    push();
-    translate(JOYSTICK_CENTER_X,JOYSTICK_CENTER_Y);
-
-    // note that y values are inverted here: we're centered according to the
-    // joystick coordinate system, but still using screen coordinates, so +y is down
-    //neg. x-axis
-    stroke(0,255,255);
-    line(0,0,-JOYSTICK_AREA_SIZE/2,0);
-    
-    //quad 3 diagonal
-    stroke(32,255,255);
-    line(0,0,-JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);  
-
-    //neg. y-axis
-    stroke(64,255,255);
-    line(0,0,0,JOYSTICK_AREA_SIZE/2);
-    
-    //quad 4 diagonal
-    stroke(96,255,255);
-    line(0,0,JOYSTICK_AREA_SIZE/2,JOYSTICK_AREA_SIZE/2);
-    
-    //pos. x-axis
-    stroke(128,255,255);
-    line(0,0,JOYSTICK_AREA_SIZE/2,0);
-    
-    //quad 1 diagonal
-    stroke(160,255,255);
-    line(0,0,JOYSTICK_AREA_SIZE/2,-JOYSTICK_AREA_SIZE/2);
-    
-    //pos y-axis
-    stroke(192,255,255);
-    line(0,0,0,-JOYSTICK_AREA_SIZE/2);
-    
-    //quad 2 diagonal
-    stroke(224,255,255);
-    line(0,0,-JOYSTICK_AREA_SIZE/2,-JOYSTICK_AREA_SIZE/2);    
-    
-    pop();
+    //drawMenu();
 }
 
 function drawJoystickPosition(colorInfo){
+    colorMode(HSB,255);
     let sat = 255;
     let bri = 255;
     if (useBrightness) {
@@ -186,6 +90,7 @@ function drawJoystickHistory() {
 function drawParticlePath(){
     strokeWeight(7);
     strokeCap(ROUND);
+    colorMode(HSB,255);
     let canv = tracer.getParticleCanvas();
     let previous = tracer.getStartingParticle();
     
@@ -209,6 +114,7 @@ function drawParticlePath(){
 
 function drawParticleVector(colorInfo) {
     strokeWeight(2);
+    colorMode(HSB,255);
     if(useBrightness){
         stroke(colorInfo.getColor(), colorInfo.getSaturation(), colorInfo.getBrightness());
     }else{
