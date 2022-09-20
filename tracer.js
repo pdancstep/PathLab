@@ -19,7 +19,7 @@ class Tracer extends Slot {
 
     // insert a barcode into this tracer
     installBarcode(barc, start = new Coord(0,0)) {
-	this.barcode = barc.clone(this.displayX, this.displayY);
+	super.installBarcode(barc);
 	this.startingPos = start;
 	this.playhead = barc.length();
 	this.particlePos = start.translate(barc.displacement());
@@ -30,6 +30,7 @@ class Tracer extends Slot {
 	this.playing = false;
 	this.playbackType = PLAYBACK_OFF;
 	this.recording = true;
+	return true;
     }
 
     clear() {

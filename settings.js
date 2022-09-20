@@ -8,6 +8,10 @@ const joystickCanvas = new Canvas(JOYSTICK_AREA_SIZE, JOYSTICK_CENTER,
 				  JOYSTICK_SCALE, JOYSTICK_STYLE);
 var tracer = new Tracer(TRACER_X, TRACER_Y, particleCanvas, joystickCanvas);
 
+var transform1 = new Transformer(null, 500, 500, 1100, 500);
+var transform2 = new Transformer(transform1, 500, 600, 1100, 600);
+
+
 ///////////////////////
 // Tuning Parameters //
 ///////////////////////

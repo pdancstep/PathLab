@@ -119,7 +119,10 @@ function touchEnded() {
 
     for (var i = 0; i < freeBarcodes.length; i++) {
 	let slot = freeBarcodes[i].onRelease();
-	if (slot >= 0) {
+	if (slot) {
+	    freeBarcodes.splice(i,1);
+	}
+/*	if (slot >= 0) {
 	    editingStation[slot] = i;
 	}
 	if (slot==-1) {
@@ -130,6 +133,6 @@ function touchEnded() {
 		}
 	    }
 	    freeBarcodes.splice(i,1);
-	}
+	} */
     }
 }

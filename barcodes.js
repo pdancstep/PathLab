@@ -38,7 +38,18 @@ class Barcode {
     // TODO remove this functionality from this class
     // it should now be handled by Slot.onRelease()
     onRelease() {
-	let slot = -2;
+	if (this.dragging) {
+	    this.dragging = false;
+	    if (transform1.inside(mouseX, mouseY)) {
+		return transform1.installBarcode(this);
+	    } else if (transform2.inside(mouseX, mouseY)) {
+		return transform2.installBarcode(this);
+	    } else if (tracer.inside(mouseX, mouseY)) {
+		return tracer.installBarcode(this);
+	    }
+	}
+	return false;
+/*	let slot = -2;
 	if (this.dragging) {
 	    let n = coordInEditor(mouseX, mouseY);
 	    if (n >= 0 && editingStation[n] < 0) {
@@ -52,6 +63,7 @@ class Barcode {
 	}
         this.dragging = false;
 	return slot;
+*/
     }
 
     update() {
@@ -137,6 +149,10 @@ class Barcode {
 	}
     }
 
+    // TODO replace this method with a method that does the actual intuitive thing
+    // where length len becomes length len times the argument given to the method
+    // Paul please use your math powers
+    
     // stretch a barcode of length len to one of length len + len/rate
     // (i.e. duplicate every rate'th frame)
     // rate must be an integer > 0

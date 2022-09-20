@@ -17,7 +17,7 @@ class Transformer extends Slot {
 	this.argumentY = argy;
     }
 
-    newNumericArgument(val = '1') {
+    newNumericArgument(val) {
 	let textfield = createInput(val);
 	textfield.size(TEXTFIELD_SIZE);
 	textfield.position(this.argumentX, this.argumentY);
@@ -26,6 +26,14 @@ class Transformer extends Slot {
 
     newBarcodeArgument() {
 	return new Slot(this.argumentX, this.argumentY);
+    }
+
+    installBarcode(barc) {
+	if (!this.parent) {
+	    super.installBarcode(barc);
+	    return true;
+	}
+	return false;
     }
     
     modeNone() {
@@ -38,19 +46,22 @@ class Transformer extends Slot {
 	this.argument = null;
     }
     
-    modeStretch(arg = this.newNumericArgument()) { 
+    modeStretch(arg = 1) {
+	let argbox = this.newNumbericArgument(arg);
 	this.mode = TR_STRETCH;
-	this.argument = arg;
+	this.argument = argbox;
     }
 
-    modeBrighten(arg = this.newNumericArgument()) {
+    modeBrighten(arg = 1) {
+	let argbox = this.newNumbericArgument(arg);
 	this.mode = TR_BRIGHTEN;
-	this.argument = arg;
+	this.argument = argbox;
     }
 
-    modeRotate(arg = this.newNumericArgument('0')) {
+    modeRotate(arg = 0) {
+	let argbox = this.newNumbericArgument(arg);
 	this.mode = TR_ROTATE;
-	this.argument = arg;
+	this.argument = argbox;
     }
 
     modeAdd(arg = newBarcodeArgument()) {

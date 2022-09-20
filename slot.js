@@ -37,6 +37,11 @@ class Slot {
 	this.barcode = new Barcode(this.displayX, this.displayY, []);
     }
 
+    installBarcode(barc) {
+	this.barcode = barc.clone(this.displayX, this.displayY);
+	return true;
+    }
+    
     copyData(x, y) {
 	return this.barcode.clone(x, y);
     }

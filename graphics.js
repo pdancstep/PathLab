@@ -199,6 +199,12 @@ function drawBarcodes() {
         barc.display();
     }
 
+    // draw transformers
+    transform1.update();
+    transform1.display();
+    transform2.update();
+    transform2.display();
+    
     // draw editing stations
     for (var i = 0; i < editingStation.length; i++) {
 	noFill();
