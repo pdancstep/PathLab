@@ -1,6 +1,5 @@
 var prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
 
-var counter = 0;
 // update particle and related values based on mouse
 function particleDrag() {
     if(draggingParticle) {

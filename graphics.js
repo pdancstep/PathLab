@@ -206,7 +206,7 @@ function drawBarcodes() {
     transform2.display();
     
     // draw editing stations
-    for (var i = 0; i < editingStation.length; i++) {
+/*    for (var i = 0; i < editingStation.length; i++) {
 	noFill();
 	stroke(200);
 	strokeWeight(2);
@@ -216,6 +216,7 @@ function drawBarcodes() {
     }
 
     drawCombinerPanel();
+*/
 }
 
 function drawMenu(){

@@ -27,7 +27,7 @@ const PLAY_BUTTON_SPACE = 55; // space between tracer and center of play/pause b
 const TEXTFIELD_SIZE = 50;
 
 // TODO these will probably get reorganized a bit when they join the Slot class hierarchy
-var editingStation = [-1, -1, -1];
+var editingStation = [];//[-1, -1, -1];
 const EDITING_STATION_X = [650, 650, 650];
 const EDITING_STATION_Y = [100, 220, 320];
 const EDITING_STATION_END_X = [1150, 1150, 1150];

@@ -5,6 +5,7 @@ function spawnBarcode(source) {
 }
 
 // TODO remove (replace with slot.inside(x,y))
+/*
 function coordInTracer(x, y) {
     return (TRACER_X < x && x < TRACER_END_X &&
 	    TRACER_Y < y && y < TRACER_END_Y);
@@ -20,6 +21,7 @@ function coordInEditor(x, y) {
     }
     return -2;
 }
+*/
 
 function drawButton(x, y, label) {
     fill(50);

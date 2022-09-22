@@ -39,7 +39,9 @@ function draw() {
     drawBarcodes();
 }
 
-function touchStarted() {
+// for some reason touchStarted stopped getting called when I updated p5
+// maybe there's a bug in its current version? anyway this works
+function mousePressed() {
     // play button
     if (dist(mouseX, mouseY, PLAY_BUTTON_CENTER_X, PLAY_BUTTON_CENTER_Y) < 30) {
 	if (tracer.isPlaying()) { // already playing, so we're clicking pause

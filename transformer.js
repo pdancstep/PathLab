@@ -28,12 +28,28 @@ class Transformer extends Slot {
 	return new Slot(this.argumentX, this.argumentY);
     }
 
+    inside(x, y) {
+	if (this.argument instanceof Slot) {
+	    return (super.inside(x, y) || this.argument.inside(x, y));
+	} else {
+	    return super.inside(x, y);
+	}
+    }
+    
     installBarcode(barc) {
-	if (!this.parent) {
-	    super.installBarcode(barc);
-	    return true;
+	if (this.argument instanceof Slot && this.argument.inside(mouseX, mouseY)) {
+	    return this.argument.installBarcode(barc);
+	} else if (!this.parent) {
+	    return super.installBarcode(barc);
 	}
 	return false;
+    }
+
+    display() {
+	super.display();
+	if (this.argument) {
+	    this.argument.display();
+	}
     }
     
     modeNone() {
@@ -47,34 +63,34 @@ class Transformer extends Slot {
     }
     
     modeStretch(arg = 1) {
-	let argbox = this.newNumbericArgument(arg);
+	let argbox = this.newNumericArgument(arg);
 	this.mode = TR_STRETCH;
 	this.argument = argbox;
     }
 
     modeBrighten(arg = 1) {
-	let argbox = this.newNumbericArgument(arg);
+	let argbox = this.newNumericArgument(arg);
 	this.mode = TR_BRIGHTEN;
 	this.argument = argbox;
     }
 
     modeRotate(arg = 0) {
-	let argbox = this.newNumbericArgument(arg);
+	let argbox = this.newNumericArgument(arg);
 	this.mode = TR_ROTATE;
 	this.argument = argbox;
     }
 
-    modeAdd(arg = newBarcodeArgument()) {
+    modeAdd(arg = this.newBarcodeArgument()) {
 	this.mode = TR_ADD;
 	this.argument = arg;
     }
 
-    modeMultiply(arg = newBarcodeArgument()) {
+    modeMultiply(arg = this.newBarcodeArgument()) {
 	this.mode = TR_MULTIPLY;
 	this.argument = arg;
     }
 
-    modeConcat(arg = newBarcodeArgument()) {
+    modeConcat(arg = this.newBarcodeArgument()) {
 	this.mode = TR_CONCAT;
 	this.argument = arg;
     }
@@ -99,7 +115,7 @@ class Transformer extends Slot {
 	    break;
 	    
 	case TR_STRETCH:
-	    let amt = Number(this.arg.value());
+	    let amt = Number(this.argument.value());
 	    if (amt > 1) {
 		// TODO
 	    } else if (amt < 1) {
@@ -111,7 +127,7 @@ class Transformer extends Slot {
 	    break;
 	    
 	case TR_BRIGHTEN:
-	    let val = Number(this.arg.value());
+	    let val = Number(this.argument.value());
 	    if (val > 0) {
 		this.barcode.brighten(val);
 	    } else {
@@ -120,7 +136,7 @@ class Transformer extends Slot {
 	    break;
 	    
 	case TR_ROTATE:
-	    let deg = Number(this.arg.value());
+	    let deg = Number(this.argument.value());
 	    if (deg > 0) { deg = deg % 360; }
 	    else if (val < 0) {	deg = (deg % 360) + 360; }
 	    else { deg = 0; }
@@ -128,18 +144,19 @@ class Transformer extends Slot {
 	    break;
 	    
 	case TR_ADD:
-	    let addend = this.arg.barcode;
+	    let addend = this.argument.barcode;
 	    this.barcode = base.framewiseAdd(addend, this.displayX, this.displayY);
 	    break;
 	    
 	case TR_MULTIPLY:
-	    let factor = this.arg.barcode;
+	    let factor = this.argument.barcode;
 	    this.barcode = base.framewiseMultiply(factor, this.displayX, this.displayY);
 	    break;
 	    
 	case TR_CONCAT:
-	    let barc = this.arg.barcode;
-	    this.barcode = base.concat(barc);
+	    let barc = this.argument.barcode;
+	    base.concat(barc);
+	    this.barcode = base;
 	    break;
 
 	default:
