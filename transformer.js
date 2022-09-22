@@ -94,7 +94,8 @@ class Transformer extends Slot {
 	    break;
 	    
 	case TR_REVERSE:
-	    this.barcode = base.reverse();
+	    base.reverse();
+	    this.barcode = base;
 	    break;
 	    
 	case TR_STRETCH:
