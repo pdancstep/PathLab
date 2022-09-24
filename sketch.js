@@ -2,6 +2,7 @@ function setup() {
     createCanvas(1500,950);
     controlMode = JOYSTICKMODE;
     createPresetBarcodes();
+    initializeTransformers();
 }
 
 function draw() {

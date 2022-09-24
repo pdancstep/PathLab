@@ -15,13 +15,14 @@ class Transformer extends Slot {
 	this.argument = null;
 	this.argumentX = argx;
 	this.argumentY = argy;
+	this.box = createInput('');
+	this.box.size(TEXTFIELD_SIZE);
+	this.box.position(this.argumentX, this.argumentY);
     }
 
     newNumericArgument(val) {
-	let textfield = createInput(val);
-	textfield.size(TEXTFIELD_SIZE);
-	textfield.position(this.argumentX, this.argumentY);
-	return textfield;
+	this.box.attribute("value", val);
+	return this.box;
     }
 
     newBarcodeArgument() {
@@ -47,8 +48,11 @@ class Transformer extends Slot {
 
     display() {
 	super.display();
-	if (this.argument) {
+	this.box.hide();
+	if (this.argument instanceof Slot) {
 	    this.argument.display();
+	} else if (this.argument) {
+	    this.argument.show();
 	}
     }
     
@@ -120,7 +124,8 @@ class Transformer extends Slot {
 		// TODO
 	    } else if (amt < 1) {
 		let factor = round(1/amt);
-		this.barcode.squash(factor);
+		base.squash(factor);
+		this.barcode = base;
 	    } else {
 		this.barcode = base;
 	    }
@@ -129,10 +134,9 @@ class Transformer extends Slot {
 	case TR_BRIGHTEN:
 	    let val = Number(this.argument.value());
 	    if (val > 0) {
-		this.barcode.brighten(val);
-	    } else {
-		this.barcode = base;
+		base.brighten(val);
 	    }
+	    this.barcode = base;
 	    break;
 	    
 	case TR_ROTATE:
@@ -140,7 +144,8 @@ class Transformer extends Slot {
 	    if (deg > 0) { deg = deg % 360; }
 	    else if (val < 0) {	deg = (deg % 360) + 360; }
 	    else { deg = 0; }
-	    this.barcode = base.rotate(map(deg, 0, 360, 0, 255));
+	    base.rotate(map(deg, 0, 360, 0, 255));
+	    this.barcode = base;
 	    break;
 	    
 	case TR_ADD:
