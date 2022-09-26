@@ -1,15 +1,11 @@
-class Barcode {
-    constructor(xPos,yPos,data) {
-	// fields for moving the barcode itself around the canvas
-        //position
+// base class for barcode hierarchy. does not actually contain any data
+class BarcodeBase {
+    constructor(xPos, yPos) {
         this.x = xPos;
         this.y = yPos;
         this.dragging = false;
         this.offsetX = 0; // position relative to xPos where barcode was grabbed
         this.offsetY = 0; // position relative to yPos where barcode was grabbed
-
-	// fields for handling the data in the barcode
-        this.frames = data.map((x)=>x);
     }
 
     // methods for moving barcodes around the canvas
@@ -31,12 +27,11 @@ class Barcode {
     }
 
     clone(x, y) {
-	return new Barcode(x, y, this.frames);
+	return new BarcodeBase(x, y);
     }
 
-    // release mouse - returns slot we ended up in
-    // TODO remove this functionality from this class
-    // it should now be handled by Slot.onRelease()
+    // TODO this is still hardcoded to the particular slot setup.
+    // should generalize and let sketch.js handle this
     onRelease() {
 	if (this.dragging) {
 	    this.dragging = false;
@@ -49,21 +44,6 @@ class Barcode {
 	    }
 	}
 	return false;
-/*	let slot = -2;
-	if (this.dragging) {
-	    let n = coordInEditor(mouseX, mouseY);
-	    if (n >= 0 && editingStation[n] < 0) {
-		this.x = EDITING_STATION_X[n];
-		this.y = EDITING_STATION_Y[n];
-		slot = n;
-	    }
-	    if (coordInTracer(mouseX, mouseY)) {
-		slot = -1;
-	    }
-	}
-        this.dragging = false;
-	return slot;
-*/
     }
 
     update() {
@@ -71,6 +51,41 @@ class Barcode {
             this.x = mouseX + this.offsetX;
             this.y = mouseY + this.offsetY;
         }  
+    }
+
+    display() {
+	fill(0);
+	rect(this.x, this.y, SLOT_WIDTH, BARCODE_HEIGHT);
+    }
+
+    getFrame(idx) {
+	return coordToFrame(0,0);
+    }
+
+    getLastFrame() {
+	return coordToFrame(0,0);
+    }
+
+    // returns the coordinate for the displacement vector from applying
+    // this portion of the barcode as velocities
+    displacement(start = 0, end = this.length()) {
+	let pos = new Coord(0,0);
+	for (let i = start; i < end; i++) {
+	    pos = this.getFrame(i).applyAsVelocity(pos);
+	}
+	return pos;
+    }
+}
+
+// barcode with specific frame data
+class Barcode extends BarcodeBase {
+    constructor(xPos,yPos,data) {
+	super(xPos, yPos);
+        this.frames = data.map((x)=>x);
+    }
+
+    clone(x, y) {
+	return new Barcode(x, y, this.frames);
     }
 
     display() {
@@ -120,15 +135,7 @@ class Barcode {
 	return this.frames.length;
     }
 
-    // returns the coordinate for the displacement vector from applying
-    // this portion of the barcode as velocities
-    displacement(start = 0, end = this.frames.length) {
-	let pos = new Coord(0,0);
-	for (let i = start; i < end; i++) {
-	    pos = this.frames[i].applyAsVelocity(pos);
-	}
-	return pos;
-    }
+
     
     // methods for editing frame data
     crop(len = MAX_BARCODE_LENGTH) {
@@ -187,15 +194,20 @@ class Barcode {
     }
 
     concat(barc) {
-	this.frames = this.frames.concat(barc.frames);
+	if (barc instanceof Segment) {
+	    this.frames = this.frames.concat(barc.freeze().frames);
+	} else if (barc instanceof Barcode) {
+	    this.frames = this.frames.concat(barc.frames);
+	}
 	this.crop();
     }
 
     framewiseAdd(barc, x, y) {
 	let length = min(this.frames.length, barc.frames.length);
 	let me = this.frames.slice(0, length);
-	let you = barc.frames.slice(0, length);
-	let sum = me.map(function(f,i) { return f.addAsCoords(you[i]); });
+	let you = barc.clone(0,0);
+	you.crop(length);
+	let sum = me.map(function(f,i) { return f.addAsCoords(you.getFrame(i)); });
 	
 	return new Barcode(x, y, sum);
     }
@@ -203,10 +215,11 @@ class Barcode {
     framewiseMultiply(barc, x, y) {
 	let length = min(this.frames.length, barc.frames.length);
 	let me = this.frames.slice(0, length);
-	let you = barc.frames.slice(0, length);
+	let you = barc.clone(0,0);
+	you.crop(length);
 
 	// note: we could use either multiply() or multiplyAsCoords() here
-	let prod = me.map(function(f,i) { return f.multiply(you[i]); });
+	let prod = me.map(function(f,i) { return f.multiply(you.getFrame(i)); });
 	
 	return new Barcode(x, y, prod);
     }
