@@ -25,8 +25,8 @@ class Segment extends BarcodeBase {
 		let frame = this.eqn(i);
 		stroke(frame.getColor(), frame.getSaturation(), frame.getBrightness());
 	    }
-	    line(this.x + i*FRAME_WIDTH, this.y,
-		 this.x + i*FRAME_WIDTH, this.y + BARCODE_HEIGHT);
+	    line(this.x + i*FRAME_WIDTH/BARCODE_DISPLAY_RESOLUTION, this.y,
+		 this.x + i*FRAME_WIDTH/BARCODE_DISPLAY_RESOLUTION, this.y+BARCODE_HEIGHT);
         }
     }
 
