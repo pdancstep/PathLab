@@ -90,10 +90,10 @@ class Barcode extends BarcodeBase {
 
     display() {
 	strokeWeight(FRAME_WIDTH);
-        for(i=0; i<this.frames.length/BARCODE_DISPLAY_RESOLUTION; i++){
-            stroke(this.frames[i*BARCODE_DISPLAY_RESOLUTION].getColor(),
-		   this.frames[i*BARCODE_DISPLAY_RESOLUTION].getSaturation(),
-		   this.frames[i*BARCODE_DISPLAY_RESOLUTION].getBrightness());
+        for(i=0; i<this.frames.length; i+= BARCODE_DISPLAY_RESOLUTION){
+            stroke(this.frames[i].getColor(),
+		   this.frames[i].getSaturation(),
+		   this.frames[i].getBrightness());
             line(this.x + i*FRAME_WIDTH, this.y,
 		 this.x + i*FRAME_WIDTH, this.y + BARCODE_HEIGHT);
         }

@@ -18,13 +18,12 @@ class Segment extends BarcodeBase {
 
     display() {
 	strokeWeight(FRAME_WIDTH);
-        for(i=0; i<this.stop/BARCODE_DISPLAY_RESOLUTION; i++){
+        for(i=0; i < this.stop; i+= BARCODE_DISPLAY_RESOLUTION){
 	    if (i < this.start) {
 		stroke(0);
 	    } else {
-		stroke(this.frames[i*BARCODE_DISPLAY_RESOLUTION].getColor(),
-		       this.frames[i*BARCODE_DISPLAY_RESOLUTION].getSaturation(),
-		       this.frames[i*BARCODE_DISPLAY_RESOLUTION].getBrightness());
+		let frame = this.eqn(i);
+		stroke(frame.getColor(), frame.getSaturation(), frame.getBrightness());
 	    }
 	    line(this.x + i*FRAME_WIDTH, this.y,
 		 this.x + i*FRAME_WIDTH, this.y + BARCODE_HEIGHT);
