@@ -2,14 +2,18 @@
 // xPos, yPos - position of the barcode on the screen
 // [start, stop) - set of indices on which this segment is defined
 //                 should be between 0 and MAX_BARCODE_LENGTH
-// eqn - procedure that takes a number and returns a frame
+// eqn - function or Piecewise that takes a number and returns a frame
 class FormulaBarcode extends Barcode {
     constructor(xPos, yPos, start, stop, eqn) {
 	super(xPos, yPos);
 
 	this.start = start;
 	this.stop = stop;
-	this.eqn = eqn;
+	if (eqn instanceof Piecewise) {
+	    this.eqn = eqn;
+	} else {
+	    this.eqn = new Piecewise(start, stop, eqn);
+	}
     }
 
     clone(x, y) {
@@ -22,7 +26,7 @@ class FormulaBarcode extends Barcode {
 	    if (i < this.start) {
 		stroke(0);
 	    } else {
-		let frame = this.eqn(i);
+		let frame = this.eqn.apply(i);
 		stroke(frame.getColor(), frame.getSaturation(), frame.getBrightness());
 	    }
 	    line(this.x + i*FRAME_WIDTH/BARCODE_DISPLAY_RESOLUTION, this.y,
@@ -34,13 +38,13 @@ class FormulaBarcode extends Barcode {
 	if (idx < this.start || idx >= this.stop) {
 	    return super.getFrame(idx);
 	} else {
-	    return this.eqn(idx);
+	    return this.eqn.apply(idx);
 	}
     }
 
     getLastFrame() {
 	if (this.start >=0 && this.stop > 0) {
-	    return this.eqn(this.stop - 1);
+	    return this.eqn.apply(this.stop - 1);
 	}
     }
 
@@ -56,9 +60,8 @@ class FormulaBarcode extends Barcode {
     }
 
     reverse() {
-	let f = this.eqn;
-	let s = this.stop
-	this.eqn = function(i) { return f(s - i); };
+	let s = this.stop;
+	this.eqn.compose(function(x) { return s - x; });
     }
 
     // squash a barcode of length len to one of length len/factor
@@ -66,8 +69,7 @@ class FormulaBarcode extends Barcode {
     squash(factor) {
 	this.start = ceil(this.start / factor);
 	this.stop = floor(this.stop / factor);
-	let f = this.eqn;
-	this.eqn = function(i) { return f(i * factor); };
+	this.eqn.compose(function(x) { return x * factor; });
     }
 
     // stretch a barcode of length len to one of length len*factor
@@ -75,23 +77,21 @@ class FormulaBarcode extends Barcode {
     stretch(factor) {
 	this.start = ceil(this.start * factor);
 	this.stop = floor(this.stop * factor);
-	let f = this.eqn;
-	this.eqn = function(i) { return f(i / factor); }
+	this.eqn.compose(function(x) { return x / factor; });
     }
 
     darken(factor) {
-	let f = this.eqn;
-	this.eqn = function(i) { return f(i).manuallyScaleIntensity(1/factor); };
+	this.eqn.composeLeft(function(fr) { return fr.manuallyScaleIntensity(1/factor); });
     }
 
     brighten(factor) {
-	let f = this.eqn;
-	this.eqn = function(i) { return f(i).manuallyScaleIntensity(factor); };
+	this.eqn.composeLeft(function(fr) { return fr.manuallyScaleIntensity(factor); });
     }
 
     extend(start, stop) {
 	this.start = start;
 	this.stop = stop;
+	this.eqn.extend(start,stop);
     }
 
     // convert to frame-based barcode
@@ -103,10 +103,12 @@ class FormulaBarcode extends Barcode {
 	return new FrameBarcode(x, y, data);
     }
 
+    // TODO
     concat(barc) {
 	return this.freeze.concat(barc);
     }
-    
+
+    // TODO
     framewiseAdd(barc, x, y) {
 	if (barc instanceof FrameBarcode) {
 	    return barc.framewiseAdd(this, x, y);
@@ -121,6 +123,7 @@ class FormulaBarcode extends Barcode {
 	}
     }
 
+    // TODO
     framewiseMultiply(barc, x, y) {
 	if (barc instanceof FrameBarcode) {
 	    return barc.framewiseMultiply(this, x, y);
