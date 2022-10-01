@@ -1,7 +1,7 @@
 // basic container for a barcode
 class Slot {
     constructor(x, y) {
-	this.barcode = new Barcode(x, y, []);
+	this.barcode = new FrameBarcode(x, y, []);
 	this.displayX = x;
 	this.displayY = y;
     }
@@ -34,7 +34,7 @@ class Slot {
 
     // replace currently-held barcode with an empty barcode
     clear() {
-	this.barcode = new Barcode(this.displayX, this.displayY, []);
+	this.barcode = new FrameBarcode(this.displayX, this.displayY, []);
     }
 
     installBarcode(barc) {

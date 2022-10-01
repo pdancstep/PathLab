@@ -176,6 +176,6 @@ function createPresetBarcodes() {
 	for (let i=0; i < PRESETS_DURATIONS[b]; i++) {
 	    frames.push(PRESETS_GEN[b](i));
 	}
-	freeBarcodes.push(new Barcode(PRESETS_X[b], PRESETS_Y[b], frames));
+	freeBarcodes.push(new FrameBarcode(PRESETS_X[b], PRESETS_Y[b], frames));
     }
 }

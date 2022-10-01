@@ -3,7 +3,7 @@
 // [start, stop) - set of indices on which this segment is defined
 //                 should be between 0 and MAX_BARCODE_LENGTH
 // eqn - procedure that takes a number and returns a frame
-class Segment extends BarcodeBase {
+class FormulaBarcode extends Barcode {
     constructor(xPos, yPos, start, stop, eqn) {
 	super(xPos, yPos);
 
@@ -13,7 +13,7 @@ class Segment extends BarcodeBase {
     }
 
     clone(x, y) {
-	return new Segment(x, y, this.start, this.stop, this.eqn);
+	return new FormulaBarcode(x, y, this.start, this.stop, this.eqn);
     }
 
     display() {
@@ -100,7 +100,7 @@ class Segment extends BarcodeBase {
 	for (let i = 0; i < this.stop; i++) {
 	    data.push(this.getFrame(i));
 	}
-	return new Barcode(x, y, data);
+	return new FrameBarcode(x, y, data);
     }
 
     concat(barc) {
@@ -108,23 +108,23 @@ class Segment extends BarcodeBase {
     }
     
     framewiseAdd(barc, x, y) {
-	if (barc instanceof Barcode) {
+	if (barc instanceof FrameBarcode) {
 	    return barc.framewiseAdd(this, x, y);
-	} else if (barc instanceof Segment) {
+	} else if (barc instanceof FormulaBarcode) {
 	    let newstart = max(this.start, barc.start);
 	    let newstop = min(this.stop, barc.stop);
 	    let f = this.eqn;
 	    let g = barc.eqn;
 	    let neweqn = function(i) { return f(i).addAsCoords(g(i)); };
 
-	    return new Segment(x, y, newstart, newstop, neweqn);
+	    return new FormulaBarcode(x, y, newstart, newstop, neweqn);
 	}
     }
 
     framewiseMultiply(barc, x, y) {
-	if (barc instanceof Barcode) {
+	if (barc instanceof FrameBarcode) {
 	    return barc.framewiseMultiply(this, x, y);
-	} else if (barc instanceof Segment) {
+	} else if (barc instanceof FormulaBarcode) {
 	    let newstart = max(this.start, barc.start);
 	    let newstop = min(this.stop, barc.stop);
 	    let f = this.eqn;
@@ -132,7 +132,7 @@ class Segment extends BarcodeBase {
 	    // note: we could use either multiply() or multiplyAsCoords() here
 	    let neweqn = function(i) { return f(i).multiply(g(i)); };
 
-	    return new Segment(x, y, newstart, newstop, neweqn);
+	    return new FormulaBarcode(x, y, newstart, newstop, neweqn);
 	}
     }
 }
