@@ -88,6 +88,17 @@ function mousePressed() {
         spawnBarcode(tracer);
     }
 
+    // TODO make this robust
+    // eject from transformers
+    if(dist(mouseX, mouseY,
+	    500 + BUTTON_SPACE + SLOT_WIDTH, 200 + BARCODE_HEIGHT/2) < 15) {
+        spawnBarcode(transform1);
+    }
+    if(dist(mouseX, mouseY,
+	    500+ BUTTON_SPACE + SLOT_WIDTH, 300 + BARCODE_HEIGHT/2) < 15) {
+        spawnBarcode(transform2);
+    }
+
     //dragging existing barcode...
     for (var i = 0; i < freeBarcodes.length; i++) {
         if (freeBarcodes[i].onClick()) {

@@ -204,6 +204,10 @@ function drawBarcodes() {
     transform1.display();
     transform2.update();
     transform2.display();
+
+    // draw eject buttons for transformers
+    drawButton(500 + SLOT_WIDTH + BUTTON_SPACE, 200 + BARCODE_HEIGHT/2, "↑");
+    drawButton(500 + SLOT_WIDTH + BUTTON_SPACE, 300 + BARCODE_HEIGHT/2, "↑");
     
     // draw editing stations
 /*    for (var i = 0; i < editingStation.length; i++) {

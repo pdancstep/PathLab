@@ -12,8 +12,8 @@ var transform1;
 var transform2;
 
 function initializeTransformers() {
-    transform1 = new Transformer(null, 500, 200, 1025, 200);
-    transform2 = new Transformer(transform1, 500, 300, 1025, 300);
+    transform1 = new Transformer(null, 500, 200, 1100, 200);
+    transform2 = new Transformer(transform1, 500, 300, 1100, 300);
     transform2.modeBrighten();
 }
 
