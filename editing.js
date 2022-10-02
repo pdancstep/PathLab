@@ -1,27 +1,8 @@
 var freeBarcodes = [];
 
-function spawnBarcode(source) {
-    freeBarcodes.push(source.eject(SPAWN_X, SPAWN_Y));
+function spawnBarcode(source, location = new Coord(SPAWN_X, SPAWN_Y)) {
+    freeBarcodes.push(source.eject(location.getX(), location.getY()));
 }
-
-// TODO remove (replace with slot.inside(x,y))
-/*
-function coordInTracer(x, y) {
-    return (TRACER_X < x && x < TRACER_END_X &&
-	    TRACER_Y < y && y < TRACER_END_Y);
-}
-
-// TODO remove (replace with slot.inside(x,y))
-function coordInEditor(x, y) {
-    for (var i=0; i < editingStation.length; i++) {
-	if (EDITING_STATION_X[i] < x && x < EDITING_STATION_END_X[i] &&
-	    EDITING_STATION_Y[i] < y && y < EDITING_STATION_END_Y[i]) {
-	    return i;
-	}
-    }
-    return -2;
-}
-*/
 
 function drawButton(x, y, label) {
     fill(50);
@@ -172,10 +153,9 @@ function combinerClick() {
 
 function createPresetBarcodes() {
     for (let b=0; b < PRESETS_GEN.length; b++) {
-	let frames = [];
-	for (let i=0; i < PRESETS_DURATIONS[b]; i++) {
-	    frames.push(PRESETS_GEN[b](i));
-	}
-	freeBarcodes.push(new FrameBarcode(PRESETS_X[b], PRESETS_Y[b], frames));
+	let barc = new FormulaBarcode(PRESETS_X[b], PRESETS_Y[b],
+				      0, PRESETS_DURATIONS[b],
+				      PRESETS_GEN[b]);
+	freeBarcodes.push(barc);
     }
 }

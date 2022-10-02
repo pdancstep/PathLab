@@ -61,7 +61,7 @@ class FormulaBarcode extends Barcode {
 
     reverse() {
 	let s = this.stop;
-	this.eqn.compose(function(x) { return s - x; });
+	this.eqn = this.eqn.compose(function(x) { return s - x; });
     }
 
     // squash a barcode of length len to one of length len/factor
@@ -69,7 +69,7 @@ class FormulaBarcode extends Barcode {
     squash(factor) {
 	this.start = ceil(this.start / factor);
 	this.stop = floor(this.stop / factor);
-	this.eqn.compose(function(x) { return x * factor; });
+	this.eqn = this.eqn.compose(function(x) { return x * factor; });
     }
 
     // stretch a barcode of length len to one of length len*factor
@@ -77,21 +77,23 @@ class FormulaBarcode extends Barcode {
     stretch(factor) {
 	this.start = ceil(this.start * factor);
 	this.stop = floor(this.stop * factor);
-	this.eqn.compose(function(x) { return x / factor; });
+	this.eqn = this.eqn.compose(function(x) { return x / factor; });
     }
 
     darken(factor) {
-	this.eqn.composeLeft(function(fr) { return fr.manuallyScaleIntensity(1/factor); });
+	let fn = function(fr) { return fr.manuallyScaleIntensity(1/factor); };
+	this.eqn = this.eqn.composeLeft(fn);
     }
 
     brighten(factor) {
-	this.eqn.composeLeft(function(fr) { return fr.manuallyScaleIntensity(factor); });
+	let fn = function(fr) { return fr.manuallyScaleIntensity(factor); }
+	this.eqn = this.eqn.composeLeft(fn);
     }
 
     extend(start, stop) {
 	this.start = start;
 	this.stop = stop;
-	this.eqn.extend(start,stop);
+	this.eqn = this.eqn.extend(start,stop);
     }
 
     // convert to frame-based barcode

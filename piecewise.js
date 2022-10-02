@@ -8,7 +8,7 @@ class Piecewise {
 
     apply(n) {
 	for (let i=0; i<this.components.length; i++) {
-	    if (n <= this.starts[i]) {
+	    if (n < this.starts[i]) {
 		return this.errorval;
 	    }
 	    if (n < this.stops[i]) {
@@ -36,38 +36,47 @@ class Piecewise {
 	return true;
     }
 
+    copy() {
+	let pw = new Piecewise(null, null, null, this.errorval);
+	pw.starts = this.starts.slice();
+	pw.stops = this.stops.slice();
+	pw.components = this.components.slice();
+	return pw;
+    }
+
     // add additional piecewise components
     // piece - Piecewise to be merged into this
     //         note that all its components will be removed
     // note if domains overlap, we favor this and drop overlapping parts of piece
     combine(piece) {
-	for (let i=0; i<this.components.length; i++) {
+	let base = this.copy();
+	for (let i=0; i<base.components.length; i++) {
 	    if (piece.components.length == 0) {
 		// no components left to merge
 		break;
 	    }
-	    if (this.stops[i] <= piece.starts[0]) {
+	    if (base.stops[i] <= piece.starts[0]) {
 		// this[i] is entirely before piece[0], nothing to do
-	    } else if (piece.stops[0] <= this.starts[i]) {
+	    } else if (piece.stops[0] <= base.starts[i]) {
 		// piece[0] is entirely before this[i]
-		this.starts.splice(i, 0, piece.starts.shift());
-		this.stops.splice(i, 0, piece.stops.shift());
-		this.components.splice(i, 0, piece.components.shift());
+		base.starts.splice(i, 0, piece.starts.shift());
+		base.stops.splice(i, 0, piece.stops.shift());
+		base.components.splice(i, 0, piece.components.shift());
 		i++; // not strictly necessary; avoids reprocessing the just-added element
 	    } else {
 		// pieces overlap
 
 		// if new piece starts first. add a segment before this[i] 
-		if (piece.starts[0] < this.starts[i]) {
-		    this.starts.splice(i, 0, piece.starts[0]);
-		    this.stops.splice(i, 0, this.starts[i]);
-		    this.components.splice(i, 0, piece.components[0]);
-		    piece.starts[0] = this.starts[i];
+		if (piece.starts[0] < base.starts[i]) {
+		    base.starts.splice(i, 0, piece.starts[0]);
+		    base.stops.splice(i, 0, base.starts[i]);
+		    base.components.splice(i, 0, piece.components[0]);
+		    piece.starts[0] = base.starts[i];
 		}
 
 		// handle overlapping segment
 		// truncate piece[0] to only include the part after the end of this[i] 
-		piece.starts[0] = this.stops[i];
+		piece.starts[0] = base.stops[i];
 		
 		// if there's nothing actually left to this component, delete it
 		if (piece.stops[0] >= piece.starts[0]) {
@@ -78,35 +87,42 @@ class Piecewise {
 	    }
 	}
 	// merge whatever remains after we pass the existing domain
-	this.starts = this.starts.concat(piece.starts);
-	this.stops = this.stops.concat(piece.stops);
-	this.components = this.components.concat(piece.components);
+	base.starts = base.starts.concat(piece.starts);
+	base.stops = base.stops.concat(piece.stops);
+	base.components = base.components.concat(piece.components);
+	return base;
     }
 
     // for each component function p(x), replace it with p(f(x))
     compose(f) {
-	for (let i=0; i < this.components.length; i++) {
-	    let p = this.components[i];
-	    this.components[i] = function(n) { return p(f(n)); }
+	let base = this.copy();
+	for (let i=0; i < base.components.length; i++) {
+	    let p = base.components[i];
+	    base.components[i] = function(n) { return p(f(n)); }
 	}
+	return base;
     }
     
     // for each component function p(x), replace with f(p(x))
     composeLeft(f) {
-	for (let i=0; i < this.components.length; i++) {
-	    let p = this.components[i];
-	    this.components[i] = function(n) { return f(p(n)); }
+	let base = this.copy();
+	for (let i=0; i < base.components.length; i++) {
+	    let p = base.components[i];
+	    base.components[i] = function(n) { return f(p(n)); }
 	}
+	return base;
     }
 
     // extend the domain by using the nearest component
     extend(start, stop) {
-	if (this.start() > start) {
-	    this.starts[0] = start;
+	let base = this.copy();
+	if (base.start() > start) {
+	    base.starts[0] = start;
 	}
-	if (this.stop() < stop) {
-	    this.stops[this.stops.length-1] = stop;
+	if (base.stop() < stop) {
+	    base.stops[base.stops.length-1] = stop;
 	}
+	return base;
     }
 }
 
@@ -140,7 +156,7 @@ function performBinaryOperation(p1, p2, f) {
 
 	if (st < nd) {
 	    let fn = function(x) { return f(p1.components[i1](x), p2.components[i2](x)); };
-	    pf.combine(new Piecewise(st, nd, fn));
+	    pf = pf.combine(new Piecewise(st, nd, fn));
 	} else {
 	    console.log("Error: something weird happened while trying to build a binary operation out of Piecewise functions");
 	    return null;

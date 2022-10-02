@@ -10,7 +10,7 @@ class Barcode {
 
     // methods for moving barcodes around the canvas
     onClick(){
-	let w = this.frames.length * FRAME_WIDTH / BARCODE_DISPLAY_RESOLUTION;
+	let w = this.length() * FRAME_WIDTH / BARCODE_DISPLAY_RESOLUTION;
         if (this.x < mouseX && mouseX < this.x + w &&
 	    this.y < mouseY && mouseY < this.y + BARCODE_HEIGHT) {
             this.offsetX = this.x - mouseX;
@@ -66,6 +66,10 @@ class Barcode {
 	return coordToFrame(0,0);
     }
 
+    length() {
+	return 0;
+    }
+    
     // returns the coordinate for the displacement vector from applying
     // this portion of the barcode as velocities
     displacement(start = 0, end = this.length()) {
