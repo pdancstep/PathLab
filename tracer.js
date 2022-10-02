@@ -103,6 +103,8 @@ class Tracer extends Slot {
 	}
     }
 
+    // TODO handle freezing if existing barcode is a FormulaBarcode
+    //
     // if recording, add the given frame to the barcode
     // colorInfo - frame to add
     // type - what type of data is being added

@@ -2,7 +2,7 @@ var prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
 
 // update particle and related values based on mouse
 function particleDrag() {
-    if(draggingParticle) {
+    if (draggingParticle) {
 	let mouse
 	    = tracer.getParticleCanvas().screenToCanvas(new Coord(mouseX, mouseY));
 	prevMouseCoords.push(mouse);
@@ -45,7 +45,7 @@ function joystickDrag() {
 // update particle, joystick, and barcode according to current UI mode
 // returns the color data (as a Frame) for the current particle velocity/joystick position
 function setNewCoordinates(mode) {
-    if(mode==DRAGGINGMODE) {
+    if (mode==DRAGGINGMODE) {
         return particleDrag();
     }
     else if (mode==JOYSTICKMODE) {

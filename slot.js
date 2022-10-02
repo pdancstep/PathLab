@@ -14,6 +14,7 @@ class Slot {
 	this.drawButtons();
     }
 
+    // TODO make eject button part of basic slot?
     drawButtons() {} // basic slot has no buttons; subclasses should override this
 
     inside(x, y) {
@@ -21,12 +22,6 @@ class Slot {
 		this.displayY < y && y < this.displayY + BARCODE_HEIGHT);
     }
     
-    // check if we're dropping a barcode on this slot.
-    // put it in the slot if appropriate
-    onRelease() {
-	// TODO
-    }
-
     // clone the barcode held in this slot and put the new one at given coordinates
     eject(x, y) {
 	return this.barcode.clone(x, y);

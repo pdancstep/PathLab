@@ -9,34 +9,16 @@ function draw() {
     colorMode(RGB,255);
     background(indicator);
 
-    //draw the environment...
     drawUI();
 
-    //infer all coordinates based on present mode...
     let velocityFrame = setNewCoordinates(controlMode);
 
-    //////////////////////////////  JOYSTICK
-    //draw joystick dot...
     drawJoystickPosition(velocityFrame);
-
-    if (drawJoystickPath) {
-	drawJoystickHistory();
-    }
-
-    //draw particle path stored in tracer array
-    if(drawPath){
-        drawParticlePath();
-    }
-
-    //draw particle velocity vector...
-    if(drawVector){
-        drawParticleVector(velocityFrame);
-    }
+    if (drawJoystickPath) { drawJoystickHistory(); }
+    if (drawPath) { drawParticlePath(); }
+    if (drawVector) { drawParticleVector(velocityFrame); }
     
-    //draw particle itself
     drawParticle();
-
-    // draw the editing and playback areas
     drawBarcodes();
 }
 
@@ -59,7 +41,7 @@ function mousePressed() {
 	}
     }
 
-    // clicking on joystick activates JOYSTICK mode controls...
+    // clicking on joystick activates JOYSTICK mode controls
     let joy = tracer.getCurrentJoystickPx();
     if(dist(mouseX, mouseY, joy.getX(), joy.getY()) < 15){
 	if (!tracer.isComplete()) {
@@ -69,7 +51,7 @@ function mousePressed() {
         draggingJoystick = true;
     }
 
-    //clicking on particle activates PARTICLE dragging controls...
+    //clicking on particle activates PARTICLE dragging controls
     let part = tracer.getCurrentParticlePx();
     if(dist(mouseX, mouseY, part.getX(), part.getY()) < 15){
 	if (!tracer.isComplete()) {
@@ -82,7 +64,7 @@ function mousePressed() {
         draggingParticle = true;
     }
 
-    //"eject"
+    // eject from tracer
     if(dist(mouseX, mouseY,
 	    TRACER_X + BUTTON_SPACE + SLOT_WIDTH, TRACER_Y + BARCODE_HEIGHT/2) < 15) {
         spawnBarcode(tracer);
@@ -99,30 +81,23 @@ function mousePressed() {
         spawnBarcode(transform2);
     }
 
-    //dragging existing barcode...
+    // drag existing barcode
     for (var i = 0; i < freeBarcodes.length; i++) {
-        if (freeBarcodes[i].onClick()) {
-	    let myslot = editingStation.indexOf(i);
-	    if (myslot >= 0) {
-		editingStation[myslot] = -1;
-	    }
-	    break;
-	}
+        freeBarcodes[i].onClick();
     }
 
+    /* these areas have been removed for now
+       TODO replace with click-handling for transformers
+       (currently, eject button for placeholder transformers is handled above)
     // handle clicking on the settings menu
     menuClick();
 
     // handle clicking on buttons in the editing area
     editingClick();
     combinerClick();
+    */
 }
 
-function touchMoved() {
-
-}
-
-// TODO refactor for Slot class
 function touchEnded() {
     if ((draggingJoystick && snapToZero) || draggingParticle) {
 	tracer.stop();
@@ -136,17 +111,5 @@ function touchEnded() {
 	if (slot) {
 	    freeBarcodes.splice(i,1);
 	}
-/*	if (slot >= 0) {
-	    editingStation[slot] = i;
-	}
-	if (slot==-1) {
-	    tracer.installBarcode(freeBarcodes[i]);
-	    for (var j = 0; j < editingStation.length; j++) {
-		if (editingStation[j] > i) {
-		    editingStation[j]--;
-		}
-	    }
-	    freeBarcodes.splice(i,1);
-	} */
     }
 }

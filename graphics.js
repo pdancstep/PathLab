@@ -1,7 +1,3 @@
-
-//NOTE: *what* is being dragged depends on controlMode
-var dragging = false;
-
 var draggingParticle = false;
 var draggingJoystick = false;
 
@@ -27,8 +23,6 @@ const JOYSTICKMODE = 1; // using joystick to set velocity of the particle
 const PLAYBACKMODE = 2; // moving the particle based on a recorded barcode
 
 var controlMode = JOYSTICKMODE;
-
-var playheadCoord;
 
 function drawUI(){
     joystickCanvas.display();
@@ -166,6 +160,7 @@ function drawBarcodes() {
     rect(TRACER_X, TRACER_Y, SLOT_WIDTH, BARCODE_HEIGHT);
 
     // TODO use the barcode class to avoid duplication here
+    // not sure what I meant to do when I wrote the above comment
     colorMode(HSB,255);
     tracer.display();
 
@@ -188,9 +183,9 @@ function drawBarcodes() {
     noFill();
     stroke(50);
     strokeWeight(4);
-    playheadCoord = map(tracer.getCurrentFrameNumber(),
-			0, MAX_BARCODE_LENGTH,
-			TRACER_X, TRACER_X + SLOT_WIDTH);
+    let playheadCoord = map(tracer.getCurrentFrameNumber(),
+			    0, MAX_BARCODE_LENGTH,
+			    TRACER_X, TRACER_X + SLOT_WIDTH);
     rect(playheadCoord-6,698,6,54);
     
     // draw barcodes on canvas
@@ -208,19 +203,6 @@ function drawBarcodes() {
     // draw eject buttons for transformers
     drawButton(500 + SLOT_WIDTH + BUTTON_SPACE, 200 + BARCODE_HEIGHT/2, "↑");
     drawButton(500 + SLOT_WIDTH + BUTTON_SPACE, 300 + BARCODE_HEIGHT/2, "↑");
-    
-    // draw editing stations
-/*    for (var i = 0; i < editingStation.length; i++) {
-	noFill();
-	stroke(200);
-	strokeWeight(2);
-	rect(EDITING_STATION_X[i], EDITING_STATION_Y[i], SLOT_WIDTH, BARCODE_HEIGHT);
-
-	drawButtonPanel(i);
-    }
-
-    drawCombinerPanel();
-*/
 }
 
 function drawMenu(){
