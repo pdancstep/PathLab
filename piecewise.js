@@ -44,6 +44,39 @@ class Piecewise {
 	return pw;
     }
 
+    // return component lists to canonical form
+    sort() {
+	// remove any empty components
+	for (let i=0; i<this.components.length; i++) {
+	    if (this.starts[i]==this.stops[i]) {
+		this.starts.splice(i,1);
+		this.stops.splice(i,1);
+		this.components.splice(i,1);
+		i--; // reset index so we don't skip a component
+	    }
+	}
+	// flip any backwards components
+	for (let i=0; i<this.components.length; i++) {
+	    if (this.starts[i] > this.stops[i]) {
+		let temp = this.starts[i];
+		this.starts[i] = this.stops[i];
+		this.stops[i] = temp;
+	    }
+	}
+
+	// put the components in order
+	let zip = []; 
+	for (let i=0; i<this.components.length; i++) {
+	    zip.push([this.starts[i],this.stops[i],this.components[i]]);
+	}
+	zip.sort(function(a, b) { return a[0] - b[0]; });
+	for (let i=0; i<this.components.length; i++) {
+	    this.starts[i] = zip[i][0];
+	    this.stops[i] = zip[i][1];
+	    this.components[i] = zip[i][2];
+	}
+    }
+
     // add additional piecewise components
     // piece - Piecewise to be merged into this
     //         note that all its components will be removed
@@ -94,16 +127,16 @@ class Piecewise {
     }
 
     // for each component function p(x), replace it with p(f(x))
-    // applying f may change the domain of the function
-    // this change is assumed to be scaling and/or shifting by a constant
-    compose(f, scale=1, shift=0) {
+    // in general, needs the inverse of f to correctly update the domain
+    compose(f, finv) {
 	let base = this.copy();
 	for (let i=0; i < base.components.length; i++) {
 	    let p = base.components[i];
 	    base.components[i] = function(n) { return p(f(n)); }
-	    base.starts[i] = base.starts[i]*scale + shift;
-	    base.stops[i] += base.stops[i]*scale + shift;
+	    base.starts[i] = finv(base.starts[i]);
+	    base.stops[i] = finv(base.stops[i]);
 	}
+	base.sort();
 	return base;
     }
     
@@ -126,6 +159,34 @@ class Piecewise {
 	if (base.stop() < stop) {
 	    base.stops[base.stops.length-1] = stop;
 	}
+	return base;
+    }
+
+    // reduce the domain to the given interval
+    contract(start, stop) {
+	let base = this.copy();
+
+	// remove any components completely outside the new domain
+	while (base.components.length > 0 && base.stops[0] < start) {
+	    base.starts.shift();
+	    base.stops.shift();
+	    base.components.shift();
+	}
+	while (base.components.length > 0 &&
+	       base.starts[base.starts.length-1] > stop) {
+	    base.starts.pop();
+	    base.stops.pop();
+	    base.components.pop();
+	}
+
+	// truncate first and last remaining component to new domain
+	if (base.components.length > 0 && base.starts[0] < start) {
+	    base.starts[0] = start;
+	}
+	if (base.components.length > 0 && base.stops[base.stops.length-1] > stop) {
+	    base.stops[base.stops.length-1] = stop;
+	}
+	
 	return base;
     }
 }

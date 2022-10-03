@@ -10,7 +10,7 @@ class FormulaBarcode extends Barcode {
 	this.start = start;
 	this.stop = stop;
 	if (eqn instanceof Piecewise) {
-	    this.eqn = eqn;
+	    this.eqn = eqn.extend(start,stop).contract(start,stop);
 	} else {
 	    this.eqn = new Piecewise(start, stop, eqn);
 	}
@@ -63,7 +63,8 @@ class FormulaBarcode extends Barcode {
 
     reverse() {
 	let s = this.stop;
-	this.eqn = this.eqn.compose(function(x) { return s - x; });
+	this.eqn = this.eqn.compose(function(x) { return s - x; },
+				    function(x) { return s - x; });
     }
 
     // squash a barcode of length len to one of length len/factor
@@ -71,7 +72,8 @@ class FormulaBarcode extends Barcode {
     squash(factor) {
 	this.start = ceil(this.start / factor);
 	this.stop = floor(this.stop / factor);
-	this.eqn = this.eqn.compose(function(x) { return x * factor; }, 1/factor, 0);
+	this.eqn = this.eqn.compose(function(x) { return x * factor; },
+				    function(x) { return x / factor; });
     }
 
     // stretch a barcode of length len to one of length len*factor
@@ -79,8 +81,8 @@ class FormulaBarcode extends Barcode {
     stretch(factor) {
 	this.start = ceil(this.start * factor);
 	this.stop = floor(this.stop * factor);
-	// TODO this appears to be wrong
-	this.eqn = this.eqn.compose(function(x) { return x / factor; }, factor, 0);
+	this.eqn = this.eqn.compose(function(x) { return x / factor; },
+				    function(x) { return x * factor; });
     }
 
     darken(factor) {
@@ -115,7 +117,7 @@ class FormulaBarcode extends Barcode {
 	if (barc instanceof FormulaBarcode) {
 	    let shiftAmt = this.stop;
 	    let shift = barc.eqn.compose(function (x) { return x - shiftAmt; },
-					 1, shiftAmt);
+					 function (x) { return x + shiftAmt; });
 	    this.eqn = this.eqn.combine(shift);
 	    this.stop = this.stop + barc.stop;
 	    this.crop();
