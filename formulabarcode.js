@@ -83,6 +83,7 @@ class FormulaBarcode extends Barcode {
 	this.stop = floor(this.stop * factor);
 	this.eqn = this.eqn.compose(function(x) { return x / factor; },
 				    function(x) { return x * factor; });
+	this.crop();
     }
 
     darken(factor) {
@@ -131,34 +132,36 @@ class FormulaBarcode extends Barcode {
 	}
     }
 
-    // TODO
     framewiseAdd(barc, x, y) {
 	if (barc instanceof FrameBarcode) {
 	    return barc.framewiseAdd(this, x, y);
 	} else if (barc instanceof FormulaBarcode) {
 	    let newstart = max(this.start, barc.start);
 	    let newstop = min(this.stop, barc.stop);
-	    let f = this.eqn;
-	    let g = barc.eqn;
-	    let neweqn = function(i) { return f(i).addAsCoords(g(i)); };
+	    let f = this.eqn.contract(newstart,newstop);
+	    let g = barc.eqn.contract(newstart,newstop);
+	    let neweqn = function(i) { return f.apply(i).addAsCoords(g.apply(i)); };
 
 	    return new FormulaBarcode(x, y, newstart, newstop, neweqn);
+	} else {
+	    return this;
 	}
     }
 
-    // TODO
     framewiseMultiply(barc, x, y) {
 	if (barc instanceof FrameBarcode) {
 	    return barc.framewiseMultiply(this, x, y);
 	} else if (barc instanceof FormulaBarcode) {
 	    let newstart = max(this.start, barc.start);
 	    let newstop = min(this.stop, barc.stop);
-	    let f = this.eqn;
-	    let g = barc.eqn;
+	    let f = this.eqn.contract(newstart,newstop);
+	    let g = barc.eqn.contract(newstart,newstop);
 	    // note: we could use either multiply() or multiplyAsCoords() here
-	    let neweqn = function(i) { return f(i).multiply(g(i)); };
+	    let neweqn = function(i) { return f.apply(i).multiply(g.apply(i)); };
 
 	    return new FormulaBarcode(x, y, newstart, newstop, neweqn);
+	} else {
+	    return this;
 	}
     }
 }
