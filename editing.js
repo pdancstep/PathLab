@@ -1,17 +1,14 @@
 var freeBarcodes = [];
 
+// old
+var editingStation = [];//[-1, -1, -1];
+const EDITING_STATION_X = [650, 650, 650];
+const EDITING_STATION_Y = [100, 220, 320];
+const EDITING_STATION_END_X = [1150, 1150, 1150];
+const EDITING_STATION_END_Y = [150, 270, 370];
+
 function spawnBarcode(source, location = new Coord(SPAWN_X, SPAWN_Y)) {
     freeBarcodes.push(source.eject(location.getX(), location.getY()));
-}
-
-function drawButton(x, y, label) {
-    fill(50);
-    noStroke();
-    ellipse(x, y, BUTTON_SIZE, BUTTON_SIZE);
-    fill(200);
-    textAlign(CENTER,CENTER);
-    textSize(BUTTON_TEXT_SIZE);
-    text(label, x, y);
 }
 
 function drawButtonPanel(station) {
@@ -151,11 +148,3 @@ function combinerClick() {
     }
 }
 
-function createPresetBarcodes() {
-    for (let b=0; b < PRESETS_GEN.length; b++) {
-	let barc = new FormulaBarcode(PRESETS_X[b], PRESETS_Y[b],
-				      0, PRESETS_DURATIONS[b],
-				      PRESETS_GEN[b]);
-	freeBarcodes.push(barc);
-    }
-}

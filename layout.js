@@ -26,25 +26,25 @@ const PLAY_BUTTON_SPACE = 55; // space between tracer and center of play/pause b
 // size of text input area for transformers with a numeric argument
 const TEXTFIELD_SIZE = 50;
 
-// TODO these will probably get reorganized a bit when they join the Slot class hierarchy
-var editingStation = [];//[-1, -1, -1];
-const EDITING_STATION_X = [650, 650, 650];
-const EDITING_STATION_Y = [100, 220, 320];
-const EDITING_STATION_END_X = [1150, 1150, 1150];
-const EDITING_STATION_END_Y = [150, 270, 370];
+// position of transformer slots
+const TRANSFORMER_X = 500;
+const TRANSFORMER_ARG_X = 1100;
+const TRANSFORMER_1_Y = 100;
+const TRANSFORMER_GAP = 50;
 
-const TRACER_X = 750;
-const TRACER_Y = 700;
+// position of main tracer
+const TRACER_X = 650;
+const TRACER_Y = 600;
 const TRACER_END_X = 1150;
 const TRACER_END_Y = 750;
 
 // location where barcodes initially spawn into the editing area
 const SPAWN_X = 750;
-const SPAWN_Y = 600;
+const SPAWN_Y = 800;
 
 // premade barcodes (solid directions & circle)
-const PRESETS_X = [900, 850, 950, 900, 1100];
-const PRESETS_Y = [520, 470, 470, 420, 420];
+const PRESETS_X = [550, 500, 600, 550, 1100];
+const PRESETS_Y = [850, 800, 800, 750, 800];
 const PRESETS_GEN = [function(idx) { return new Frame(63.75, 128, 255); },
 		     function(idx) { return new Frame(0, 128, 255); },
 		     function(idx) { return new Frame(127.5, 128, 255); },

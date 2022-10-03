@@ -16,7 +16,7 @@ class FormulaBarcode extends Barcode {
 	}
     }
 
-    clone(x, y) {
+    clone(x = this.x, y = this.y) {
 	return new FormulaBarcode(x, y, this.start, this.stop, this.eqn);
     }
 
@@ -27,7 +27,9 @@ class FormulaBarcode extends Barcode {
 		stroke(0);
 	    } else {
 		let frame = this.eqn.apply(i);
-		stroke(frame.getColor(), frame.getSaturation(), frame.getBrightness());
+		if (frame) {
+		    stroke(frame.getColor(), frame.getSaturation(), frame.getBrightness());
+		}
 	    }
 	    line(this.x + i*FRAME_WIDTH/BARCODE_DISPLAY_RESOLUTION, this.y,
 		 this.x + i*FRAME_WIDTH/BARCODE_DISPLAY_RESOLUTION, this.y+BARCODE_HEIGHT);
@@ -69,7 +71,7 @@ class FormulaBarcode extends Barcode {
     squash(factor) {
 	this.start = ceil(this.start / factor);
 	this.stop = floor(this.stop / factor);
-	this.eqn = this.eqn.compose(function(x) { return x * factor; });
+	this.eqn = this.eqn.compose(function(x) { return x * factor; }, 1/factor, 0);
     }
 
     // stretch a barcode of length len to one of length len*factor
@@ -77,7 +79,8 @@ class FormulaBarcode extends Barcode {
     stretch(factor) {
 	this.start = ceil(this.start * factor);
 	this.stop = floor(this.stop * factor);
-	this.eqn = this.eqn.compose(function(x) { return x / factor; });
+	// TODO this appears to be wrong
+	this.eqn = this.eqn.compose(function(x) { return x / factor; }, factor, 0);
     }
 
     darken(factor) {
@@ -105,9 +108,25 @@ class FormulaBarcode extends Barcode {
 	return new FrameBarcode(x, y, data);
     }
 
-    // TODO
+    // precondition: both barcodes must start at 0
+    // to concatenate barcodes that already have non-overlapping domains,
+    // use framewiseAdd
     concat(barc) {
-	return this.freeze.concat(barc);
+	if (barc instanceof FormulaBarcode) {
+	    let shiftAmt = this.stop;
+	    let shift = barc.eqn.compose(function (x) { return x - shiftAmt; },
+					 1, shiftAmt);
+	    this.eqn = this.eqn.combine(shift);
+	    this.stop = this.stop + barc.stop;
+	    this.crop();
+	    return this;
+	} else if (barc instanceof FrameBarcode) {
+	    let result = this.freeze().concat(barc);
+	    result.crop();
+	    return result;
+	} else {
+	    return this;
+	}
     }
 
     // TODO

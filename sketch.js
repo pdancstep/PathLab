@@ -1,8 +1,29 @@
 function setup() {
     createCanvas(1500,950);
     controlMode = JOYSTICKMODE;
-    createPresetBarcodes();
-    initializeTransformers();
+
+    // create preset barcodes
+    for (let b=0; b < PRESETS_GEN.length; b++) {
+	let barc = new FormulaBarcode(PRESETS_X[b], PRESETS_Y[b],
+				      0, PRESETS_DURATIONS[b],
+				      PRESETS_GEN[b]);
+	freeBarcodes.push(barc);
+    }
+
+    // initialize transformers
+    let t = null;
+    let y = TRANSFORMER_1_Y;
+    for (let i=0; i<NUM_TRANSFORMERS; i++) {
+	t = new Transformer(t, TRANSFORMER_X, y, TRANSFORMER_ARG_X, y);
+	transformers.push(t)
+	y = y + BARCODE_HEIGHT + TRANSFORMER_GAP;
+    }
+
+    // placeholder starting modes
+    transformers[1].modeReverse();
+    transformers[2].modeBrighten(2);
+    transformers[3].modeStretch(0.5);
+    transformers[4].modeConcat();
 }
 
 function draw() {
@@ -64,21 +85,23 @@ function mousePressed() {
         draggingParticle = true;
     }
 
+    // TODO encapsulate button-press handling in a function somewhere 
+    // and put the eject functionality in there
+    
     // eject from tracer
     if(dist(mouseX, mouseY,
 	    TRACER_X + BUTTON_SPACE + SLOT_WIDTH, TRACER_Y + BARCODE_HEIGHT/2) < 15) {
         spawnBarcode(tracer);
     }
 
-    // TODO make this robust
     // eject from transformers
-    if(dist(mouseX, mouseY,
-	    500 + BUTTON_SPACE + SLOT_WIDTH, 200 + BARCODE_HEIGHT/2) < 15) {
-        spawnBarcode(transform1);
-    }
-    if(dist(mouseX, mouseY,
-	    500+ BUTTON_SPACE + SLOT_WIDTH, 300 + BARCODE_HEIGHT/2) < 15) {
-        spawnBarcode(transform2);
+    let ejectX = TRANSFORMER_X + SLOT_WIDTH + BUTTON_SPACE;
+    let ejectY = TRANSFORMER_1_Y + BARCODE_HEIGHT/2; 
+    for (let i=0; i<NUM_TRANSFORMERS; i++) {
+	if (dist(mouseX, mouseY, ejectX, ejectY) < BUTTON_SIZE/2) {
+	    transformers[i].spawnBarcode();
+	}
+	ejectY = ejectY + BARCODE_HEIGHT + TRANSFORMER_GAP;
     }
 
     // drag existing barcode
@@ -87,8 +110,6 @@ function mousePressed() {
     }
 
     /* these areas have been removed for now
-       TODO replace with click-handling for transformers
-       (currently, eject button for placeholder transformers is handled above)
     // handle clicking on the settings menu
     menuClick();
 

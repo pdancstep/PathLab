@@ -94,11 +94,15 @@ class Piecewise {
     }
 
     // for each component function p(x), replace it with p(f(x))
-    compose(f) {
+    // applying f may change the domain of the function
+    // this change is assumed to be scaling and/or shifting by a constant
+    compose(f, scale=1, shift=0) {
 	let base = this.copy();
 	for (let i=0; i < base.components.length; i++) {
 	    let p = base.components[i];
 	    base.components[i] = function(n) { return p(f(n)); }
+	    base.starts[i] = base.starts[i]*scale + shift;
+	    base.stops[i] += base.stops[i]*scale + shift;
 	}
 	return base;
     }

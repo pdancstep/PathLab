@@ -46,6 +46,10 @@ class Transformer extends Slot {
 	return false;
     }
 
+    spawnBarcode(location = new Coord(SPAWN_X, SPAWN_Y)) {
+	freeBarcodes.push(this.eject(location.getX(), location.getY()));
+    }
+    
     display() {
 	super.display();
 	this.box.hide();
@@ -102,11 +106,8 @@ class Transformer extends Slot {
     getArgument() { return this.argument; }
     
     update() {
-	let base = this.barcode;
-	if (this.parent)
-	{
-	    base = this.parent.copyData(this.displayX, this.displayY);
-	}
+	if (!this.parent) { return; }
+	let base = this.parent.copyData(this.displayX, this.displayY);
 
 	switch (this.mode) {
 	case TR_NONE:
@@ -121,14 +122,11 @@ class Transformer extends Slot {
 	case TR_STRETCH:
 	    let amt = Number(this.argument.value());
 	    if (amt > 1) {
-		// TODO
+		base.stretch(amt);
 	    } else if (amt < 1) {
-		let factor = round(1/amt);
-		base.squash(factor);
-		this.barcode = base;
-	    } else {
-		this.barcode = base;
+		base.squash(1/amt);
 	    }
+	    this.barcode = base;
 	    break;
 	    
 	case TR_BRIGHTEN:
@@ -160,8 +158,7 @@ class Transformer extends Slot {
 	    
 	case TR_CONCAT:
 	    let barc = this.argument.barcode;
-	    base.concat(barc);
-	    this.barcode = base;
+	    this.barcode = base.concat(barc);
 	    break;
 
 	default:

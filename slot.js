@@ -1,7 +1,7 @@
 // basic container for a barcode
 class Slot {
     constructor(x, y) {
-	this.barcode = new FrameBarcode(x, y, []);
+	this.barcode = new Barcode(x, y);
 	this.displayX = x;
 	this.displayY = y;
     }

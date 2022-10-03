@@ -152,6 +152,16 @@ function drawParticle() {
     ellipse(part.getX(), part.getY(), 15, 15);
 }
 
+function drawButton(x, y, label) {
+    fill(50);
+    noStroke();
+    ellipse(x, y, BUTTON_SIZE, BUTTON_SIZE);
+    fill(200);
+    textAlign(CENTER,CENTER);
+    textSize(BUTTON_TEXT_SIZE);
+    text(label, x, y);
+}
+
 function drawBarcodes() {
     // tracer
     rectMode(CORNER);
@@ -186,7 +196,7 @@ function drawBarcodes() {
     let playheadCoord = map(tracer.getCurrentFrameNumber(),
 			    0, MAX_BARCODE_LENGTH,
 			    TRACER_X, TRACER_X + SLOT_WIDTH);
-    rect(playheadCoord-6,698,6,54);
+    rect(playheadCoord-6, TRACER_Y-2, 6, BARCODE_HEIGHT+4);
     
     // draw barcodes on canvas
     for(const barc of freeBarcodes){
@@ -195,14 +205,19 @@ function drawBarcodes() {
     }
 
     // draw transformers
-    transform1.update();
-    transform1.display();
-    transform2.update();
-    transform2.display();
+    for (const t of transformers) {
+	t.update();
+	t.display();
+    }
 
+    // TODO encapsulate drawing buttons in a function somewhere
     // draw eject buttons for transformers
-    drawButton(500 + SLOT_WIDTH + BUTTON_SPACE, 200 + BARCODE_HEIGHT/2, "↑");
-    drawButton(500 + SLOT_WIDTH + BUTTON_SPACE, 300 + BARCODE_HEIGHT/2, "↑");
+    let ejectX = TRANSFORMER_X + SLOT_WIDTH + BUTTON_SPACE;
+    let ejectY = TRANSFORMER_1_Y + BARCODE_HEIGHT/2; 
+    for (let i=0; i<NUM_TRANSFORMERS; i++) {
+	drawButton(ejectX, ejectY, "↑");
+	ejectY = ejectY + BARCODE_HEIGHT + TRANSFORMER_GAP;
+    }
 }
 
 function drawMenu(){

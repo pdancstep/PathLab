@@ -69,9 +69,10 @@ class FrameBarcode extends Barcode {
     }
 
     // squash a barcode of length len to one of length len/factor
-    // factor must be an integer > 1
+    // factor must be > 1
     squash(factor) {
-	for (var i = 0; i < this.frames.length-1; i+=factor-1) {
+	let f = round(factor);
+	for (var i = 0; i < this.frames.length-1; i+=f-1) {
 	    this.frames.splice(i, 1);
 	}
     }
@@ -120,6 +121,7 @@ class FrameBarcode extends Barcode {
 	    this.frames = this.frames.concat(barc.frames);
 	}
 	this.crop();
+	return this;
     }
 
     framewiseAdd(barc, x, y) {

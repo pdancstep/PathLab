@@ -34,15 +34,15 @@ class Barcode {
 	return new Barcode(x, y);
     }
 
-    // TODO generalize; currently still hardcoded to placeholder slot setup
     onRelease() {
 	if (this.dragging) {
 	    this.dragging = false;
-	    if (transform1.inside(mouseX, mouseY)) {
-		return transform1.installBarcode(this);
-	    } else if (transform2.inside(mouseX, mouseY)) {
-		return transform2.installBarcode(this);
-	    } else if (tracer.inside(mouseX, mouseY)) {
+	    for (let i=0; i<NUM_TRANSFORMERS; i++) {
+		if (transformers[i].inside(mouseX, mouseY)) {
+		    return transformers[i].installBarcode(this);
+		}
+	    }
+	    if (tracer.inside(mouseX, mouseY)) {
 		return tracer.installBarcode(this);
 	    }
 	}
@@ -57,8 +57,6 @@ class Barcode {
     }
 
     display() {
-	fill(0);
-	rect(this.x, this.y, SLOT_WIDTH, BARCODE_HEIGHT);
     }
 
     getFrame(idx) {
@@ -82,4 +80,15 @@ class Barcode {
 	}
 	return pos;
     }
+
+    // placeholder methods for transformations (define in subclasses)
+    reverse() {}
+    squash(factor) {}
+    stretch(factor) {}
+    darken(factor) {}
+    brighten(factor) {}
+    rotate(angle) {}
+    concat(barc) { return this; }
+    framewiseAdd(barc, x, y) { return this; }
+    framewiseMultiply(barc, x, y) {return this; }
 }

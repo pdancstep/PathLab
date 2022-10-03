@@ -8,14 +8,9 @@ const joystickCanvas = new Canvas(JOYSTICK_AREA_SIZE, JOYSTICK_CENTER,
 				  JOYSTICK_SCALE, JOYSTICK_STYLE);
 var tracer = new Tracer(TRACER_X, TRACER_Y, particleCanvas, joystickCanvas);
 
-var transform1;
-var transform2;
-
-function initializeTransformers() {
-    transform1 = new Transformer(null, 500, 200, 1100, 200);
-    transform2 = new Transformer(transform1, 500, 300, 1100, 300);
-    transform2.modeBrighten();
-}
+const NUM_TRANSFORMERS = 5;
+var transformers = [];
+var freeBarcodes = [];
 
 ///////////////////////
 // Tuning Parameters //
