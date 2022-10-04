@@ -58,6 +58,7 @@ class FormulaBarcode extends Barcode {
 	if (this.stop > len) {
 	    this.stop = len;
 	    this.start = min(this.start, len);
+	    this.eqn = this.eqn.contract(this.start, this.stop);
 	}
     }
 
@@ -111,6 +112,15 @@ class FormulaBarcode extends Barcode {
 	return new FrameBarcode(x, y, data);
     }
 
+    // add the given angle to the color value of each frame
+    // angle should be on the 0-255 scale, NOT degrees or radians
+    rotate(angle) {
+	let fn = function(fr) { return new Frame((fr.getColor() + angle) % 255,
+						 fr.getBrightness(),
+						 fr.getSaturation()); };
+	this.eqn = this.eqn.composeLeft(fn);
+    }
+    
     // precondition: both barcodes must start at 0
     // to concatenate barcodes that already have non-overlapping domains,
     // use framewiseAdd

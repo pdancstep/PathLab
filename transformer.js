@@ -140,7 +140,7 @@ class Transformer extends Slot {
 	case TR_ROTATE:
 	    let deg = Number(this.argument.value());
 	    if (deg > 0) { deg = deg % 360; }
-	    else if (val < 0) {	deg = (deg % 360) + 360; }
+	    else if (deg < 0) {	deg = (deg % 360) + 360; }
 	    else { deg = 0; }
 	    base.rotate(map(deg, 0, 360, 0, 255));
 	    this.barcode = base;
