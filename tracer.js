@@ -117,7 +117,7 @@ class Tracer extends Slot {
 		if (typeof this.barcode.freeze === "function") {
 		    this.barcode = this.barcode.freeze();
 		} else {
-		    this.barcode = new FrameBarcode(this.x, this.y, []);
+		    this.barcode = new FrameBarcode(this.displayX, this.displayY, []);
 		}
 	    }
 	    let droppedFrame = this.barcode.addFrame(frame);

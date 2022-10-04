@@ -127,6 +127,7 @@ class Piecewise {
     }
 
     // for each component function p(x), replace it with p(f(x))
+    // f is expected to map an interval to an interval
     // in general, needs the inverse of f to correctly update the domain
     compose(f, finv) {
 	let base = this.copy();
@@ -202,10 +203,10 @@ function performBinaryOperation(p1, p2, f) {
 	console.log("Error: Tried to build a binary operation using a Piecewise function with gaps in its domain.");
 	return null;
     }
-    let st = 0;
-    let nd = min(p1.stops[i1], p2.stops[i2]);
     let i1 = 0;
     let i2 = 0;
+    let st = 0;
+    let nd = min(p1.stops[i1], p2.stops[i2]);
     let f0 = function(x) { return f(p1.components[i1](x), p2.components[i2](x)); };
     let pf = new Piecewise(st, nd, f0, p1.errorval);
 

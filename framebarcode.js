@@ -125,23 +125,19 @@ class FrameBarcode extends Barcode {
     }
 
     framewiseAdd(barc, x, y) {
-	let length = min(this.frames.length, barc.frames.length);
+	let length = min(this.length(), barc.length());
 	let me = this.frames.slice(0, length);
-	let you = barc.clone(0,0);
-	you.crop(length);
-	let sum = me.map(function(f,i) { return f.addAsCoords(you.getFrame(i)); });
+	let sum = me.map(function(f,i) { return f.addAsCoords(barc.getFrame(i)); });
 	
 	return new FrameBarcode(x, y, sum);
     }
 
     framewiseMultiply(barc, x, y) {
-	let length = min(this.frames.length, barc.frames.length);
+	let length = min(this.length(), barc.length());
 	let me = this.frames.slice(0, length);
-	let you = barc.clone(0,0);
-	you.crop(length);
 
 	// note: we could use either multiply() or multiplyAsCoords() here
-	let prod = me.map(function(f,i) { return f.multiply(you.getFrame(i)); });
+	let prod = me.map(function(f,i) { return f.multiply(barc.getFrame(i)); });
 	
 	return new FrameBarcode(x, y, prod);
     }
