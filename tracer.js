@@ -112,6 +112,14 @@ class Tracer extends Slot {
     //        as well as starting position if we overflow and drop the oldest frame
     recordFrame(frame, type) {
 	if (this.recording) {
+	    // can only record to FrameBarcodes
+	    if (!(this.barcode instanceof FrameBarcode)) {
+		if (typeof this.barcode.freeze === "function") {
+		    this.barcode = this.barcode.freeze();
+		} else {
+		    this.barcode = new FrameBarcode(this.x, this.y, []);
+		}
+	    }
 	    let droppedFrame = this.barcode.addFrame(frame);
 	    switch (type) {
 	    case PLAYBACK_POS:
