@@ -6,6 +6,7 @@ const TR_ROTATE = 4;
 const TR_ADD = 5;
 const TR_MULTIPLY = 6;
 const TR_CONCAT = 7;
+const TR_CYCLE = 8;
 
 class Transformer extends Slot {
     constructor(parent, x, y, argx, argy) {
@@ -103,6 +104,12 @@ class Transformer extends Slot {
 	this.argument = arg;
     }
 
+    modeCycle(arg = 1) {
+    let argbox = this.newNumericArgument(arg);
+	this.mode = TR_CYCLE;
+	this.argument = argbox;
+    }
+
     getArgument() { return this.argument; }
     
     update() {
@@ -160,6 +167,16 @@ class Transformer extends Slot {
 	    let barc = this.argument.barcode;
 	    this.barcode = base.concat(barc);
 	    break;
+
+	case TR_CYCLE:
+		let iter = round(Number(this.argument.value()));
+		base.squash(iter);
+		let seq = base.clone();
+		for(let i=1; i<iter; i++){
+			base = base.concat(seq);
+		}
+		this.barcode = base;
+		break;
 
 	default:
 	    this.barcode = base;
