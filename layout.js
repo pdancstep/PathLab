@@ -14,7 +14,7 @@ const JOYSTICK_CENTER = new Coord(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y);
 const JOYSTICK_SCALE = 75;
 
 // barcode display parameters
-const BARCODE_HEIGHT = 50;
+const BARCODE_HEIGHT = 25;
 const FRAME_WIDTH = 2;
 
 // buttons!

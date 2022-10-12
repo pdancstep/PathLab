@@ -32,7 +32,7 @@ const MAX_MAGNITUDE = 4;
 const BARCODE_DISPLAY_RESOLUTION = 2;
 
 // max frames before a barcode overflows (deleting old frames when adding new ones)
-const MAX_BARCODE_LENGTH = 510;
+const MAX_BARCODE_LENGTH = 375;
 
 ////////////
 // derived quantities
