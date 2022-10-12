@@ -20,7 +20,7 @@ function setup() {
     }
 
     // placeholder starting modes
-    transformers[1].modeReverse();
+    transformers[1].modeCycle();
     transformers[2].modeAdd();
     transformers[3].modeStretch(0.5);
     transformers[4].modeConcat();

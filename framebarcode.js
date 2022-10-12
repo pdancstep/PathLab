@@ -72,8 +72,8 @@ class FrameBarcode extends Barcode {
     // factor must be > 1
     squash(factor) {
 	let f = round(factor);
-	for (var i = 0; i < this.frames.length-1; i+=f-1) {
-	    this.frames.splice(i, 1);
+	for (var i = 1; i < this.frames.length; i++) {
+	    this.frames.splice(i, f-1);
 	}
     }
 

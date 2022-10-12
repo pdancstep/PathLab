@@ -167,17 +167,22 @@ class Transformer extends Slot {
 	    let barc = this.argument.barcode;
 	    this.barcode = base.concat(barc);
 	    break;
-
+	    
 	case TR_CYCLE:
-		let iter = round(Number(this.argument.value()));
+	    let iter = round(Number(this.argument.value()));
+	    if (base instanceof FormulaBarcode) {
+		base = base.freeze();
+	    }
+	    if (iter > 1) {
 		base.squash(iter);
-		let seq = base.clone();
-		for(let i=1; i<iter; i++){
-			base = base.concat(seq);
-		}
-		this.barcode = base;
-		break;
-
+	    }
+	    let seq = base.clone();
+	    for(let i=1; i<iter; i++){
+		base = base.concat(seq);
+	    }
+	    this.barcode = base;
+	    break;
+	    
 	default:
 	    this.barcode = base;
 	    break;
