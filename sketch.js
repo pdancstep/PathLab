@@ -80,28 +80,25 @@ function mousePressed() {
         draggingParticle = true;
     }
 
-    // TODO encapsulate button-press handling in a function somewhere 
-    // and put the eject functionality in there
-    
-    // eject from tracer
-    if(dist(mouseX, mouseY,
+    // use eject button to spawn from tracer
+    if (dist(mouseX, mouseY,
 	    TRACER_X + BUTTON_SPACE + SLOT_WIDTH, TRACER_Y + BARCODE_HEIGHT/2) < 15) {
         spawnBarcode(tracer);
     }
 
-    // eject from transformers
-    let ejectX = TRANSFORMER_X + SLOT_WIDTH + BUTTON_SPACE;
-    let ejectY = TRANSFORMER_1_Y + BARCODE_HEIGHT/2; 
-    for (let i=0; i<NUM_TRANSFORMERS; i++) {
-	if (dist(mouseX, mouseY, ejectX, ejectY) < BUTTON_SIZE/2) {
-	    transformers[i].spawnBarcode();
-	}
-	ejectY = ejectY + BARCODE_HEIGHT + TRANSFORMER_GAP;
+    // click on tracer
+    tracer.onClick();
+    
+    // click on transformers
+    for (const t of transformers) {
+	let drag = t.onClick();
+	if (drag) { break; }
     }
-
-    // drag existing barcode
-    for (var i = 0; i < freeBarcodes.length; i++) {
-        freeBarcodes[i].onClick();
+    
+    // click on free barcode
+    for (const b of freeBarcodes) {
+        let drag = b.onClick();
+	if (drag) { break; }
     }
 
     /* these areas have been removed for now
@@ -121,7 +118,7 @@ function touchEnded() {
 
     draggingJoystick = false;
     draggingParticle = false;
-
+    
     for (var i = 0; i < freeBarcodes.length; i++) {
 	let slot = freeBarcodes[i].onRelease();
 	if (slot) {

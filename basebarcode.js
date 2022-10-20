@@ -29,7 +29,7 @@ class Barcode {
     isBeingDragged() {
 	return this.dragging;
     }
-
+    
     clone(x, y) {
 	return new Barcode(x, y);
     }

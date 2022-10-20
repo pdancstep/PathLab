@@ -14,7 +14,6 @@ class Slot {
 	this.drawButtons();
     }
 
-    // TODO make eject button part of basic slot?
     drawButtons() {} // basic slot has no buttons; subclasses should override this
 
     inside(x, y) {
@@ -32,6 +31,13 @@ class Slot {
 	this.barcode = new FrameBarcode(this.displayX, this.displayY, []);
     }
 
+    onClick() {
+	let copy = this.eject(this.displayX, this.displayY);
+	if (copy.onClick()) {
+	    freeBarcodes.push(copy);
+	}
+    }
+    
     installBarcode(barc) {
 	this.barcode = barc.clone(this.displayX, this.displayY);
 	return true;
