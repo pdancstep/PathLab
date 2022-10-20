@@ -11,19 +11,14 @@ function setup() {
     }
 
     // initialize transformers
-    let t = null;
     let y = TRANSFORMER_1_Y;
-    for (let i=0; i<NUM_TRANSFORMERS; i++) {
-	t = new Transformer(t, TRANSFORMER_X, y, TRANSFORMER_ARG_X, y);
-	transformers.push(t)
+    let t = new Slot(TRANSFORMER_X, y);
+    transformers.push(t);
+    for (let i=1; i<NUM_TRANSFORMERS; i++) {
 	y = y + BARCODE_HEIGHT + TRANSFORMER_GAP;
+	t = new Transformer(t, TRANSFORMER_X, y, TRANSFORMER_ARG_X, y);
+	transformers.push(t);
     }
-
-    // placeholder starting modes
-    transformers[1].modeCycle();
-    transformers[2].modeAdd();
-    transformers[3].modeStretch(0.5);
-    transformers[4].modeConcat();
 }
 
 function draw() {

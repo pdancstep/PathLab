@@ -206,7 +206,6 @@ function drawBarcodes() {
 
     // draw transformers
     for (const t of transformers) {
-	t.update();
 	t.display();
     }
 

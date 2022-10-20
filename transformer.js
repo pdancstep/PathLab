@@ -19,10 +19,69 @@ class Transformer extends Slot {
 	this.box = createInput('');
 	this.box.size(TEXTFIELD_SIZE);
 	this.box.position(this.argumentX, this.argumentY);
+	this.dropdown = createSelect();
+	this.dropdown.option("No change");
+	this.dropdown.option("Reverse");
+	this.dropdown.option("Stretch");
+	this.dropdown.option("Brighten");
+	this.dropdown.option("Rotate");
+	this.dropdown.option("Add Frames");
+	this.dropdown.option("Mult Frames");
+	this.dropdown.option("Concatenate");
+	this.dropdown.option("Repeat");
+	this.dropdown.position(x + SLOT_WIDTH + 2*BUTTON_SPACE, y);
     }
 
+    updateMode() {
+	switch (this.dropdown.value()) {
+	case "No change":
+	    this.modeNone();
+	    return TR_NONE;
+	case "Reverse":
+	    this.modeReverse();
+	    return TR_REVERSE;
+	case "Stretch":
+	    if (this.mode != TR_STRETCH) {
+		this.modeStretch();
+	    }
+	    return TR_STRETCH;
+	case "Brighten":
+	    if (this.mode != TR_BRIGHTEN) {
+		this.modeBrighten();
+	    }
+	    return TR_BRIGHTEN;
+	case "Rotate":
+	    if (this.mode != TR_ROTATE) {
+		this.modeRotate();
+	    }
+	    return TR_ROTATE;
+	case "Add Frames":
+	    if (this.mode != TR_ADD) {
+		this.modeAdd();
+	    }
+	    return TR_ADD;
+	case "Mult Frames":
+	    if (this.mode != TR_MULTIPLY) {
+		this.modeMultiply();
+	    }
+	    return TR_MULTIPLY;
+	case "Concatenate":
+	    if (this.mode != TR_CONCAT) {
+		this.modeConcat();
+	    }
+	    return TR_CONCAT;
+	case "Repeat":
+	    if (this.mode != TR_CYCLE) {
+		this.modeCycle();
+	    }
+	    return TR_CYCLE;
+	default:
+	    return -1;
+	}
+    }
+    
     newNumericArgument(val) {
-	this.box.attribute("value", val);
+	this.box.value(val);
 	return this.box;
     }
 
@@ -52,6 +111,7 @@ class Transformer extends Slot {
     }
     
     display() {
+	this.update();
 	super.display();
 	this.box.hide();
 	if (this.argument instanceof Slot) {
@@ -113,7 +173,7 @@ class Transformer extends Slot {
     getArgument() { return this.argument; }
     
     update() {
-	if (!this.parent) { return; }
+	this.updateMode();
 	let base = this.parent.copyData(this.displayX, this.displayY);
 
 	switch (this.mode) {
