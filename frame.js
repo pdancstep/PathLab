@@ -52,3 +52,12 @@ class Frame {
 			 prodbrightness, prodsaturation);
     }
 }
+
+function addFrames(f1, f2) {
+    return f1.addAsCoords(f2);
+}
+
+function multFrames(f1, f2) {
+    // note: we could use either multiply() or multiplyAsCoords() here
+    return f1.multiply(f2);
+}

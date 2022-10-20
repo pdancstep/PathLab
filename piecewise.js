@@ -18,11 +18,11 @@ class Piecewise {
 	return this.errorval;
     }
     
-    start() {
+    getStart() {
 	return this.starts[0];
     }
 
-    stop() {
+    getStop() {
 	return this.stops[this.stops.length-1];
     }
 
@@ -154,10 +154,10 @@ class Piecewise {
     // extend the domain by using the nearest component
     extend(start, stop) {
 	let base = this.copy();
-	if (base.start() > start) {
+	if (base.getStart() > start) {
 	    base.starts[0] = start;
 	}
-	if (base.stop() < stop) {
+	if (base.getStop() < stop) {
 	    base.stops[base.stops.length-1] = stop;
 	}
 	return base;
@@ -195,7 +195,7 @@ class Piecewise {
 // given Piecewise functions p1(x) and p2(x) and a binary operation f(a,b),
 // define the Piecewise function f(p1(x), p2(x))
 function performBinaryOperation(p1, p2, f) {
-    if (p1.start() != p2.start() || p1.stop() != p2.stop()) {
+    if (p1.getStart() != p2.getStart() || p1.getStop() != p2.getStop()) {
 	console.log("Error: Tried to build a binary operation out of Piecewise functions with different domains.");
 	return null;
     }
@@ -210,7 +210,7 @@ function performBinaryOperation(p1, p2, f) {
     let f0 = function(x) { return f(p1.components[i1](x), p2.components[i2](x)); };
     let pf = new Piecewise(st, nd, f0, p1.errorval);
 
-    while (nd < p1.stop()) {
+    while (nd < p1.getStop()) {
 	// next segment starts where the last one ended
 	st = nd;
 

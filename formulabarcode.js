@@ -150,8 +150,7 @@ class FormulaBarcode extends Barcode {
 	    let newstop = min(this.stop, barc.stop);
 	    let f = this.eqn.contract(newstart,newstop);
 	    let g = barc.eqn.contract(newstart,newstop);
-	    let neweqn = function(i) { return f.apply(i).addAsCoords(g.apply(i)); };
-
+	    let neweqn = performBinaryOperation(f, g, addFrames);
 	    return new FormulaBarcode(x, y, newstart, newstop, neweqn);
 	} else {
 	    return this;
@@ -166,9 +165,8 @@ class FormulaBarcode extends Barcode {
 	    let newstop = min(this.stop, barc.stop);
 	    let f = this.eqn.contract(newstart,newstop);
 	    let g = barc.eqn.contract(newstart,newstop);
-	    // note: we could use either multiply() or multiplyAsCoords() here
-	    let neweqn = function(i) { return f.apply(i).multiply(g.apply(i)); };
-
+	    let neweqn = performBinaryOperation(f, g, multFrames);
+		
 	    return new FormulaBarcode(x, y, newstart, newstop, neweqn);
 	} else {
 	    return this;
