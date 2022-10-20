@@ -86,7 +86,11 @@ class Transformer extends Slot {
     }
 
     newBarcodeArgument() {
-	return new Slot(this.argumentX, this.argumentY);
+	if (this.argument instanceof Slot) {
+	    return this.argument;
+	} else {
+	    return new Slot(this.argumentX, this.argumentY);
+	}
     }
 
     inside(x, y) {
@@ -106,6 +110,13 @@ class Transformer extends Slot {
 	return false;
     }
 
+    onClick() {
+	if (this.argument instanceof Slot) {
+	    this.argument.onClick();
+	}
+	super.onClick();
+    }
+    
     spawnBarcode(location = new Coord(SPAWN_X, SPAWN_Y)) {
 	freeBarcodes.push(this.eject(location.getX(), location.getY()));
     }
@@ -165,7 +176,7 @@ class Transformer extends Slot {
     }
 
     modeCycle(arg = 1) {
-    let argbox = this.newNumericArgument(arg);
+	let argbox = this.newNumericArgument(arg);
 	this.mode = TR_CYCLE;
 	this.argument = argbox;
     }

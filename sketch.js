@@ -91,14 +91,13 @@ function mousePressed() {
     
     // click on transformers
     for (const t of transformers) {
-	let drag = t.onClick();
-	if (drag) { break; }
+	t.onClick();
     }
     
     // click on free barcode
     for (const b of freeBarcodes) {
         let drag = b.onClick();
-	if (drag) { break; }
+	if (drag) { break; } // only pick up one free barcode at a time
     }
 
     /* these areas have been removed for now

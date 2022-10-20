@@ -33,6 +33,19 @@ class Tracer extends Slot {
 	return true;
     }
 
+    insidePlayhead(x, y) {
+	// TODO
+	return false;
+    }
+    
+    onClick() {
+	if (this.insidePlayhead(mouseX, mouseY)) {
+	  // TODO
+	} else {
+	    super.onClick();
+	}
+    }
+    
     clear() {
 	super.clear();
 	this.startingPos = new Coord(0,0);
