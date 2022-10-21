@@ -165,12 +165,6 @@ function drawButton(x, y, label) {
 function drawBarcodes() {
     // tracer
     rectMode(CORNER);
-    fill(100);
-    noStroke();
-    rect(TRACER_X, TRACER_Y, SLOT_WIDTH, BARCODE_HEIGHT);
-
-    // TODO use the barcode class to avoid duplication here
-    // not sure what I meant to do when I wrote the above comment
     colorMode(HSB,255);
     tracer.display();
 
@@ -207,15 +201,6 @@ function drawBarcodes() {
     // draw transformers
     for (const t of transformers) {
 	t.display();
-    }
-
-    // TODO encapsulate drawing buttons in a function somewhere
-    // draw eject buttons for transformers
-    let ejectX = TRANSFORMER_X + SLOT_WIDTH + BUTTON_SPACE;
-    let ejectY = TRANSFORMER_1_Y + BARCODE_HEIGHT/2; 
-    for (let i=0; i<NUM_TRANSFORMERS; i++) {
-	drawButton(ejectX, ejectY, "↑");
-	ejectY = ejectY + BARCODE_HEIGHT + TRANSFORMER_GAP;
     }
 }
 

@@ -28,9 +28,10 @@ const TEXTFIELD_SIZE = 50;
 
 // position of transformer slots
 const TRANSFORMER_X = 500;
-const TRANSFORMER_ARG_X = 1100;
+const TRANSFORMER_ARG_X = 900;
 const TRANSFORMER_1_Y = 100;
-const TRANSFORMER_GAP = 50;
+const TRANSFORMER_GAP = 30;
+const DROPDOWN_OVERHANG = 130;
 
 // position of main tracer
 const TRACER_X = 650;

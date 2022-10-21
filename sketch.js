@@ -15,8 +15,8 @@ function setup() {
     let t = new Slot(TRANSFORMER_X, y);
     transformers.push(t);
     for (let i=1; i<NUM_TRANSFORMERS; i++) {
-	y = y + BARCODE_HEIGHT + TRANSFORMER_GAP;
-	t = new Transformer(t, TRANSFORMER_X, y, TRANSFORMER_ARG_X, y);
+	y = y + BARCODE_HEIGHT + TRANSFORMER_GAP*2;
+	t = new Transformer(t, TRANSFORMER_X, y, TRANSFORMER_ARG_X, y - TRANSFORMER_GAP);
 	transformers.push(t);
     }
 }

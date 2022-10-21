@@ -29,7 +29,7 @@ class Transformer extends Slot {
 	this.dropdown.option("Mult Frames");
 	this.dropdown.option("Concatenate");
 	this.dropdown.option("Repeat");
-	this.dropdown.position(x + SLOT_WIDTH + 2*BUTTON_SPACE, y);
+	this.dropdown.position(this.argumentX - DROPDOWN_OVERHANG, this.argumentY);
     }
 
     updateMode() {
