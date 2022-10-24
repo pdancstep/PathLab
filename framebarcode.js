@@ -43,7 +43,7 @@ class FrameBarcode extends Barcode {
 	if (this.frames.length > 0) {
 	    return this.frames[this.frames.length-1];
 	} else {
-	    return null;
+	    return coordToFrame(0,0);
 	}
     }
 

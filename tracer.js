@@ -172,7 +172,7 @@ class Tracer extends Slot {
     sendPathData(callback) {
         let present = this.playhead;
         let settings = [this.recording, this.playing];
-        this.start(this.playback);
+        this.start(this.playbackType);
         let oldf = this.getCurrentFrame();
         let newf = oldf;
         for (let i = 0; i < present; i++) {
@@ -186,8 +186,8 @@ class Tracer extends Slot {
     }
     
     // start a new replay
-    // type - how to interpret the barcode data (defaults to particle velocity)
-    start(type = PLAYBACK_VEL) {
+    // type - how to interpret the barcode data
+    start(type) {
         this.recording = false;
         this.playing = true;
         this.playbackType = type;
@@ -211,7 +211,7 @@ class Tracer extends Slot {
             this.particlePos = this.startingPos.translate(this.barcode.displacement());
         }
         if (this.playbackType == PLAYBACK_POS) {
-            this.particlePos = this.barcode.getLastFrame().coord();
+            this.particlePos = this.barcode.getLastFrame().getCoord();
         }
         this.joystickPos = new Coord(0,0);
         this.playbackType = PLAYBACK_OFF;

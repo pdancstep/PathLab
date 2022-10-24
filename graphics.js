@@ -63,10 +63,7 @@ function drawJoystickHistory() {
     strokeWeight(1);
     strokeCap(ROUND);
 
-    let activeTracer = jtracer;
-    if (controlMode==PARTICLEMODE) { activeTracer = ptracer; }
-
-    let canv = activeTracer.getJoystickCanvas();
+    let canv = jtracer.getJoystickCanvas();
 
     let drawSegment = function(start, end) {
 	if (useColor&&useBrightness) {
@@ -86,7 +83,7 @@ function drawJoystickHistory() {
 	line(startCoord.getX(), startCoord.getY(), endCoord.getX(), endCoord.getY());
     };
     
-    activeTracer.sendPathData(drawSegment);
+    jtracer.sendPathData(drawSegment);
 }
 
 function drawParticlePath(){
@@ -94,11 +91,7 @@ function drawParticlePath(){
     strokeCap(ROUND);
     colorMode(HSB,255);
 
-    let activeTracer = ptracer;
-    if (controlMode==JOYSTICKMODE) { activeTracer = jtracer; }
-
-    let canv = activeTracer.getParticleCanvas();
-    let previous = activeTracer.getStartingParticle();
+    let canv = ptracer.getParticleCanvas();
     
     let drawSegment = function(start, end) {
 	if (useColor&&useBrightness) {
@@ -108,14 +101,12 @@ function drawParticlePath(){
         } else {
             stroke(50);
         }
-	let next = end.applyAsVelocity(previous);
-	let startCoord = canv.canvasToScreen(previous);
-	let endCoord = canv.canvasToScreen(next);
+	let startCoord = canv.canvasToScreen(start.getCoord());
+	let endCoord = canv.canvasToScreen(end.getCoord());
 	line(startCoord.getX(), startCoord.getY(), endCoord.getX(), endCoord.getY());
-	previous = next;
     };
     
-    activeTracer.sendPathData(drawSegment);
+    ptracer.sendPathData(drawSegment);
 }
 
 function drawParticleVector(colorInfo) {
