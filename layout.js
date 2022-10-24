@@ -42,8 +42,8 @@ const SPAWN_X = 750;
 const SPAWN_Y = 800;
 
 // premade barcodes (solid directions & circle)
-const PRESETS_X = [550, 500, 600, 550, 1100];
-const PRESETS_Y = [850, 800, 800, 750, 800];
+const PRESETS_X = [1215, 1165, 1265, 1215, 1100];
+const PRESETS_Y = [450, 400, 400, 350, 300];
 const PRESETS_GEN = [function(idx) { return new Frame(63.75, 128, 255); },
 		     function(idx) { return new Frame(0, 128, 255); },
 		     function(idx) { return new Frame(127.5, 128, 255); },

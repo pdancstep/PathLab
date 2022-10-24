@@ -37,7 +37,7 @@ class Barcode {
     onRelease() {
 	if (this.dragging) {
 	    this.dragging = false;
-	    for (let i=0; i<NUM_TRANSFORMERS; i++) {
+	    for (let i=0; i<transformers.length; i++) {
 		if (transformers[i].inside(mouseX, mouseY)) {
 		    return transformers[i].installBarcode(this);
 		}

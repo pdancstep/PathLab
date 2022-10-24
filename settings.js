@@ -9,8 +9,10 @@ const joystickCanvas = new Canvas(JOYSTICK_AREA_SIZE, JOYSTICK_CENTER,
 var ptracer;
 var jtracer;
 
-const NUM_TRANSFORMERS = 5;
+const STARTING_TRANSFORMERS = 3;
+const MAX_TRANSFORMERS = 10;
 var transformers = [];
+var addTransformerButton;
 var freeBarcodes = [];
 
 ///////////////////////

@@ -14,10 +14,11 @@ function setup() {
     let y = TRANSFORMER_1_Y;
     let t = new Slot(TRANSFORMER_X, y);
     transformers.push(t);
-    for (let i=1; i<NUM_TRANSFORMERS; i++) {
-	y = y + BARCODE_HEIGHT + TRANSFORMER_GAP*2;
-	t = new Transformer(t, TRANSFORMER_X, y, TRANSFORMER_ARG_X, y - TRANSFORMER_GAP);
-	transformers.push(t);
+    addTransformerButton = createButton("Add Transformer");
+    addTransformerButton.position(TRANSFORMER_X, y + BARCODE_HEIGHT + TRANSFORMER_GAP);
+    addTransformerButton.mousePressed(addTransformer);
+    for (let i=1; i < STARTING_TRANSFORMERS; i++) {
+        addTransformer();
     }
 
     // initialize tracers
@@ -125,5 +126,16 @@ function touchEnded() {
 	if (slot) {
 	    freeBarcodes.splice(i,1);
 	}
+    }
+}
+
+function addTransformer() {
+    let y = addTransformerButton.position().y + BARCODE_HEIGHT;
+    let t = transformers[transformers.length-1];
+    let t2 = new Transformer(t, TRANSFORMER_X, y, TRANSFORMER_ARG_X, y - TRANSFORMER_GAP);
+    transformers.push(t2);
+    addTransformerButton.position(TRANSFORMER_X, y + TRANSFORMER_GAP*2);
+    if (transformers.length >= MAX_TRANSFORMERS) {
+        addTransformerButton.hide();
     }
 }
