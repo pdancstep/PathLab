@@ -123,7 +123,7 @@ class Transformer extends Slot {
     
     display() {
 	this.update();
-	super.display();
+	super.display(100);
 	this.box.hide();
 	if (this.argument instanceof Slot) {
 	    this.argument.display();

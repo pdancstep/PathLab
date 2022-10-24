@@ -18,11 +18,11 @@ var drawVector = true;
 var snapToZero = true;
 
 //where are we controlling from?
-const DRAGGINGMODE = 0; // directly controlling the particle
-const JOYSTICKMODE = 1; // using joystick to set velocity of the particle
-const PLAYBACKMODE = 2; // moving the particle based on a recorded barcode
+const RECORDMODE = 0; // creating barcode using mouse
+const PARTICLEMODE = 1; // playing back barcode from particle tracer
+const JOYSTICKMODE = 2; // playing back barcode from joystick tracer
 
-var controlMode = JOYSTICKMODE;
+var controlMode = RECORDMODE;
 
 function drawUI(){
     joystickCanvas.display();
@@ -42,7 +42,11 @@ function drawJoystickPosition(colorInfo){
     noFill();
     stroke(colorInfo.getColor(), sat, bri);
 
-    let point = tracer.getCurrentJoystickPx();
+    let activeTracer = jtracer;
+    if (controlMode==PARTICLEMODE) { activeTracer = ptracer; }
+
+    let point = activeTracer.getCurrentJoystickPx();
+
     line(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y, point.getX(), point.getY());
     
     strokeWeight(2);
@@ -58,7 +62,11 @@ function drawJoystickPosition(colorInfo){
 function drawJoystickHistory() {
     strokeWeight(1);
     strokeCap(ROUND);
-    let canv = tracer.getJoystickCanvas();
+
+    let activeTracer = jtracer;
+    if (controlMode==PARTICLEMODE) { activeTracer = ptracer; }
+
+    let canv = activeTracer.getJoystickCanvas();
 
     let drawSegment = function(start, end) {
 	if (useColor&&useBrightness) {
@@ -78,15 +86,19 @@ function drawJoystickHistory() {
 	line(startCoord.getX(), startCoord.getY(), endCoord.getX(), endCoord.getY());
     };
     
-    tracer.sendPathData(drawSegment);
+    activeTracer.sendPathData(drawSegment);
 }
 
 function drawParticlePath(){
     strokeWeight(7);
     strokeCap(ROUND);
     colorMode(HSB,255);
-    let canv = tracer.getParticleCanvas();
-    let previous = tracer.getStartingParticle();
+
+    let activeTracer = ptracer;
+    if (controlMode==JOYSTICKMODE) { activeTracer = jtracer; }
+
+    let canv = activeTracer.getParticleCanvas();
+    let previous = activeTracer.getStartingParticle();
     
     let drawSegment = function(start, end) {
 	if (useColor&&useBrightness) {
@@ -103,7 +115,7 @@ function drawParticlePath(){
 	previous = next;
     };
     
-    tracer.sendPathData(drawSegment);
+    activeTracer.sendPathData(drawSegment);
 }
 
 function drawParticleVector(colorInfo) {
@@ -114,8 +126,12 @@ function drawParticleVector(colorInfo) {
     }else{
         stroke(colorInfo.getColor(), 255, 255);
     }
-    let part = tracer.getCurrentParticlePx();
-    let joy = tracer.getCurrentJoystickPx().subtract(JOYSTICK_CENTER);
+
+    let activeTracer = ptracer;
+    if (controlMode==JOYSTICKMODE) { activeTracer = jtracer; }
+    
+    let part = activeTracer.getCurrentParticlePx();
+    let joy = activeTracer.getCurrentJoystickPx().subtract(JOYSTICK_CENTER);
     let xplusdx = part.getX() + joy.getX();
     let yplusdy = part.getY() + joy.getY();
     
@@ -148,7 +164,11 @@ function drawParticle() {
     fill(50);
     strokeWeight(2);
     stroke(225,225,220);
-    let part = tracer.getCurrentParticlePx();
+
+    let activeTracer = ptracer;
+    if (controlMode==JOYSTICKMODE) { activeTracer = jtracer; }
+
+    let part = activeTracer.getCurrentParticlePx();
     ellipse(part.getX(), part.getY(), 15, 15);
 }
 
@@ -163,44 +183,62 @@ function drawButton(x, y, label) {
 }
 
 function drawBarcodes() {
-    // tracer
+    // tracers
     rectMode(CORNER);
     colorMode(HSB,255);
-    tracer.display();
+    ptracer.display();
+    jtracer.display()
 
-    //draw play/pause button:
+    // play/pause buttons
+    // TODO move this into Tracer.display() ?
     fill(50);
     noStroke();
     push();
-    translate(PLAY_BUTTON_CENTER_X, PLAY_BUTTON_CENTER_Y);
-    if (tracer.isPlaying()) {
-	rect(-25,-25,20,55);
-	rect(5,-25,20,55);
+    translate(PLAY_BUTTON_CENTER_X, PPLAY_BUTTON_CENTER_Y);
+    if (ptracer.isPlaying()) {
+	rect(-20,-20,15,40);
+	rect(0,-20,15,40);
     } else {
-	triangle(25,0,-25,-30,-25,30);
+	triangle(15,0,-15,-20,-15,20);
     }
     pop();
 
-    drawButton(TRACER_X + SLOT_WIDTH + BUTTON_SPACE, TRACER_Y + BARCODE_HEIGHT/2, "↑");
+    push();
+    translate(PLAY_BUTTON_CENTER_X, JPLAY_BUTTON_CENTER_Y);
+    if (jtracer.isPlaying()) {
+	rect(-20,-20,15,40);
+	rect(0,-20,15,40);
+    } else {
+	triangle(15,0,-15,-20,-15,20);
+    }
+    pop();
+
+    drawButton(EJECT_BUTTON_CENTER_X, PARTICLE_TRACER_Y + BARCODE_HEIGHT/2, "↑");
+    drawButton(EJECT_BUTTON_CENTER_X, JOYSTICK_TRACER_Y + BARCODE_HEIGHT/2, "↑");
 
     // drawing a playhead position indicator
+    // TODO move this into Tracer.display()
     noFill();
     stroke(50);
     strokeWeight(4);
-    let playheadCoord = map(tracer.getCurrentFrameNumber(),
-			    0, MAX_BARCODE_LENGTH,
-			    TRACER_X, TRACER_X + SLOT_WIDTH);
-    rect(playheadCoord-6, TRACER_Y-2, 6, BARCODE_HEIGHT+4);
+    let pplayheadCoord = map(ptracer.getCurrentFrameNumber(),
+			     0, MAX_BARCODE_LENGTH,
+			     TRACER_X, TRACER_X + SLOT_WIDTH);
+    rect(pplayheadCoord-6, PARTICLE_TRACER_Y-2, 6, BARCODE_HEIGHT+4);
     
-    // draw barcodes on canvas
+    let jplayheadCoord = map(jtracer.getCurrentFrameNumber(),
+			     0, MAX_BARCODE_LENGTH,
+			     TRACER_X, TRACER_X + SLOT_WIDTH);
+    rect(jplayheadCoord-6, JOYSTICK_TRACER_Y-2, 6, BARCODE_HEIGHT+4);
+
+    // everything else
+    for (const t of transformers) {
+	t.display();
+    }
+    
     for(const barc of freeBarcodes){
         barc.update();
         barc.display();
-    }
-
-    // draw transformers
-    for (const t of transformers) {
-	t.display();
     }
 }
 
@@ -346,10 +384,8 @@ function menuClick() {
 
     //if we're hovering over clear button...
     if(clearButtonColor==255){
-	particlePos = PARTICLE_CENTER;
-	tracer.clear();
-	prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
-	playhead = 0;
+	ptracer.clear();
+        jtracer.clear();
     }
 
     //if we have paths and we're over the hue button...

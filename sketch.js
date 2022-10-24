@@ -1,6 +1,6 @@
 function setup() {
     createCanvas(1500,950);
-    controlMode = JOYSTICKMODE;
+    controlMode = RECORDMODE;
 
     // create preset barcodes
     for (let b=0; b < PRESETS_GEN.length; b++) {
@@ -19,6 +19,10 @@ function setup() {
 	t = new Transformer(t, TRANSFORMER_X, y, TRANSFORMER_ARG_X, y - TRANSFORMER_GAP);
 	transformers.push(t);
     }
+
+    // initialize tracers
+    ptracer = new Tracer(TRACER_X, PARTICLE_TRACER_Y, particleCanvas, joystickCanvas);
+    jtracer = new Tracer(TRACER_X, JOYSTICK_TRACER_Y, particleCanvas, joystickCanvas);
 }
 
 function draw() {
@@ -41,53 +45,50 @@ function draw() {
 // for some reason touchStarted stopped getting called when I updated p5
 // maybe there's a bug in its current version? anyway this works
 function mousePressed() {
-    // play button
-    if (dist(mouseX, mouseY, PLAY_BUTTON_CENTER_X, PLAY_BUTTON_CENTER_Y) < 30) {
-	if (tracer.isPlaying()) { // already playing, so we're clicking pause
-	    tracer.pause();
-	} else {
-	    if (tracer.isComplete()) { // at the end, so we're starting a new playback
-		tracer.start(PLAYBACK_VEL);
-	    } else { // we're paused, so resume
-		tracer.resume();
-	    }
-	    controlMode = PLAYBACKMODE;
-	    drawPath = true;
-	    return;
-	}
-    }
+    if (playButtonClick()) { return; }
 
     // clicking on joystick activates JOYSTICK mode controls
-    let joy = tracer.getCurrentJoystickPx();
+    let joy = jtracer.getCurrentJoystickPx();
     if(dist(mouseX, mouseY, joy.getX(), joy.getY()) < 15){
-	if (!tracer.isComplete()) {
-	    tracer.recordFromHere();
-	}
-        controlMode = JOYSTICKMODE;
+        if (!ptracer.isComplete()) {
+            ptracer.recordFromHere();
+        }
+	if (!jtracer.isComplete()) {
+            jtracer.recordFromHere();
+        }
+        controlMode = RECORDMODE;
         draggingJoystick = true;
     }
 
     //clicking on particle activates PARTICLE dragging controls
-    let part = tracer.getCurrentParticlePx();
+    let part = ptracer.getCurrentParticlePx();
     if(dist(mouseX, mouseY, part.getX(), part.getY()) < 15){
-	if (!tracer.isComplete()) {
-	    tracer.recordFromHere();
+	if (!ptracer.isComplete()) {
+	    ptracer.recordFromHere();
 	}
-        controlMode = DRAGGINGMODE;
+        if (!jtracer.isComplete()) {
+            jtracer.recordFromHere();
+        }
+        controlMode = RECORDMODE;
 	let mouse
-	    = tracer.getParticleCanvas().screenToCanvas(new Coord(mouseX, mouseY));
+	    = ptracer.getParticleCanvas().screenToCanvas(new Coord(mouseX, mouseY));
 	prevMouseCoords = Array(SAMPLE_SIZE).fill(mouse);
         draggingParticle = true;
     }
 
-    // use eject button to spawn from tracer
+    // use eject buttons to spawn from tracer
     if (dist(mouseX, mouseY,
-	    TRACER_X + BUTTON_SPACE + SLOT_WIDTH, TRACER_Y + BARCODE_HEIGHT/2) < 15) {
-        spawnBarcode(tracer);
+             EJECT_BUTTON_CENTER_X, PARTICLE_TRACER_Y + BARCODE_HEIGHT/2) < 15) {
+        spawnBarcode(ptracer);
+    }
+    if (dist(mouseX, mouseY,
+             EJECT_BUTTON_CENTER_X, JOYSTICK_TRACER_Y + BARCODE_HEIGHT/2) < 15) {
+        spawnBarcode(jtracer);
     }
 
     // click on tracer
-    tracer.onClick();
+    ptracer.onClick();
+    jtracer.onClick();
     
     // click on transformers
     for (const t of transformers) {
@@ -112,7 +113,8 @@ function mousePressed() {
 
 function touchEnded() {
     if ((draggingJoystick && snapToZero) || draggingParticle) {
-	tracer.stop();
+	ptracer.stop();
+        jtracer.stop();
     }
 
     draggingJoystick = false;

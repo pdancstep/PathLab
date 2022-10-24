@@ -6,15 +6,13 @@ class Slot {
 	this.displayY = y;
     }
 
-    display() {
-	this.barcode.display();
-	noFill();
+    display(background = 150) {
+	fill(background);
+        strokeWeight(FRAME_WIDTH);
 	stroke(200);
 	rect(this.displayX, this.displayY, SLOT_WIDTH, BARCODE_HEIGHT);
-	this.drawButtons();
+	this.barcode.display();
     }
-
-    drawButtons() {} // basic slot has no buttons; subclasses should override this
 
     inside(x, y) {
 	return (this.displayX < x && x < this.displayX + SLOT_WIDTH &&

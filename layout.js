@@ -1,6 +1,6 @@
 // coordinates of particle area
 const PARTICLE_CENTER_X = 225;
-const PARTICLE_CENTER_Y = 225;
+const PARTICLE_CENTER_Y = 200;
 const PARTICLE_AREA_SIZE = 375;
 const PARTICLE_CENTER = new Coord(PARTICLE_CENTER_X, PARTICLE_CENTER_Y);
 const PARTICLE_SCALE = 75;
@@ -21,23 +21,21 @@ const FRAME_WIDTH = 2;
 const BUTTON_SIZE = 30;
 const BUTTON_TEXT_SIZE = 20;
 const BUTTON_SPACE = 40; // space between centers of consecutive buttons on the same panel
-const PLAY_BUTTON_SPACE = 55; // space between tracer and center of play/pause button
+const PLAY_BUTTON_SPACE = 30; // space between tracer and center of play/pause button
 
 // size of text input area for transformers with a numeric argument
 const TEXTFIELD_SIZE = 50;
 
 // position of transformer slots
-const TRANSFORMER_X = 500;
-const TRANSFORMER_ARG_X = 900;
+const TRANSFORMER_X = 600;
+const TRANSFORMER_ARG_X = 1000;
 const TRANSFORMER_1_Y = 100;
 const TRANSFORMER_GAP = 30;
 const DROPDOWN_OVERHANG = 130;
 
-// position of main tracer
-const TRACER_X = 650;
-const TRACER_Y = 600;
-const TRACER_END_X = 1150;
-const TRACER_END_Y = 750;
+// position of main tracers
+const TRACER_X = 40;
+const TRACER_MARGIN = 20;
 
 // location where barcodes initially spawn into the editing area
 const SPAWN_X = 750;

@@ -42,9 +42,11 @@ class Barcode {
 		    return transformers[i].installBarcode(this);
 		}
 	    }
-	    if (tracer.inside(mouseX, mouseY)) {
-		return tracer.installBarcode(this);
-	    }
+            if (ptracer.inside(mouseX, mouseY)) {
+                return ptracer.installBarcode(this);
+            } else if (jtracer.inside(mouseX, mouseY)) {
+                return jtracer.installBarcode(this);
+            }
 	}
 	return false;
     }

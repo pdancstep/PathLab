@@ -13,6 +13,7 @@ class Frame {
 
     // apply this coordinate as a velocity to the argument
     // for a duration of 1 p5 frame (display frame)
+    // return the coordinate of the result (NOT a Frame/color)
     applyAsVelocity(coord) {
 	let scaled_velocity = this.coord.scale(1/TIME_UNIT);
 	return coord.translate(scaled_velocity);

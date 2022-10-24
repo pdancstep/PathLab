@@ -109,11 +109,14 @@ class Tracer extends Slot {
             }
             // frame treated as position for the particle
             if (this.playbackType == PLAYBACK_POS) {
-                this.joystickPos = frame.getCoord().subtract(this.particlePos) * TIME_UNIT;
+                this.joystickPos
+                    = frame.getCoord().subtract(this.particlePos).scale(TIME_UNIT);
                 this.particlePos = frame.getCoord();
             }
             this.playhead++;
+            return true;
         }
+        return false;
     }
 
     // TODO handle freezing if existing barcode is a FormulaBarcode
@@ -124,6 +127,9 @@ class Tracer extends Slot {
     //        used to update current particle/joystick positions,
     //        as well as starting position if we overflow and drop the oldest frame
     recordFrame(frame, type) {
+        if (!(frame instanceof Frame)) {
+            console.log(frame);
+        }
         if (this.recording) {
             // can only record to FrameBarcodes
             if (!(this.barcode instanceof FrameBarcode)) {
@@ -136,7 +142,8 @@ class Tracer extends Slot {
             let droppedFrame = this.barcode.addFrame(frame);
             switch (type) {
             case PLAYBACK_POS:
-                this.joystickPos = frame.getCoord().subtract(this.particlePos) * TIME_UNIT;
+                this.joystickPos
+                    = frame.getCoord().subtract(this.particlePos).scale(TIME_UNIT);
                 this.particlePos = frame.getCoord();
                 if (droppedFrame) {
                     this.startingPos = droppedFrame.getCoord();
