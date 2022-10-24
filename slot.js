@@ -45,3 +45,7 @@ class Slot {
 	return this.barcode.clone(x, y);
     }
 }
+
+function spawnBarcode(source, location = new Coord(SPAWN_X, SPAWN_Y)) {
+    freeBarcodes.push(source.eject(location.getX(), location.getY()));
+}
