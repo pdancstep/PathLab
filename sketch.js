@@ -1,5 +1,5 @@
 function setup() {
-    createCanvas(1500,950);
+    createCanvas(1500,1000);
     controlMode = RECORDMODE;
 
     // create preset barcodes

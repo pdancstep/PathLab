@@ -100,9 +100,9 @@ class Tracer extends Slot {
         if (this.isComplete()) {
             this.stop();
         }
-        // frame treated as velocity for the particle (position for joystick)
         if (this.playing) {
             let frame = this.getCurrentFrame();
+            // frame treated as velocity for the particle (position for joystick)
             if (this.playbackType == PLAYBACK_VEL) {
                 this.joystickPos = frame.getCoord();
                 this.particlePos = frame.applyAsVelocity(this.particlePos);

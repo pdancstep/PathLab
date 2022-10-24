@@ -8,7 +8,7 @@ const PARTICLE_SCALE = 75;
 
 // coordinates of joystick area
 const JOYSTICK_CENTER_X = 225;
-const JOYSTICK_CENTER_Y = 675;
+const JOYSTICK_CENTER_Y = 700;
 const JOYSTICK_AREA_SIZE = 375;
 const JOYSTICK_CENTER = new Coord(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y);
 const JOYSTICK_SCALE = 75;

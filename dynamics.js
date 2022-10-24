@@ -58,11 +58,11 @@ function setNewCoordinates(mode) {
         let fr_before = ptracer.getCurrentFrame();
         if (ptracer.advance()) {
             let fr_after = ptracer.getCurrentFrame();
-            let fr_v = fr_after.getCoord().subtract(fr_before.getCoord()).scale(TIME_UNIT);
-            jtracer.recordFrame(fr_v.toFrame(), PLAYBACK_VEL);
-            return fr_after;
+            let v = fr_after.getCoord().subtract(fr_before.getCoord()).scale(TIME_UNIT);
+            jtracer.recordFrame(v.toFrame(), PLAYBACK_VEL);
+            return v.toFrame();
         } else {
-            return fr_before;
+            return coordToFrame(0,0);
         }
     } else if (mode==JOYSTICKMODE) {
         let fr_before = jtracer.getCurrentFrame();
@@ -94,6 +94,7 @@ function playButtonClick() {
 	    ptracer.pause();
 	} else {
 	    if (ptracer.isComplete()) { // at the end, so we're starting a new playback
+                jtracer.clear();
 		ptracer.start(PLAYBACK_POS);
 	    } else { // we're paused, so resume
 		ptracer.resume();
@@ -117,7 +118,8 @@ function playButtonClick() {
 	    jtracer.pause();
 	} else {
 	    if (jtracer.isComplete()) { // at the end, so we're starting a new playback
-		jtracer.start(PLAYBACK_VEL);
+                ptracer.clear();
+                jtracer.start(PLAYBACK_VEL);
 	    } else { // we're paused, so resume
 		jtracer.resume();
 	    }
