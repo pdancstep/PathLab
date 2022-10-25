@@ -11,6 +11,7 @@ var jtracer;
 
 const STARTING_TRANSFORMERS = 3;
 const MAX_TRANSFORMERS = 10;
+var presets = [];
 var transformers = [];
 var addTransformerButton;
 var freeBarcodes = [];

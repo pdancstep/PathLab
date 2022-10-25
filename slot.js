@@ -4,14 +4,26 @@ class Slot {
 	this.barcode = new Barcode(x, y);
 	this.displayX = x;
 	this.displayY = y;
+        this.displayType = 0;
     }
 
     display(background = 150) {
 	fill(background);
-        strokeWeight(FRAME_WIDTH);
 	stroke(200);
-	rect(this.displayX, this.displayY, SLOT_WIDTH, BARCODE_HEIGHT);
-	this.barcode.display();
+        if (this.displayType==0) {
+            strokeWeight(FRAME_WIDTH);
+	    rect(this.displayX, this.displayY, SLOT_WIDTH, BARCODE_HEIGHT);
+        } else {
+            strokeWeight(FRAME_WIDTH*2);
+            rect(this.displayX, this.displayY,
+                 this.barcode.length()*FRAME_WIDTH/BARCODE_DISPLAY_RESOLUTION,
+                 BARCODE_HEIGHT);
+        }
+        this.barcode.display();
+    }
+
+    presetStyle() {
+        this.displayType = 1;
     }
 
     inside(x, y) {

@@ -7,7 +7,10 @@ function setup() {
 	let barc = new FormulaBarcode(PRESETS_X[b], PRESETS_Y[b],
 				      0, PRESETS_DURATIONS[b],
 				      PRESETS_GEN[b]);
-	freeBarcodes.push(barc);
+        let slot = new Slot(PRESETS_X[b], PRESETS_Y[b]);
+        slot.installBarcode(barc);
+        slot.presetStyle();
+	presets.push(slot);
     }
 
     // initialize transformers
@@ -91,6 +94,11 @@ function mousePressed() {
     ptracer.onClick();
     jtracer.onClick();
     
+    // click on presets
+    for (const s of presets) {
+        s.onClick();
+    }
+
     // click on transformers
     for (const t of transformers) {
 	t.onClick();

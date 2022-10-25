@@ -223,6 +223,10 @@ function drawBarcodes() {
     rect(jplayheadCoord-6, JOYSTICK_TRACER_Y-2, 6, BARCODE_HEIGHT+4);
 
     // everything else
+    for (const slot of presets) {
+        slot.display();
+    }
+
     for (const t of transformers) {
 	t.display();
     }
