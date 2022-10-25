@@ -38,6 +38,7 @@ class Slot {
 
     // replace currently-held barcode with an empty barcode
     clear() {
+        // wait why did I have it do an empty FrameBarcode and not a base barcode?
 	this.barcode = new FrameBarcode(this.displayX, this.displayY, []);
     }
 

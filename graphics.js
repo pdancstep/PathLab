@@ -178,7 +178,7 @@ function drawBarcodes() {
     rectMode(CORNER);
     colorMode(HSB,255);
     ptracer.display();
-    jtracer.display()
+    jtracer.display();
 
     // play/pause buttons
     // TODO move this into Tracer.display() ?

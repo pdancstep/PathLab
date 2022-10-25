@@ -119,10 +119,8 @@ class Tracer extends Slot {
         return false;
     }
 
-    // TODO handle freezing if existing barcode is a FormulaBarcode
-    //
     // if recording, add the given frame to the barcode
-    // colorInfo - frame to add
+    // frame - frame to add
     // type - what type of data is being added
     //        used to update current particle/joystick positions,
     //        as well as starting position if we overflow and drop the oldest frame
