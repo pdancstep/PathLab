@@ -82,6 +82,7 @@ class FrameBarcode extends Barcode {
     // stretch a barcode of length len into one of length len*factor
     // by copying each frame (factor-1) times
     stretch(factor) {
+        factor = floor(factor);
 	for (var i = 0; i < this.frames.length; i+=factor) {
             for (var j = 1; j < factor; j++) {
                 this.frames.splice(i, 0, this.frames[i]);

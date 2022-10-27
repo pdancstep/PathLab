@@ -3,30 +3,24 @@ var prevMouseCoords = Array(SAMPLE_SIZE).fill(PARTICLE_CENTER);
 // update particle and related values based on mouse
 function particleDrag() {
     if (draggingParticle) {
-	let mouse
-	    = ptracer.getParticleCanvas().screenToCanvas(new Coord(mouseX, mouseY));
-//	prevMouseCoords.push(mouse);
-//	prevMouseCoords.shift();
-	
-//	let prevCoordSum = prevMouseCoords.reduce((a,b)=> a.translate(b),
-//						      new Coord(0,0));
-//	let prevCoordAvg = prevCoordSum.scale(1/prevMouseCoords.length);
-//      let dx = mouse.getX() - prevCoordAvg.getX();
-//	let dy = mouse.getY() - prevCoordAvg.getY();
+        let mouse = ptracer.getParticleCanvas().screenToCanvas(new Coord(mouseX, mouseY));
+        prevMouseCoords.push(mouse);
+        prevMouseCoords.shift();
         
-//      let colorInfo = coordToFrame(dx * TIME_UNIT * DRAG_SCALING,
-//                                   dy * TIME_UNIT * DRAG_SCALING);
+        let prevCoordSum = prevMouseCoords.reduce((a,b)=> a.translate(b),
+					          new Coord(0,0));
+        let prevCoordAvg = prevCoordSum.scale(1/prevMouseCoords.length);
+        //let dx = mouse.getX() - prevCoordAvg.getX();
+        //let dy = mouse.getY() - prevCoordAvg.getY();
+        
+        //let colorInfo = coordToFrame(dx * TIME_UNIT * DRAG_SCALING,
+        //                             dy * TIME_UNIT * DRAG_SCALING);
 
-        let colorInfo = mouse.toFrame().velocityComingFrom(ptracer.getCurrentParticle());
+        let colorInfo = mouse.toFrame().velocityComingFrom(prevCoordAvg);
+        let vel = colorInfo.getCoord().scale(DRAG_SCALING).toFrame();
         
-//	why are we doing this calculation twice?
-//	// magnitude the joystick needs to be at
-//        let magnitude = sqrt(dy*dy + dx*dx) * TIME_UNIT * DRAG_SCALING;
-	
-//	let colorInfo = coordToFrame(magnitude * cos(atan2(dy, dx)),
-//				     magnitude * sin(atan2(dy, dx)));
-        ptracer.recordFrame(mouse.toFrame(), PLAYBACK_POS);
-        jtracer.recordFrame(colorInfo, PLAYBACK_VEL);
+        ptracer.recordFrame(prevCoordAvg.toFrame(), PLAYBACK_POS);
+        jtracer.recordFrame(vel, PLAYBACK_VEL);
     }
 }
 

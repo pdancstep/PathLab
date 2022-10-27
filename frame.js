@@ -25,7 +25,7 @@ class Frame {
     velocityComingFrom(prev_coord) {
         let delta = this.coord.subtract(prev_coord);
         delta = delta.scale(TIME_UNIT);
-        return coordToFrame(delta.getX(), delta.getY());
+        return delta.toFrame();
     }
     
     // scale brightness & saturation without looking at the coordinates,
