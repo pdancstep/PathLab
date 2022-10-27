@@ -36,7 +36,8 @@ function draw() {
     drawUI();
 
     setNewCoordinates(controlMode);
-
+    // debugTracerData(20);
+    
     drawJoystickPosition();
     if (drawJoystickPath) { drawJoystickHistory(); }
     if (drawPath) { drawParticlePath(); }

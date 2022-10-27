@@ -13,12 +13,16 @@ function particleDrag() {
 	let prevCoordAvg = prevCoordSum.scale(1/prevMouseCoords.length);
         let dx = mouse.getX() - prevCoordAvg.getX();
 	let dy = mouse.getY() - prevCoordAvg.getY();
+
+        let colorInfo = coordToFrame(dx * TIME_UNIT * DRAG_SCALING,
+                                     dy * TIME_UNIT * DRAG_SCALING);
+        
+//	why are we doing this calculation twice?
+//	// magnitude the joystick needs to be at
+//        let magnitude = sqrt(dy*dy + dx*dx) * TIME_UNIT * DRAG_SCALING;
 	
-	// magnitude the joystick needs to be at
-        let magnitude = sqrt(dy*dy + dx*dx) * TIME_UNIT * DRAG_SCALING;
-	
-	let colorInfo = coordToFrame(magnitude * cos(atan2(dy, dx)),
-				     magnitude * sin(atan2(dy, dx)));
+//	let colorInfo = coordToFrame(magnitude * cos(atan2(dy, dx)),
+//				     magnitude * sin(atan2(dy, dx)));
         ptracer.recordFrame(mouse.toFrame(), PLAYBACK_POS);
         jtracer.recordFrame(colorInfo, PLAYBACK_VEL);
     }
@@ -114,4 +118,30 @@ function playButtonClick() {
         return true;
     }
     return false;
+}
+
+function debugTracerData(freq, ) {
+    if (!(ptracer.recording && jtracer.recording) &&
+        (ptracer.playhead % freq==1 || jtracer.playhead % freq==1)) {
+        /* console.log("Particle Tracer, Frame " + ptracer.playhead + ": P=("
+              + ptracer.particlePos.getX().toPrecision(3) + ","
+              + ptracer.particlePos.getY().toPrecision(3) + ") J=("
+              + ptracer.joystickPos.getX().toPrecision(3) + ","
+              + ptracer.joystickPos.getY().toPrecision(3) + ")");
+              console.log("Joystick Tracer, Frame " + jtracer.playhead + ": P=("
+              + jtracer.particlePos.getX().toPrecision(3) + ","
+              + jtracer.particlePos.getY().toPrecision(3) + ") J=("
+              + jtracer.joystickPos.getX().toPrecision(3) + ","
+              + jtracer.joystickPos.getY().toPrecision(3) + ")");
+        */
+        console.log("Frame " + ptracer.playhead + ": dP=("
+                    + (ptracer.particlePos.getX()-jtracer.particlePos.getX()).toPrecision(3)
+                    + ","
+                    + (ptracer.particlePos.getY()-jtracer.particlePos.getY()).toPrecision(3)
+                    + ") dJ=("
+                    + (ptracer.joystickPos.getX()-jtracer.joystickPos.getX()).toPrecision(3)
+                    + ","
+                    + (ptracer.joystickPos.getY()-jtracer.joystickPos.getY()).toPrecision(3)
+                    + ")");
+    }
 }
