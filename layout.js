@@ -42,13 +42,16 @@ const SPAWN_X = 750;
 const SPAWN_Y = 800;
 
 // premade barcodes (solid directions & circle)
-const PRESETS_X = [1213, 1163, 1263, 1213, 1100];
+const PRESETS_X = [1213, 1163, 1263, 1213, 1163];
 const PRESETS_Y = [115, 95, 95, 70, 25];
 const PRESETS_GEN = [function(idx) { return new Frame(63.75, 128, 255); },
 		     function(idx) { return new Frame(0, 128, 255); },
 		     function(idx) { return new Frame(127.5, 128, 255); },
 		     function(idx) { return new Frame(191.25, 128, 255); },
 		     function(idx) { return new Frame(255-idx, 64, 255); }]
-const BASE_DURATION = BARCODE_HEIGHT;
+
+// generally wants to be BARCODE_HEIGHT*BARCODE_DISPLAY_RESOLUTION/FRAME_WIDTH
+const BASE_DURATION = 50;
+
 const PRESETS_DURATIONS = [BASE_DURATION, BASE_DURATION, BASE_DURATION, BASE_DURATION,
-			   255];
+			   256];

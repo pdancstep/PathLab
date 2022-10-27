@@ -24,7 +24,7 @@ var freeBarcodes = [];
 const TIME_UNIT = 20;
 
 // relation of mouse movement speed to vector magnitude of joystick
-const DRAG_SCALING = .25; // was 4.45 before calculation changed
+const DRAG_SCALING = .5;
 
 // how many frames back we look when calculating velocity of mouse movement
 const SAMPLE_SIZE = 10;
@@ -33,10 +33,10 @@ const SAMPLE_SIZE = 10;
 const MAX_MAGNITUDE = 4;
 
 // frequency of frames that are visually displayed for a barcode
-const BARCODE_DISPLAY_RESOLUTION = 2;
+const BARCODE_DISPLAY_RESOLUTION = 4;
 
 // max frames before a barcode overflows (deleting old frames when adding new ones)
-const MAX_BARCODE_LENGTH = 375;
+const MAX_BARCODE_LENGTH = 750;
 
 ////////////
 // derived quantities
