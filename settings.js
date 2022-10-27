@@ -24,7 +24,7 @@ var freeBarcodes = [];
 const TIME_UNIT = 20;
 
 // relation of mouse movement speed to vector magnitude of joystick
-const DRAG_SCALING = .5;
+const DRAG_SCALING = .25;
 
 // how many frames back we look when calculating velocity of mouse movement
 const SAMPLE_SIZE = 10;
