@@ -77,16 +77,15 @@ class FrameBarcode extends Barcode {
 	}
     }
 
-    // TODO replace this method with a method that does the actual intuitive thing
-    // where length len becomes length len times the argument given to the method
+    // TODO replace this with something that tries to figure out better intermediate values
     // Paul please use your math powers
-    
-    // stretch a barcode of length len to one of length len + len/rate
-    // (i.e. duplicate every rate'th frame)
-    // rate must be an integer > 0
-    stretch(rate) {
-	for (var i = 0; i < this.frames.length; i+=rate+1) {
-	    this.frames.splice(i, 0, this.frames[i]);
+    // stretch a barcode of length len into one of length len*factor
+    // by copying each frame (factor-1) times
+    stretch(factor) {
+	for (var i = 0; i < this.frames.length; i+=factor) {
+            for (var j = 1; j < factor; j++) {
+                this.frames.splice(i, 0, this.frames[i]);
+            }
 	}
 	this.crop();
     }
