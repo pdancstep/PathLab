@@ -110,8 +110,7 @@ class Tracer extends Slot {
             }
             // frame treated as position for the particle
             if (this.playbackType == PLAYBACK_POS) {
-                this.joystickPos
-                    = frame.getCoord().subtract(this.particlePos).scale(TIME_UNIT);
+                this.joystickPos = frame.velocityComingFrom(this.particlePos).getCoord();
                 this.particlePos = frame.getCoord();
             }
             this.playhead++;
@@ -141,8 +140,7 @@ class Tracer extends Slot {
             let droppedFrame = this.barcode.addFrame(frame);
             switch (type) {
             case PLAYBACK_POS:
-                this.joystickPos
-                    = frame.getCoord().subtract(this.particlePos).scale(TIME_UNIT);
+                this.joystickPos = frame.velocityComingFrom(this.particlePos).getCoord();
                 this.particlePos = frame.getCoord();
                 if (droppedFrame) {
                     this.startingPos = droppedFrame.getCoord();

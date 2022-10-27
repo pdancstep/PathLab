@@ -5,17 +5,19 @@ function particleDrag() {
     if (draggingParticle) {
 	let mouse
 	    = ptracer.getParticleCanvas().screenToCanvas(new Coord(mouseX, mouseY));
-	prevMouseCoords.push(mouse);
-	prevMouseCoords.shift();
+//	prevMouseCoords.push(mouse);
+//	prevMouseCoords.shift();
 	
-	let prevCoordSum = prevMouseCoords.reduce((a,b)=> a.translate(b),
-						      new Coord(0,0));
-	let prevCoordAvg = prevCoordSum.scale(1/prevMouseCoords.length);
-        let dx = mouse.getX() - prevCoordAvg.getX();
-	let dy = mouse.getY() - prevCoordAvg.getY();
+//	let prevCoordSum = prevMouseCoords.reduce((a,b)=> a.translate(b),
+//						      new Coord(0,0));
+//	let prevCoordAvg = prevCoordSum.scale(1/prevMouseCoords.length);
+//      let dx = mouse.getX() - prevCoordAvg.getX();
+//	let dy = mouse.getY() - prevCoordAvg.getY();
+        
+//      let colorInfo = coordToFrame(dx * TIME_UNIT * DRAG_SCALING,
+//                                   dy * TIME_UNIT * DRAG_SCALING);
 
-        let colorInfo = coordToFrame(dx * TIME_UNIT * DRAG_SCALING,
-                                     dy * TIME_UNIT * DRAG_SCALING);
+        let colorInfo = mouse.toFrame().velocityComingFrom(ptracer.getCurrentParticle());
         
 //	why are we doing this calculation twice?
 //	// magnitude the joystick needs to be at
@@ -50,18 +52,12 @@ function setNewCoordinates(mode) {
         particleDrag();
         joystickDrag();
     } else if (mode==PARTICLEMODE) {
-        let fr_before = ptracer.getCurrentFrame();
         if (ptracer.advance()) {
-            let fr_after = ptracer.getCurrentFrame();
-            let v = fr_after.getCoord().subtract(fr_before.getCoord()).scale(TIME_UNIT);
-            jtracer.recordFrame(v.toFrame(), PLAYBACK_VEL);
+            jtracer.recordFrame(ptracer.getCurrentJoystick().toFrame(), PLAYBACK_VEL);
         }
     } else if (mode==JOYSTICKMODE) {
-        let fr_before = jtracer.getCurrentFrame();
         if (jtracer.advance()) {
-            let fr_after = jtracer.getCurrentFrame();
-            let fr_p = fr_after.applyAsVelocity(ptracer.getCurrentFrame().getCoord());
-            ptracer.recordFrame(fr_p.toFrame(), PLAYBACK_POS);
+            ptracer.recordFrame(jtracer.getCurrentParticle().toFrame(), PLAYBACK_POS);
         }
     }
 }

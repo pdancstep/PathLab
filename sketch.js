@@ -52,7 +52,7 @@ function draw() {
 function mousePressed() {
     if (playButtonClick()) { return; }
 
-    // clicking on joystick activates JOYSTICK mode controls
+    // clicking on joystick activates joystick-dragging controls
     let joy = jtracer.getCurrentJoystickPx();
     if(dist(mouseX, mouseY, joy.getX(), joy.getY()) < 15){
         if (!ptracer.isComplete()) {
@@ -65,7 +65,7 @@ function mousePressed() {
         draggingJoystick = true;
     }
 
-    //clicking on particle activates PARTICLE dragging controls
+    //clicking on particle activates particle-dragging controls
     let part = ptracer.getCurrentParticlePx();
     if(dist(mouseX, mouseY, part.getX(), part.getY()) < 15){
 	if (!ptracer.isComplete()) {

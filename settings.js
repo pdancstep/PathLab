@@ -21,10 +21,10 @@ var freeBarcodes = [];
 ///////////////////////
 
 // number of frames for speed 1 to produce displacement 1
-const TIME_UNIT = 20;
+const TIME_UNIT = 25;
 
 // relation of mouse movement speed to vector magnitude of joystick
-const DRAG_SCALING = .25; // was 4.45 before calculation changed
+const DRAG_SCALING = 1;
 
 // how many frames back we look when calculating velocity of mouse movement
 const SAMPLE_SIZE = 10;

@@ -19,6 +19,15 @@ class Frame {
 	return coord.translate(scaled_velocity);
     }
 
+    // given the preceding position to this frame (interpreted as a position)
+    // return a frame that describes the velocity of a particle moving
+    // between those positions
+    velocityComingFrom(prev_coord) {
+        let delta = this.coord.subtract(prev_coord);
+        delta = delta.scale(TIME_UNIT);
+        return coordToFrame(delta.getX(), delta.getY());
+    }
+    
     // scale brightness & saturation without looking at the coordinates,
     // just the color values
     manuallyScaleIntensity(factor) {
