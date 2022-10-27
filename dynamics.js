@@ -120,7 +120,7 @@ function playButtonClick() {
     return false;
 }
 
-function debugTracerData(freq, ) {
+function debugTracerData(freq) {
     if (!(ptracer.recording && jtracer.recording) &&
         (ptracer.playhead % freq==1 || jtracer.playhead % freq==1)) {
         /* console.log("Particle Tracer, Frame " + ptracer.playhead + ": P=("

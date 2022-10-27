@@ -97,10 +97,11 @@ class Tracer extends Slot {
 
     // play back the next frame (interpreting it as specified when playback started)
     advance() {
-        if (this.isComplete()) {
-            this.stop();
-        }
         if (this.playing) {
+            if (this.isComplete()) {
+                this.stop();
+                return;
+            }
             let frame = this.getCurrentFrame();
             // frame treated as velocity for the particle (position for joystick)
             if (this.playbackType == PLAYBACK_VEL) {
@@ -169,7 +170,7 @@ class Tracer extends Slot {
     // to the given callback procedure
     sendPathData(callback) {
         let present = this.playhead;
-        let settings = [this.recording, this.playing];
+        let settings = [this.recording, this.playing, this.particlePos, this.joystickPos];
         this.start(this.playbackType);
         let oldf = this.getCurrentFrame();
         let newf = oldf;
@@ -181,6 +182,10 @@ class Tracer extends Slot {
         }
         this.recording = settings[0];
         this.playing = settings[1];
+        
+        // TODO: why don't these already match???
+        this.particlePos = settings[2];
+        this.joystickPos = settings[3];
     }
     
     // start a new replay
