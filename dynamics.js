@@ -21,9 +21,6 @@ function particleDrag() {
 				     magnitude * sin(atan2(dy, dx)));
         ptracer.recordFrame(mouse.toFrame(), PLAYBACK_POS);
         jtracer.recordFrame(colorInfo, PLAYBACK_VEL);
-	return colorInfo;
-    } else {
-	return null;
     }
 }
 
@@ -39,9 +36,6 @@ function joystickDrag() {
         let part = mouse.toFrame().applyAsVelocity(ptracer.getCurrentParticle());
         ptracer.recordFrame(part.toFrame(), PLAYBACK_POS);
 	jtracer.recordFrame(mouse.toFrame(), PLAYBACK_VEL);
-	return mouse.toFrame();
-    } else {
-	return null;
     }
 }
 
@@ -49,20 +43,14 @@ function joystickDrag() {
 // returns the color data (as a Frame) for the current particle velocity/joystick position
 function setNewCoordinates(mode) {
     if (mode==RECORDMODE) {
-        let fr = particleDrag();
-        if (fr) { return fr; }
-        fr = joystickDrag();
-        if (fr) { return fr; }
-        return coordToFrame(0,0);
+        particleDrag();
+        joystickDrag();
     } else if (mode==PARTICLEMODE) {
         let fr_before = ptracer.getCurrentFrame();
         if (ptracer.advance()) {
             let fr_after = ptracer.getCurrentFrame();
             let v = fr_after.getCoord().subtract(fr_before.getCoord()).scale(TIME_UNIT);
             jtracer.recordFrame(v.toFrame(), PLAYBACK_VEL);
-            return v.toFrame();
-        } else {
-            return coordToFrame(0,0);
         }
     } else if (mode==JOYSTICKMODE) {
         let fr_before = jtracer.getCurrentFrame();
@@ -70,9 +58,6 @@ function setNewCoordinates(mode) {
             let fr_after = jtracer.getCurrentFrame();
             let fr_p = fr_after.applyAsVelocity(ptracer.getCurrentFrame().getCoord());
             ptracer.recordFrame(fr_p.toFrame(), PLAYBACK_POS);
-            return fr_after;
-        } else {
-            return fr_before;
         }
     }
 }

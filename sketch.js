@@ -35,12 +35,12 @@ function draw() {
 
     drawUI();
 
-    let velocityFrame = setNewCoordinates(controlMode);
+    setNewCoordinates(controlMode);
 
-    drawJoystickPosition(velocityFrame);
+    drawJoystickPosition();
     if (drawJoystickPath) { drawJoystickHistory(); }
     if (drawPath) { drawParticlePath(); }
-    if (drawVector) { drawParticleVector(velocityFrame); }
+    if (drawVector) { drawParticleVector(); }
     
     drawParticle();
     drawBarcodes();

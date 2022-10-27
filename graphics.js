@@ -31,7 +31,13 @@ function drawUI(){
     //drawMenu();
 }
 
-function drawJoystickPosition(colorInfo){
+function drawJoystickPosition(){
+    let activeTracer = jtracer;
+    if (controlMode==PARTICLEMODE) { activeTracer = ptracer; }
+
+    let colorInfo = activeTracer.getCurrentJoystick().toFrame();
+    let point = activeTracer.getCurrentJoystickPx();
+
     colorMode(HSB,255);
     let sat = 255;
     let bri = 255;
@@ -42,10 +48,7 @@ function drawJoystickPosition(colorInfo){
     noFill();
     stroke(colorInfo.getColor(), sat, bri);
 
-    let activeTracer = jtracer;
-    if (controlMode==PARTICLEMODE) { activeTracer = ptracer; }
 
-    let point = activeTracer.getCurrentJoystickPx();
 
     line(JOYSTICK_CENTER_X, JOYSTICK_CENTER_Y, point.getX(), point.getY());
     
@@ -109,7 +112,12 @@ function drawParticlePath(){
     ptracer.sendPathData(drawSegment);
 }
 
-function drawParticleVector(colorInfo) {
+function drawParticleVector() {
+    let activeTracer = ptracer;
+    if (controlMode==JOYSTICKMODE) { activeTracer = jtracer; }
+
+    let colorInfo = activeTracer.getCurrentJoystick().toFrame();
+
     strokeWeight(2);
     colorMode(HSB,255);
     if(useBrightness){
@@ -118,8 +126,6 @@ function drawParticleVector(colorInfo) {
         stroke(colorInfo.getColor(), 255, 255);
     }
 
-    let activeTracer = ptracer;
-    if (controlMode==JOYSTICKMODE) { activeTracer = jtracer; }
     
     let part = activeTracer.getCurrentParticlePx();
     let joy = activeTracer.getCurrentJoystickPx().subtract(JOYSTICK_CENTER);
