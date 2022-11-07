@@ -7,6 +7,10 @@ class Coord {
     getX() { return this.x; }
     getY() { return this.y; }
 
+    getR() { return sqrt(this.x*this.x + this.y*this.y); }
+    getTh() { return atan2(this.y, this.x); }
+    getThDegrees() { return map(this.getTh(), -PI, PI, -180, 180); }
+
     translate(vector) {
 	return new Coord(this.x + vector.getX(), this.y + vector.getY());
     }
