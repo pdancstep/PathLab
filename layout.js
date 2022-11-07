@@ -41,14 +41,35 @@ const TRACER_MARGIN = 20;
 const SPAWN_X = 750;
 const SPAWN_Y = 800;
 
+function presetSquare(idx) {
+    let x = 1;
+    let y = 1;
+    if (idx<64) {
+        x = map(idx, 0, 63, -1, 1);
+    }
+    else if (idx<128) {
+        y = map(idx, 64, 127, 1, -1);
+    }
+    else if (idx<192) {
+        y = -1;
+        x = map(idx, 128, 191, 1, -1);
+    }
+    else if (idx<256) {
+        x = -1;
+        y = map(idx, 192, 255, -1, 1);
+    }
+    return coordToFrame(x, y);
+}
+
 // premade barcodes (solid directions & circle)
-const PRESETS_X = [1213, 1163, 1263, 1213, 1100];
-const PRESETS_Y = [115, 95, 95, 70, 25];
+const PRESETS_X = [1213, 1163, 1263, 1213, 1100, 1100];
+const PRESETS_Y = [115, 95, 95, 70, 25, 700];
 const PRESETS_GEN = [function(idx) { return new Frame(63.75, 128, 255); },
 		     function(idx) { return new Frame(0, 128, 255); },
 		     function(idx) { return new Frame(127.5, 128, 255); },
 		     function(idx) { return new Frame(191.25, 128, 255); },
-		     function(idx) { return new Frame(255-idx, 64, 255); }]
+		     function(idx) { return new Frame((idx+128)%256, 64, 255); },
+                     presetSquare];
 const BASE_DURATION = BARCODE_HEIGHT;
 const PRESETS_DURATIONS = [BASE_DURATION, BASE_DURATION, BASE_DURATION, BASE_DURATION,
-			   255];
+			   255, 255];
