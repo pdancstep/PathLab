@@ -271,7 +271,7 @@ class Transformer extends Slot {
 
         case TR_DISPLACE:
             let p = base.displacement();
-            let r = this.argument.eject();
+            let r = this.argument.eject(this.displayX, this.displayY);
             r.rotate(map(p.getTh(), -PI, PI, 0, 255));
             r.brighten(p.getR() * DISP_SCALING);
             this.barcode = r;
