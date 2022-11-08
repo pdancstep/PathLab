@@ -7,29 +7,31 @@ const TR_ADD = 5;
 const TR_MULTIPLY = 6;
 const TR_CONCAT = 7;
 const TR_CYCLE = 8;
+const TR_DISPLACE = 9;
 
 class Transformer extends Slot {
     constructor(parent, x, y, argx, argy) {
 	super(x, y);
-	this.parent = parent;
-	this.mode = TR_NONE;
-	this.argument = null;
-	this.argumentX = argx;
-	this.argumentY = argy;
-	this.box = createInput('');
-	this.box.size(TEXTFIELD_SIZE);
-	this.box.position(this.argumentX, this.argumentY);
-	this.dropdown = createSelect();
-	this.dropdown.option("No change");
-	this.dropdown.option("Reverse");
-	this.dropdown.option("Stretch");
-	this.dropdown.option("Brighten");
-	this.dropdown.option("Rotate");
-	this.dropdown.option("Add Frames");
-	this.dropdown.option("Mult Frames");
-	this.dropdown.option("Concatenate");
-	this.dropdown.option("Repeat");
-	this.dropdown.position(this.argumentX - DROPDOWN_OVERHANG, this.argumentY);
+        this.parent = parent;
+        this.mode = TR_NONE;
+        this.argument = null;
+        this.argumentX = argx;
+        this.argumentY = argy;
+        this.box = createInput('');
+        this.box.size(TEXTFIELD_SIZE);
+        this.box.position(this.argumentX, this.argumentY);
+        this.dropdown = createSelect();
+        this.dropdown.option("No change");
+        this.dropdown.option("Reverse");
+        this.dropdown.option("Stretch");
+        this.dropdown.option("Brighten");
+        this.dropdown.option("Rotate");
+        this.dropdown.option("Add Frames");
+        this.dropdown.option("Mult Frames");
+        this.dropdown.option("Concatenate");
+        this.dropdown.option("Repeat");
+        this.dropdown.option("Displace");
+        this.dropdown.position(this.argumentX - DROPDOWN_OVERHANG, this.argumentY);
     }
 
     updateMode() {
@@ -75,6 +77,10 @@ class Transformer extends Slot {
 		this.modeCycle();
 	    }
 	    return TR_CYCLE;
+        case "Displace":
+            if (this.mode != TR_DISPLACE) {
+                this.modeDisplace();
+            }
 	default:
 	    return -1;
 	}
@@ -181,6 +187,11 @@ class Transformer extends Slot {
 	this.argument = argbox;
     }
 
+    modeDisplace(arg = this.newBarcodeArgument()) {
+        this.mode = TR_DISPLACE;
+        this.argument = arg;
+    }
+    
     getArgument() { return this.argument; }
     
     update() {
@@ -253,7 +264,15 @@ class Transformer extends Slot {
 	    }
 	    this.barcode = base;
 	    break;
-	    
+
+        case TR_DISPLACE:
+            let p = base.displacement();
+            let r = this.argument.eject(this.displayX, this.displayY);
+            r.rotate(map(p.getTh(), -PI, PI, 0, 255));
+            r.brighten(p.getR() * DISP_SCALING);
+            this.barcode = r;
+            break;
+            
 	default:
 	    this.barcode = base;
 	    break;
