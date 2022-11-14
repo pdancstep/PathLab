@@ -115,7 +115,7 @@ class FormulaBarcode extends Barcode {
     // add the given angle to the color value of each frame
     // angle should be on the 0-255 scale, NOT degrees or radians
     rotate(angle) {
-	let fn = function(fr) { return new Frame((fr.getColor() + angle) % 255,
+	let fn = function(fr) { return new Frame((fr.getColor() + angle) % 256,
 						 fr.getBrightness(),
 						 fr.getSaturation()); };
 	this.eqn = this.eqn.composeLeft(fn);

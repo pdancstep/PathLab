@@ -45,18 +45,18 @@ function presetSquare(idx) {
     let x = 1;
     let y = 1;
     if (idx<64) {
-        x = map(idx, 0, 63, -1, 1);
+        x = map(idx, 0, 64, -1, 1);
     }
     else if (idx<128) {
-        y = map(idx, 64, 127, 1, -1);
+        y = map(idx, 64, 128, 1, -1);
     }
     else if (idx<192) {
         y = -1;
-        x = map(idx, 128, 191, 1, -1);
+        x = map(idx, 128, 192, 1, -1);
     }
     else if (idx<256) {
         x = -1;
-        y = map(idx, 192, 255, -1, 1);
+        y = map(idx, 192, 256, -1, 1);
     }
     return coordToFrame(x, y);
 }
@@ -68,9 +68,9 @@ const PRESETS_GEN = [function(idx) { return new Frame(63.75, 128, 255); },
 		     function(idx) { return new Frame(0, 128, 255); },
 		     function(idx) { return new Frame(127.5, 128, 255); },
 		     function(idx) { return new Frame(191.25, 128, 255); },
-		     function(idx) { return new Frame((idx+128)%256, 64, 255); },
+		     function(idx) { return new Frame((idx+128)%256, 128, 255); },
                      presetSquare,
                      function(idx) { return new Frame(0, 0, 255); }];
 const BASE_DURATION = BARCODE_HEIGHT;
 const PRESETS_DURATIONS = [BASE_DURATION, BASE_DURATION, BASE_DURATION, BASE_DURATION,
-			   255, 255, 255];
+			   256, 256, 256];

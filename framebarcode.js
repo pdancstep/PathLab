@@ -107,7 +107,7 @@ class FrameBarcode extends Barcode {
     // angle should be on the 0-255 scale, NOT degrees or radians
     rotate(angle) {
 	for (var i = 0; i < this.frames.length; i++) {
-	    let newcolor = (this.frames[i].getColor() + angle) % 255;
+	    let newcolor = (this.frames[i].getColor() + angle) % 256;
 	    this.frames[i] = new Frame(newcolor,
 				       this.frames[i].getBrightness(),
 				       this.frames[i].getSaturation());

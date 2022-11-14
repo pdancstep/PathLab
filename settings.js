@@ -27,7 +27,7 @@ const TIME_UNIT = 25;
 const DRAG_SCALING = 1/Math.sqrt(TIME_UNIT);
 
 // scaling constant used in Fourier transform
-const DISP_SCALING = 1/Math.PI;
+const DISP_SCALING = 1/10;
 
 // how many frames back we look when calculating velocity of mouse movement
 const SAMPLE_SIZE = 10;
