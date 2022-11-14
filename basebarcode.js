@@ -42,6 +42,11 @@ class Barcode {
 		    return transformers[i].installBarcode(this);
 		}
 	    }
+            for (let i=0; i<bonusSlots.length; i++) {
+		if (bonusSlots[i].inside(mouseX, mouseY)) {
+		    return bonusSlots[i].installBarcode(this);
+		}
+	    }
             if (ptracer.inside(mouseX, mouseY)) {
                 return ptracer.installBarcode(this);
             } else if (jtracer.inside(mouseX, mouseY)) {

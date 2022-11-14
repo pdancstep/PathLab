@@ -27,6 +27,13 @@ function setup() {
     // initialize tracers
     ptracer = new Tracer(TRACER_X, PARTICLE_TRACER_Y, particleCanvas, joystickCanvas);
     jtracer = new Tracer(TRACER_X, JOYSTICK_TRACER_Y, particleCanvas, joystickCanvas);
+
+    // initialize extra storage slots
+    y = EXTRA_1_Y;
+    for (let i=0; i < EXTRA_SLOTS; i++) {
+        bonusSlots.push(new Slot(EXTRA_X, y));
+        y += EXTRA_GAP;                        
+    }
 }
 
 function draw() {
@@ -103,6 +110,10 @@ function mousePressed() {
     // click on transformers
     for (const t of transformers) {
 	t.onClick();
+    }
+
+    for (const s of bonusSlots) {
+        s.onClick();
     }
     
     // click on free barcode

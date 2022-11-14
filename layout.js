@@ -33,11 +33,16 @@ const TRANSFORMER_1_Y = 100;
 const TRANSFORMER_GAP = 30;
 const DROPDOWN_OVERHANG = 130;
 
+// position of extra slots
+const EXTRA_X = 1100;
+const EXTRA_1_Y = 800;
+const EXTRA_GAP = 50;
+
 // position of main tracers
 const TRACER_X = 40;
 const TRACER_MARGIN = 20;
 
-// location where barcodes initially spawn into the editing area
+// default location to spawn barcodes into the editing area
 const SPAWN_X = 750;
 const SPAWN_Y = 800;
 
@@ -63,7 +68,7 @@ function presetSquare(idx) {
 
 // premade barcodes (solid directions & circle)
 const PRESETS_X = [1213, 1163, 1263, 1213, 1100, 1100, 1100];
-const PRESETS_Y = [115, 95, 95, 70, 25, 700, 800];
+const PRESETS_Y = [115, 95, 95, 70, 25, 700, 750];
 const PRESETS_GEN = [function(idx) { return new Frame(63.75, 128, 255); },
 		     function(idx) { return new Frame(0, 128, 255); },
 		     function(idx) { return new Frame(127.5, 128, 255); },

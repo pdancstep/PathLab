@@ -236,6 +236,10 @@ function drawBarcodes() {
     for (const t of transformers) {
 	t.display();
     }
+
+    for (const slot of bonusSlots) {
+        slot.display();
+    }
     
     for(const barc of freeBarcodes){
         barc.update();

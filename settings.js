@@ -15,6 +15,8 @@ var presets = [];
 var transformers = [];
 var addTransformerButton;
 var freeBarcodes = [];
+const EXTRA_SLOTS = 3;
+var bonusSlots = [];
 
 ///////////////////////
 // Tuning Parameters //
