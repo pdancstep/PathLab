@@ -77,20 +77,80 @@ class FrameBarcode extends Barcode {
 	}
     }
 
-    // TODO replace this with something that tries to figure out better intermediate values
-    // Paul please use your math powers
     // stretch a barcode of length len into one of length len*factor
-    // by copying each frame (factor-1) times
+    // uses cubic interpolation to create intermediate frames
     stretch(factor) {
-        factor = floor(factor);
-	for (var i = 0; i < this.frames.length; i+=factor) {
-            for (var j = 1; j < factor; j++) {
-                this.frames.splice(i, 0, this.frames[i]);
+        function P0(t) {
+            return (2*t*t*t-3*t*t+1);
+        }
+        
+        function M0(t) {
+            return (t*t*t-2*t*t+t);
+        }
+        
+        function P1(t) {
+            return (-2*t*t*t + 3*t*t);
+        }
+        
+        function M1(t) {
+            return (t*t*t-t*t);
+        }
+        
+        function makeInter(p0, p1, m0, m1, interval) {
+            let f = function(t) {
+                let tnorm = t/interval;
+                let a = p0.scale(P0(tnorm));
+                let b = p1.scale(P1(tnorm));
+                let c = m0.scale(M0(tnorm));
+                let d = m1.scale(M1(tnorm));
+                return a.translate(b).translate(c).translate(d).toFrame();
             }
-	}
+            return f;
+        }
+        
+        // phase 1: compute interpolation function
+        let p0 = this.getFrame(0).getCoord();
+        let m0 = new Coord(0,0);
+        let p1 = this.getFrame(1).getCoord();
+        let m1 = this.getFrame(2).getCoord().subtract(p0).scale(1/2);
+        
+        let f = new Piecewise(0, 1, makeInter(p0,p1,m0,m1,this.length()));
+        
+        for (let i = 2; i < this.length()-1; i++) {
+            p0 = p1;
+            m0 = m1;
+            p1 = this.getFrame(i).getCoord();
+            m1 = this.getFrame(i+1).getCoord().subtract(p0).scale(1/2);
+            
+            f = f.combine(new Piecewise(i-1, i, makeInter(p0,p1,m0,m1,this.length())));
+        }
+        
+        p0 = p1;
+        m0 = m1;
+        p1 = this.getLastFrame().getCoord();
+        m1 = new Coord(0,0);
+        
+        f = f.combine(new Piecewise(this.length()-1,this.length(),
+                                    makeInter(p0,p1,m0,m1,this.length())));
+        
+        // phase 2: sample interpolation function to compute new frames
+        let newlength = floor(this.length() * factor);
+        let samplingWidth = this.length()/newlength;
+        
+        let newframes = [];
+        for (let i = 0; i < newlength; i++) {
+            let fr = f.apply(samplingWidth*i);
+            if (fr) {
+                newframes.push(fr);
+            } else {
+                //console.log("error sampling at t=" + samplingWidth*i);
+            }
+        }
+        
+        this.frames = newframes;
 	this.crop();
     }
-
+    
     darken(factor) {
 	for (var i = 0; i < this.frames.length; i++) {
 	    this.frames[i] = this.frames[i].manuallyScaleIntensity(1/factor);
