@@ -96,13 +96,13 @@ class FrameBarcode extends Barcode {
             return (t*t*t-t*t);
         }
         
-        function makeInter(p0, p1, m0, m1, interval) {
+        function makeInter(p0, p1, m0, m1, intervalStart) {
             let f = function(t) {
-                let tnorm = t/interval;
-                let a = p0.scale(P0(tnorm));
-                let b = p1.scale(P1(tnorm));
-                let c = m0.scale(M0(tnorm));
-                let d = m1.scale(M1(tnorm));
+                let tlocal = t - intervalStart;
+                let a = p0.scale(P0(tlocal));
+                let b = p1.scale(P1(tlocal));
+                let c = m0.scale(M0(tlocal));
+                let d = m1.scale(M1(tlocal));
                 return a.translate(b).translate(c).translate(d).toFrame();
             }
             return f;
@@ -110,42 +110,41 @@ class FrameBarcode extends Barcode {
         
         // phase 1: compute interpolation function
         let p0 = this.getFrame(0).getCoord();
-        let m0 = new Coord(0,0);
         let p1 = this.getFrame(1).getCoord();
-        let m1 = this.getFrame(2).getCoord().subtract(p0).scale(1/2);
+        let p2 = this.getFrame(2).getCoord();
+        let m0 = new Coord(0,0);
+        let m1 = p2.subtract(p0).scale(1/2);
         
-        let f = new Piecewise(0, 1, makeInter(p0,p1,m0,m1,this.length()));
+        let f = new Piecewise(0, 1, makeInter(p0,p1,m0,m1,0));
         
         for (let i = 2; i < this.length()-1; i++) {
             p0 = p1;
+            p1 = p2;
+            p2 = this.getFrame(i+1).getCoord();
             m0 = m1;
-            p1 = this.getFrame(i).getCoord();
-            m1 = this.getFrame(i+1).getCoord().subtract(p0).scale(1/2);
+            m1 = p2.subtract(p0).scale(1/2);
             
-            f = f.combine(new Piecewise(i-1, i, makeInter(p0,p1,m0,m1,this.length())));
+            f = f.combine(new Piecewise(i-1, i, makeInter(p0,p1,m0,m1,i-1)));
         }
         
         p0 = p1;
+        p1 = p2; // should equal this.getLastFrame().getCoord()
         m0 = m1;
-        p1 = this.getLastFrame().getCoord();
         m1 = new Coord(0,0);
         
-        f = f.combine(new Piecewise(this.length()-1,this.length(),
-                                    makeInter(p0,p1,m0,m1,this.length())));
+        f = f.combine(new Piecewise(this.length()-2,this.length()-1,
+                                    makeInter(p0,p1,m0,m1,this.length()-2)));
         
         // phase 2: sample interpolation function to compute new frames
-        let newlength = floor(this.length() * factor);
-        let samplingWidth = this.length()/newlength;
+        let numIntervals = this.length()-1;
+        let newlengthMinusEndpoint = floor(numIntervals * factor);
         
         let newframes = [];
-        for (let i = 0; i < newlength; i++) {
-            let fr = f.apply(samplingWidth*i);
-            if (fr) {
-                newframes.push(fr);
-            } else {
-                //console.log("error sampling at t=" + samplingWidth*i);
-            }
+        for (let i = 0; i < newlengthMinusEndpoint; i++) {
+            let fr = f.apply(i/factor);
+            newframes.push(fr);
         }
+        newframes.push(this.getLastFrame());
         
         this.frames = newframes;
 	this.crop();
