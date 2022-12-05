@@ -205,9 +205,11 @@ function performBinaryOperation(p1, p2, f) {
     }
     let i1 = 0;
     let i2 = 0;
-    let st = 0;
+    let st = p1.starts[0];
     let nd = min(p1.stops[i1], p2.stops[i2]);
-    let f0 = function(x) { return f(p1.components[i1](x), p2.components[i2](x)); };
+    let f0_1 = p1.components[i1];
+    let f0_2 = p2.components[i2];
+    let f0 = function(x) { return f(f0_1(x), f0_2(x)); };
     let pf = new Piecewise(st, nd, f0, p1.errorval);
 
     while (nd < p1.getStop()) {
@@ -221,7 +223,9 @@ function performBinaryOperation(p1, p2, f) {
 	nd = min(p1.stops[i1], p2.stops[i2]);
 
 	if (st < nd) {
-	    let fn = function(x) { return f(p1.components[i1](x), p2.components[i2](x)); };
+            let fn_1 = p1.components[i1];
+            let fn_2 = p2.components[i2];
+	    let fn = function(x) { return f(fn_1(x), fn_2(x)); };
 	    pf = pf.combine(new Piecewise(st, nd, fn));
 	} else {
 	    console.log("Error: something weird happened while trying to build a binary operation out of Piecewise functions");
